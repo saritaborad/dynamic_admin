@@ -1,0 +1,673 @@
+.customer-page-box {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: 0px 0px 14px 5px rgba(0, 0, 0, 0.09);
+  overflow: hidden;
+}
+
+.customer-page-box-body {
+  position: relative;
+  padding: 5px 15px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.player-detail label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333333;
+}
+
+.player-detail p {
+  font-weight: 400;
+  font-size: 14px;
+  color: #7B838A;
+}
+
+.player-detail div {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.player-detail div span {
+  font-weight: 400;
+  font-size: 14px;
+  color: #7B838A;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.player-detail div span b,
+.player-detail div bdi {
+  font-weight: 400;
+  font-size: 14px;
+  color: #7B838A;
+}
+
+.athlete-profile {
+  position: absolute;
+  top: 0px;
+  left: 60px;
+  transform: translate(-50%, -50%);
+}
+
+.athlete-profile img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 100px;
+}
+
+.athelete-name-txt {
+  margin-left: 90px;
+}
+
+.market-rigth-subtxt div {
+  width: 26px;
+  display: inline-block;
+}
+
+.market-rigth-subtxt div span {
+  display: flex !important;
+  align-items: center;
+  justify-content: start;
+}
+
+.linear-txt {
+  color: #6A58FB !important;
+  cursor: pointer;
+  // border-bottom: 1px solid #6a58fb;
+  line-height: 15px;
+  font-weight: 600 !important;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.soc-innr-percent p {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333333;
+  margin-bottom: 0;
+}
+
+.soc-innr-percent span {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 13px;
+  color: #333333;
+  padding-right: 10px;
+  border-right: 1px solid #c1c1c1;
+}
+
+.soc-innr-percent bdi {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 13px;
+  color: #333333;
+  padding-left: 10px;
+}
+
+.soc-img-div img {
+  width: 40px;
+  height: 40px;
+}
+
+.social-score-detail {
+  border: 1px solid rgba(108, 106, 129, 0.2);
+  border-radius: 7px;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.border-class {
+  border-top: 1px solid rgba(108, 106, 129, 0.2);
+  border-bottom: 1px solid rgba(108, 106, 129, 0.2);
+}
+
+
+
+.score-div {
+  padding: 10px;
+  background: #ffff;
+  border-radius: 10px;
+}
+
+.score-div img {
+  width: 150px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.score-div h6 {
+  font-weight: 700;
+  font-size: 18px;
+  color: #333333;
+}
+
+.score-div .score-detail span {
+  font-weight: 700;
+  font-size: 16px;
+  background: linear-gradient(100.19deg, #6a58fb 6.63%, #4599f4 101.7%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #547ef6;
+}
+
+.score-div .score-detail bdi {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 160%;
+  color: #7b838a;
+  margin-top: 8px;
+  margin-bottom: 0;
+  display: block;
+}
+
+.deal-personal-box-div {
+  background-color: #fff;
+  border: 1px solid rgba(108, 106, 129, 0.2);
+  border-radius: 10px;
+  height: 100%;
+}
+
+.deal-personal-img img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 5px 5px 1px 0px #D9D9D9;
+}
+
+.deal-profile-img-class bdi {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333333;
+}
+
+.deal-profile-img-class img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.deal-profile-img-class div {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.energy-div {
+  background: #f5f6f7;
+  border: 1px solid #ffffff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.energy-div img {
+  width: 25px;
+  height: 25px;
+  object-fit: cover;
+}
+
+.comn-status-class {
+  width: 120px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 12px;
+  color: #fff;
+}
+
+.comn-status-class.pending-class {
+  background: #7b838a;
+}
+
+.comn-status-class.review-class {
+  background: #ffc107;
+}
+
+.comn-status-class.progress-class {
+  background: #2f80ed;
+}
+
+.comn-status-class.inprogress-class {
+  background: #f2994a;
+}
+
+.comn-status-class.cancel-class {
+  background: #eb5757;
+}
+
+.comn-status-class.complete-class {
+  background: #27ae60;
+}
+
+.comn-status-class.offerclose-class {
+  color: #eb5757;
+  background: #f3868633;
+}
+
+.deal-personal-detail li span {
+  padding: 5px 0px 0px 0px;
+  font-weight: 400;
+  font-size: 12px;
+  color: #7B838A;
+}
+
+.deal-personal-detail li bdi {
+  font-weight: 600;
+  font-size: 12px;
+  color: #333333;
+}
+
+.deal-personal-detail .price-txt {
+  background: linear-gradient(100.19deg, #6A58FB 6.63%, #4599F4 101.7%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.deal-personal-box-body p {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 19px;
+  color: #333333;
+  margin: 10px 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deal-personal-box-body span {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #7B838A;
+}
+
+.deal-personal-detail .price-txt {
+  background: #6A58FB;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.user-athlete-about label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 15px;
+  display: block;
+  color: #333333;
+}
+
+.user-athlete-about div>span {
+  background: #F4F7FE;
+  border: 1px solid rgba(108, 106, 129, 0.3);
+  border-radius: 10px;
+  text-align: center;
+  color: #6A58FB;
+  font-weight: 700;
+  font-size: 20px;
+  width: 300px;
+  padding: 20px 30px;
+  display: block;
+}
+
+.user-parent-box {
+  border: 1px solid rgba(108, 106, 129, 0.3);
+  border-radius: 10px;
+  width: 300px;
+}
+
+.user-parent-box img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 100px;
+}
+
+.user-parent-box p {
+  margin: 5px 0 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 13px;
+  color: #333333;
+
+}
+
+.user-athlete-detail span {
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 15px;
+  color: #7B838A;
+  display: block;
+}
+
+.user-athlete-detail bdi {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 15px;
+  color: #333333;
+  display: block;
+  margin-top: 10px;
+}
+
+// =================== //
+
+.social-media-platform {
+  border-bottom: 1px solid rgba(108, 106, 129, 0.2);
+}
+
+.social-media-platform h6 {
+  font-weight: 700;
+  font-size: 16px;
+  color: #333333;
+  margin-bottom: 0;
+}
+
+.social-media-platform img {
+  width: 30px;
+  height: 30px;
+}
+
+.social-media-platform span {
+  font-weight: 500;
+  font-size: 14px;
+  color: #7b838a;
+  margin-left: 10px;
+}
+
+.social-media-platform bdi {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333333;
+}
+
+.categori-main h6 {
+  font-weight: 500;
+  font-size: 18px;
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+.category-inner-div span {
+  display: inline-block;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 13px;
+  letter-spacing: 0.01em;
+  color: #7B838A;
+  border: 1px solid #c1c1c1;
+  border-radius: 10px;
+  padding: 8px 15px;
+  margin: 0px 8px 8px 0px;
+  // cursor: pointer;
+}
+
+
+// ==================== Review Modal ================== //
+
+.report-post-hdr p {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: 0.01em;
+  color: #333333;
+  margin-bottom: 0;
+}
+
+.review-modal-body span {
+  color: #333333;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.review-modal-body bdi {
+  color: #7B838A;
+  font-weight: 400;
+  font-size: 11px;
+}
+
+.review-modal-body p {
+  font-weight: 400;
+  font-size: 14px;
+  color: #7B838A;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.review-modal-body ul li img {
+  width: 40px;
+  height: 40px;
+}
+
+.review-modal-body li:last-child p {
+  border: none;
+  margin-bottom: 0;
+}
+
+.total-review-div {
+  background: #F5F6F7;
+  border-radius: 10px;
+  text-align: center;
+  margin: 10px 0px 20px;
+}
+
+.total-review-div h6 {
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 33px;
+  color: #333333;
+}
+
+.total-review-div bdi {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 26px;
+  color: #7B838A;
+}
+
+// =================== Notification ================== //
+
+.profile-hdr-drop-class .dropdown-item:focus,
+.dropdown-item:hover,
+.profile-hdr-drop-class .btn:first-child:active {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.profile-hdr-drop-class .dropdown-menu.show {
+  display: block;
+  border-radius: 10px;
+  // margin: 0px 5px;
+}
+
+.profile-hdr-drop-class .dropdown-item {
+  white-space: unset;
+}
+
+.noti-main-div {
+  border-bottom: 1px solid rgba(32, 33, 36, 0.3);
+}
+
+.profile-hdr-drop-class .dropdown-item h3 {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 17px;
+  color: #333333;
+  padding: 15px 0px 20px;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(32, 33, 36, 0.3);
+}
+
+.profile-hdr-drop-class .dropdown-item:last-child .noti-main-div {
+  border: 0;
+}
+
+.profile-hdr-drop-class .dropdown-toggle::after {
+  display: none;
+}
+
+.time-noti-div span {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  color: #333333;
+}
+
+.noti-main-div bdi {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 24px;
+  color: #7B838A;
+}
+
+.noti-detail-part {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 160%;
+  margin: 5px 0px 10px;
+  letter-spacing: 0.02em;
+  color: #7B838A;
+}
+
+// =================== SIDEBAR ACCODION ======================== //
+
+.sidebar-accodion .accordion-button {
+  padding: 0 0px 0px 0px;
+  background-color: #1e1e2d;
+}
+
+.sidebar-accodion .accordion-item {
+  border: 0;
+  background-color: #1e1e2d;
+}
+
+.sidebar-accodion .accordion-body {
+  padding: 0 0 0 30px;
+  background-color: #1e1e2d;
+
+}
+
+.sidebar-accodion .accordion-button:focus {
+  box-shadow: none;
+  background-color: #1e1e2d;
+  color: #1e1e2d;
+}
+
+.sidebar-accodion .accordion-button::after {
+  margin-right: 20px;
+  background-size: 14px;
+  background-image: url("./Images/arrow-down.svg");
+  background-position: center;
+}
+
+.sidebar-accodion .accordion-body li a.active::before {
+  background: linear-gradient(100.19deg, #6a58fb 6.63%, #4599f4 101.7%);
+}
+
+.sidebar-accodion .accordion-body li a::before {
+  position: absolute;
+  content: "";
+  left: -3px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+}
+
+.sidebar-accodion .accordion-body li a {
+  border-left: 3px solid #1e1e2d;
+}
+
+.sidebar-accodion .accordion-body li {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+  color: #333333;
+  text-transform: capitalize;
+  white-space: nowrap;
+  margin: 0;
+}
+
+
+.sidebar-accodion .accordion-button:not(.collapsed) {
+  box-shadow: none;
+  background-color: #1e1e2d;
+}
+
+
+
+
+@media (max-width: 575px) {
+
+  .player-detail label {
+    font-size: 13px;
+  }
+
+  .player-detail p {
+    font-size: 13px;
+  }
+
+  .player-detail div span,
+  .player-detail div span b,
+  .player-detail div bdi,
+  .auth-div bdi {
+    font-size: 13px;
+  }
+
+  .athlete-profile img {
+    width: 65px;
+    height: 65px;
+  }
+
+  .athlete-profile {
+    left: 50px;
+  }
+
+  .athelete-name-txt {
+    margin-left: 75px;
+  }
+
+  .soc-innr-percent p,
+  .soc-innr-percent span,
+  .soc-innr-percent bdi {
+    font-size: 13px;
+  }
+
+  .user-athlete-about div>span,
+  .user-parent-box {
+    width: 100%;
+  }
+
+  .social-media-platform h6 {
+    font-size: 16px;
+  }
+
+  .categori-main h6 {
+    font-size: 15px;
+  }
+
+  .category-inner-div span {
+    padding: 6px 10px;
+  }
+}
