@@ -263,6 +263,7 @@ const ManageAdmin = () => {
    (res) => {
     if (res.status === 200) {
      toast.success(res.data.message);
+     resetForm(formData);
      getAllApp();
      setShow(false);
     }
@@ -281,16 +282,23 @@ const ManageAdmin = () => {
   });
  };
 
- const updateApp = (formData) => {
+ const updateApp = (formData, resetForm) => {
   new Promise((resolve) => resolve(PostApi(API_PATH.updateApp, formData))).then(
    (res) => {
     if (res.status === 200) {
      setShow(false);
+     resetForm(formData);
      toast.success(res.data.message);
      getAllApp();
     }
    }
   );
+ };
+
+ const appModalClose = () => {
+  setShow(false);
+  setTitle(false);
+  setUpdate(false);
  };
 
  return (
@@ -376,7 +384,7 @@ const ManageAdmin = () => {
     </div>
     <Modal
      show={show}
-     onHide={() => setShow(false)}
+     onHide={() => appModalClose()}
      size="md"
      className="cust-comn-modal"
      aria-labelledby="contained-modal-title-vcenter"
@@ -398,7 +406,9 @@ const ManageAdmin = () => {
         title: Yup.string().required("Title is required."),
        })}
        onSubmit={(formData, { resetForm }) => {
-        update ? updateApp(formData) : submitFormData(formData, resetForm);
+        update
+         ? updateApp(formData, resetForm)
+         : submitFormData(formData, resetForm);
        }}
       >
        {(runform) => (
@@ -422,7 +432,7 @@ const ManageAdmin = () => {
            <button
             className="btn-smart-comn2 px-4"
             type="button"
-            onClick={() => setShow(false)}
+            onClick={() => appModalClose()}
            >
             Cancel
            </button>

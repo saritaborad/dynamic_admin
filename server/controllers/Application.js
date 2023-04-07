@@ -1,6 +1,15 @@
+const mongoose = require("mongoose");
 const Application = require("../models/Application");
 const give_response = require("../middleware/help");
 const asyncHandler = require("../middleware/async");
+const {
+ DB,
+ createCollection,
+ deleteCollection,
+ renameCollection,
+} = require("../db/db");
+const { versionSchema } = require("../models/Version");
+const { privacySchema } = require("../models/PrivacyPolicy");
 
 exports.addApp = asyncHandler(async (req, res, next) => {
  const { title } = req.body;
@@ -11,7 +20,12 @@ exports.addApp = asyncHandler(async (req, res, next) => {
 
  const addApp = Application({ title, table_prefix: table_prefix });
  addApp.save();
- give_response(res, 200, true, "Application added!");
+ mongoose.model(`${addApp.table_prefix}_privacypolicy`, privacySchema);
+ mongoose.model(`${addApp.table_prefix}_version_table`, versionSchema);
+ //  createCollection(res, DB, `${addApp.table_prefix}_privacypolicy`);
+ //  createCollection(res, DB, `${addApp.table_prefix}_version_table`);
+
+ return give_response(res, 200, true, "Application added!");
 });
 
 exports.updateApp = asyncHandler(async (req, res, next) => {
@@ -21,12 +35,25 @@ exports.updateApp = asyncHandler(async (req, res, next) => {
  table_prefix = title?.replaceAll(" ", "_");
  let obj =
   enable || enable === 0 ? { enable, _id } : { title, _id, table_prefix };
- const editAdmin = await Application.findByIdAndUpdate(
+ const old = await Application.findById({ _id: _id });
+ const newApp = await Application.findByIdAndUpdate(
   { _id: _id },
   { $set: { ...obj } },
   { new: true }
  );
- give_response(res, 200, true, "Details updated", editAdmin);
+ renameCollection(
+  res,
+  DB,
+  `${old.table_prefix}_privacypolicy`,
+  `${newApp.table_prefix}_privacypolicy`
+ );
+ renameCollection(
+  res,
+  DB,
+  `${old.table_prefix}_version_table`,
+  `${newApp.table_prefix}_version_table`
+ );
+ give_response(res, 200, true, "Details updated", newApp);
 });
 
 exports.updatePosition = asyncHandler(async (req, res, next) => {
@@ -42,8 +69,10 @@ exports.updatePosition = asyncHandler(async (req, res, next) => {
 
 exports.deleteApp = asyncHandler(async (req, res, next) => {
  const { _id } = req.body;
- await Application.findByIdAndDelete({ _id });
- give_response(res, 200, true, "Application deleted");
+ const app = await Application.findByIdAndDelete({ _id });
+ deleteCollection(res, DB, `${app?.table_prefix}_version_table`);
+ deleteCollection(res, DB, `${app?.table_prefix}_version_table`);
+ return give_response(res, 200, true, "Application deleted");
 });
 
 exports.getAllApp = asyncHandler(async (req, res, next) => {
