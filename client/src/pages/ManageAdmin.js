@@ -287,9 +287,9 @@ const ManageAdmin = () => {
    (res) => {
     if (res.status === 200) {
      setShow(false);
-     resetForm(formData);
-     toast.success(res.data.message);
      getAllApp();
+     resetForm && resetForm(formData);
+     toast.success(res.data.message);
     }
    }
   );

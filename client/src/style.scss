@@ -1997,7 +1997,7 @@ color: #7b838a;
     padding-left: 0;
   }
   
-   .form-switch .form-check-input {
+.form-switch .form-check-input {
     height: 18px;
     width: 30px;
     cursor: pointer;
@@ -2007,24 +2007,26 @@ color: #7b838a;
     margin-right: 0;
     margin-left: 0;
     
-  }
+}
   
-   .form-switch .form-check-input:focus {
+.form-switch .form-check-input:focus {
     box-shadow: none;
     background-image: url("./Images/check-circle1.svg");
   }
   
-   .form-switch .form-check-input:checked {
+.form-switch .form-check-input:checked {
     background-image: url("./Images/check-circle.svg");
-  }
+}
   
-   .form-switch .form-check-input:checked {
+.form-switch .form-check-input:checked {
     background-color: #e8ebf1;
-     }
+}
   
-   .form-switch {
+.form-switch {
     min-width: 0;
-  }
+}
+
+
 //------------------------------------------------- media query -------------------------------------------------
 @media (max-width: 1599px) {
     .cust-col-team {

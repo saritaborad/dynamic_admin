@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 // import Logo from "../../Images/logo.svg";
 import Accordion from "react-bootstrap/Accordion";
+import { useActiveApp } from "../../CustomHook/Hook";
 
 function Sidebar(props) {
  const [path, setPath] = useState("");
  const location = useLocation();
+ const activeApp = useActiveApp();
 
  useEffect(() => {
   setPath(location.pathname.replace(/\//g, ""));
@@ -115,7 +117,10 @@ function Sidebar(props) {
       </li>
       <span className="sidebar-header">MANAGE APP DATA</span>
       <li>
-       <Link to="#" className={path === "" ? "active" : ""}>
+       <Link
+        to="/manage-admin"
+        className={path === "/manage-admin" ? "active" : ""}
+       >
         <svg
          width="14"
          height="17"
@@ -134,9 +139,9 @@ function Sidebar(props) {
       <span className="sidebar-header">APPLICATION LIST</span>
 
       <li className="sidebar-accodion">
-       <Accordion defaultActiveKey="1">
-        {props.activeApp?.length > 0 &&
-         props.activeApp.map((item, i) => {
+       <Accordion>
+        {activeApp?.length > 0 &&
+         activeApp.map((item, i) => {
           return (
            <Accordion.Item eventKey={i + 1}>
             <Accordion.Header>
@@ -162,16 +167,25 @@ function Sidebar(props) {
              <ul>
               <li>
                <Link
-                to="/"
-                className={path === "users-athlete" ? "active" : ""}
+                to={`/version?${item.table_prefix}`}
+                className={
+                 `/${path + location.search}` ===
+                 `/version?${item.table_prefix}`
+                  ? "active"
+                  : ""
+                }
                >
                 <span>Version</span>
                </Link>
               </li>
               <li>
                <Link
-                to="/"
-                className={path === "users-business" ? "active" : ""}
+                to={`/pp?${item.table_prefix}`}
+                className={
+                 `/${path + location.search}` === `/pp?${item.table_prefix}`
+                  ? "active"
+                  : ""
+                }
                >
                 <span>Privacy Policy</span>
                </Link>

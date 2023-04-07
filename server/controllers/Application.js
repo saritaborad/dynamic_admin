@@ -1,29 +1,22 @@
-const mongoose = require("mongoose");
 const Application = require("../models/Application");
 const give_response = require("../middleware/help");
 const asyncHandler = require("../middleware/async");
-const {
- DB,
- createCollection,
- deleteCollection,
- renameCollection,
-} = require("../db/db");
-const { versionSchema } = require("../models/Version");
-const { privacySchema } = require("../models/PrivacyPolicy");
+const { DB, delCollection, renameCollection } = require("../db/db");
+const { verionTable } = require("../models/Version");
+const { privacyTable } = require("../models/PrivacyPolicy");
 
 exports.addApp = asyncHandler(async (req, res, next) => {
  const { title } = req.body;
 
  let table_prefix;
  table_prefix = title?.toLowerCase();
- table_prefix = title?.replaceAll(" ", "_");
+ table_prefix = title?.trim()?.replaceAll(" ", "_");
 
  const addApp = Application({ title, table_prefix: table_prefix });
- addApp.save();
- mongoose.model(`${addApp.table_prefix}_privacypolicy`, privacySchema);
- mongoose.model(`${addApp.table_prefix}_version_table`, versionSchema);
- //  createCollection(res, DB, `${addApp.table_prefix}_privacypolicy`);
- //  createCollection(res, DB, `${addApp.table_prefix}_version_table`);
+ await addApp.save();
+
+ privacyTable(`${addApp.table_prefix}_privacypolicy`);
+ verionTable(`${addApp.table_prefix}_version_table`);
 
  return give_response(res, 200, true, "Application added!");
 });
@@ -32,7 +25,7 @@ exports.updateApp = asyncHandler(async (req, res, next) => {
  const { title, _id, enable } = req.body;
  let table_prefix;
  table_prefix = title?.toLowerCase();
- table_prefix = title?.replaceAll(" ", "_");
+ table_prefix = title?.trim()?.replaceAll(" ", "_");
  let obj =
   enable || enable === 0 ? { enable, _id } : { title, _id, table_prefix };
  const old = await Application.findById({ _id: _id });
@@ -44,14 +37,14 @@ exports.updateApp = asyncHandler(async (req, res, next) => {
  renameCollection(
   res,
   DB,
-  `${old.table_prefix}_privacypolicy`,
-  `${newApp.table_prefix}_privacypolicy`
+  `${old.table_prefix}_privacypolicies`,
+  `${newApp.table_prefix}_privacypolicies`
  );
  renameCollection(
   res,
   DB,
-  `${old.table_prefix}_version_table`,
-  `${newApp.table_prefix}_version_table`
+  `${old.table_prefix}_version_tables`,
+  `${newApp.table_prefix}_version_tables`
  );
  give_response(res, 200, true, "Details updated", newApp);
 });
@@ -70,8 +63,8 @@ exports.updatePosition = asyncHandler(async (req, res, next) => {
 exports.deleteApp = asyncHandler(async (req, res, next) => {
  const { _id } = req.body;
  const app = await Application.findByIdAndDelete({ _id });
- deleteCollection(res, DB, `${app?.table_prefix}_version_table`);
- deleteCollection(res, DB, `${app?.table_prefix}_version_table`);
+ delCollection(res, DB, `${app?.table_prefix}_version_tables`);
+ delCollection(res, DB, `${app?.table_prefix}_privacypolicies`);
  return give_response(res, 200, true, "Application deleted");
 });
 
@@ -89,17 +82,9 @@ exports.getAllApp = asyncHandler(async (req, res, next) => {
   find = {
    $or: [
     {
-     table_prefix: {
-      $regex: `.*${req.body.search?.trim()}.*`,
-      $options: "i",
-     },
+     table_prefix: { $regex: `.*${req.body.search?.trim()}.*`, $options: "i" },
     },
-    {
-     title: {
-      $regex: `.*${req.body.search?.trim()}.*`,
-      $options: "i",
-     },
-    },
+    { title: { $regex: `.*${req.body.search?.trim()}.*`, $options: "i" } },
    ],
    enable: status,
   };

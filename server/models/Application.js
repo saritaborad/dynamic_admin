@@ -12,6 +12,7 @@ const appSchema = mongoose.Schema(
   title: {
    type: String,
    trim: true,
+   unique: true,
   },
   table_prefix: {
    type: String,
@@ -24,6 +25,10 @@ const appSchema = mongoose.Schema(
   enable: {
    type: Number,
    default: 0,
+  },
+  date: {
+   type: Date,
+   default: Date.now(),
   },
  },
  {

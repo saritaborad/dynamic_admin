@@ -6,4 +6,6 @@ export const API_PATH = {
  deleteApp: ApiBaseUrl + "/app/deleteApp",
  updateApp: ApiBaseUrl + "/app/updateApp",
  updatePosition: ApiBaseUrl + "/app/updatePosition",
+ changePolicy: ApiBaseUrl + "/app/changePolicy",
+ getPolicy: ApiBaseUrl + "/app/getPolicy",
 };

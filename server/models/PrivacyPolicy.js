@@ -2,7 +2,12 @@ const mongoose = require("mongoose");
 
 const privacySchema = mongoose.Schema({
  content: { type: String },
- date: { type: String },
+ date: { type: Date, default: Date.now },
+ table_prefix: { type: String },
 });
 
-module.exports = { privacySchema };
+const privacyTable = (name) => {
+ mongoose.model(name, privacySchema);
+};
+
+module.exports = { privacyTable };

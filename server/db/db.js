@@ -21,7 +21,7 @@ const connClientDB = () => {
  return db;
 };
 
-const createCollection = async (res, db, name) => {
+const addCollection = async (res, db, name) => {
  try {
   await db.createCollection(name);
  } catch (error) {
@@ -29,7 +29,7 @@ const createCollection = async (res, db, name) => {
  }
 };
 
-const deleteCollection = async (res, db, name) => {
+const delCollection = async (res, db, name) => {
  try {
   await db.dropCollection(name);
  } catch (error) {
@@ -49,7 +49,7 @@ const DB = connClientDB();
 module.exports = {
  connectDB,
  DB,
- createCollection,
- deleteCollection,
+ addCollection,
+ delCollection,
  renameCollection,
 };

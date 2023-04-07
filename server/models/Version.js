@@ -11,4 +11,8 @@ const versionSchema = mongoose.Schema({
  date: { type: String },
 });
 
-module.exports = { versionSchema };
+const verionTable = (name) => {
+ mongoose.model(name, versionSchema);
+};
+
+module.exports = { verionTable };
