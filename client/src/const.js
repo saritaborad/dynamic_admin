@@ -8,4 +8,6 @@ export const API_PATH = {
  updatePosition: ApiBaseUrl + "/app/updatePosition",
  changePolicy: ApiBaseUrl + "/app/changePolicy",
  getPolicy: ApiBaseUrl + "/app/getPolicy",
+ addVersion: ApiBaseUrl + "/app/addVersion",
+ getAllVersion: ApiBaseUrl + "/app/getAllVersion",
 };

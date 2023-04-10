@@ -79,20 +79,20 @@ const ManageAdmin = () => {
         style={{ color: "#93a2dd", cursor: "pointer" }}
         onClick={() => moveItemUp(data[i]._id)}
        >
-        <i class="fa fa-arrow-up"></i>
+        <i className="fa fa-arrow-up"></i>
        </span>
        <span
         style={{ color: "#93a2dd", cursor: "pointer" }}
         onClick={() => moveItemDown(data[i]._id)}
        >
-        <i class="fa fa-arrow-down"></i>
+        <i className="fa fa-arrow-down"></i>
        </span>
 
        <div className="cust-drop-down">
         <Dropdown drop="left">
          <Dropdown.Toggle className="cust-drop-btn" id="dropdown">
           <span style={{ color: "#93a2dd" }}>
-           <i class="fa fa-cog"></i>
+           <i className="fa fa-cog"></i>
           </span>
          </Dropdown.Toggle>
          <Dropdown.Menu>
@@ -143,7 +143,7 @@ const ManageAdmin = () => {
         style={{ color: "red", cursor: "pointer" }}
         onClick={() => deleteItem(data[i]?._id)}
        >
-        <i class="fa fa-trash"></i>
+        <i className="fa fa-trash"></i>
        </span>
       </div>
      );

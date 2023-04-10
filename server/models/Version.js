@@ -8,7 +8,7 @@ const versionSchema = mongoose.Schema({
  users: { type: Number },
  enabled: { type: Number },
  is_force: { type: Number },
- date: { type: String },
+ date: { type: Date, default: Date.now() },
 });
 
 const verionTable = (name) => {
