@@ -21,6 +21,12 @@ const connClientDB = () => {
  return db;
 };
 
+const getCollection = (name) => {
+ const DB = connClientDB();
+ const Collection = DB.collection(name);
+ return Collection;
+};
+
 const addCollection = async (res, db, name) => {
  try {
   await db.createCollection(name);
@@ -52,4 +58,5 @@ module.exports = {
  addCollection,
  delCollection,
  renameCollection,
+ getCollection,
 };

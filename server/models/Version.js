@@ -1,14 +1,37 @@
 const mongoose = require("mongoose");
 
 const versionSchema = mongoose.Schema({
- title: { type: String },
+ title: { type: String, trim: true },
  code: { type: Number },
- features: { type: String },
- ad_master: { type: String },
+ features: { type: String, trim: true },
  users: { type: Number },
  enabled: { type: Number },
  is_force: { type: Number },
- date: { type: Date, default: Date.now() },
+ version_note: { type: String },
+ ad_master: [
+  {
+   adm_name: { type: String, trim: true },
+   version_Id: {
+    type: mongoose.Schema.Types.ObjectId,
+   },
+   count: { type: Number },
+   enable: { type: Number, default: 0 },
+   adm_date: { type: Date, default: Date.now },
+   ad_chield: [
+    {
+     ad_token: { type: String, trim: true },
+     ad_keyword: { type: String, trim: true },
+     version_Id: { type: mongoose.Schema.Types.ObjectId },
+     enable: { type: Number, default: 0 },
+     adc_date: {
+      type: Date,
+      default: Date.now,
+     },
+    },
+   ],
+  },
+ ],
+ date: { type: Date, default: Date.now },
 });
 
 const verionTable = (name) => {

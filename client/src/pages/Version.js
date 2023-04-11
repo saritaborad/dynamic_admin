@@ -9,20 +9,25 @@ import { errorContainer, formAttr } from "../CommonFun/CommonFun";
 import RtdDatatable from "./Common/DataTable/DataTable";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AdTitleModal, AdTypeModal, ModeModal, NoteModal, VersionModal } from "../Modals/VersionModal";
 
 const Version = () => {
+ const [data, setData] = useState([]);
+ const [version, setVersion] = useState("");
+ const [isUpdate, setIsUpdate] = useState(false);
+
  const [versShow, setVersShow] = useState(false);
  const [adShow, setAdShow] = useState(false);
  const [adTitleShow, setAdTitleShow] = useState(false);
  const [modeShow, setModeShow] = useState(false);
- const [data, setData] = useState([]);
+ const [noteShow, setNoteShow] = useState(false);
  const [isOpen, setIsOpen] = useState(false);
  const [option, set_option] = useState({
   sizePerPage: 10,
   search: "",
   totalRecord: 10,
   page: 1,
-  sort: "position",
+  sort: "createdAt",
   order: "ASC",
   entries: true,
  });
@@ -51,7 +56,7 @@ const Version = () => {
     filter: false,
     sort: false,
     customBodyRender: (data, i) => {
-     return <div>{data[i]?.enable == 1 ? "Online" : "Offline"}</div>;
+     return <div>{data[i]?.enabled === 1 ? "Online" : "Offline"}</div>;
     },
    },
   },
@@ -68,22 +73,27 @@ const Version = () => {
        <span
         style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
         className="pe-2"
-        // onClick={() => moveItemUp(data[i]._id)}
+        onClick={() => {
+         setIsUpdate(true);
+         setVersion(data[i]);
+         setNoteShow(true);
+        }}
        >
         <i className="fa fa-clipboard"></i>
        </span>
        <span
         style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
         className="pe-2"
-        onClick={() => EditVersion(data[i]?._id)}
+        onClick={() => {
+         setIsUpdate(true);
+         setVersion(data[i]);
+         setVersShow(true);
+        }}
        >
         <i className="fa fa-edit "></i>
        </span>
 
-       <span
-        style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
-        onClick={() => deleteItem(data[i]?._id)}
-       >
+       <span style={{ color: "red", cursor: "pointer", fontSize: "20px" }} onClick={() => delVersion(data[i]?._id)}>
         <i className="fa fa-trash"></i>
        </span>
       </div>
@@ -101,34 +111,69 @@ const Version = () => {
   getAllVersion();
  }, []);
 
- const getAllVersion = () => {
-  new Promise((resolve) =>
-   resolve(PostApi(API_PATH.getAllVersion, { table_prefix: table_prefix }))
-  ).then((res) => {
+ const getAllVersion = (search) => {
+  let data = { table_prefix: table_prefix, ...option, search: search };
+  new Promise((resolve) => resolve(PostApi(API_PATH.getAllVersion, data))).then((res) => {
    if (res.status === 200) {
+    set_option({ ...option, totalRecord: res.data.data?.totalRecord });
     setData(res.data.data);
    }
   });
  };
 
- const deleteItem = () => {};
-
- const EditVersion = () => {};
+ const delVersion = (id) => {
+  let data = { table_prefix: table_prefix, _id: id };
+  new Promise((resolve, reject) => {
+   resolve(PostApi(API_PATH.delVersion, data));
+  }).then((res) => {
+   if (res.status === 200) {
+    toast.success(res.data.message);
+    getAllVersion();
+   }
+  });
+ };
 
  const submitFormData = (formData, resetForm) => {
-  new Promise((resolve) =>
-   resolve(PostApi(API_PATH.addVersion, formData))
-  ).then((res) => {
+  let path = isUpdate ? API_PATH.editVersion : API_PATH.addVersion;
+  new Promise((resolve) => resolve(PostApi(path, formData))).then((res) => {
    if (res.status === 200) {
     setVersShow(false);
+    setNoteShow(false);
     toast.success(res.data.message);
     resetForm(formData);
+    getAllVersion();
+   }
+  });
+ };
+
+ const submitAdTitle = (formData, resetForm) => {
+  console.log(formData);
+  let path = isUpdate ? API_PATH.addTitle : API_PATH.addTitle;
+  new Promise((resolve) => resolve(PostApi(path, formData))).then((res) => {
+   if (res.status === 200) {
+    setAdTitleShow(false);
+    toast.success(res.data.message);
+    resetForm(formData);
+    getAllVersion();
+   }
+  });
+ };
+
+ const submitAdMode = (formData, resetForm) => {
+  let path = isUpdate ? API_PATH.addMode : API_PATH.addMode;
+  new Promise((resolve) => resolve(PostApi(path, formData))).then((res) => {
+   if (res.status === 200) {
+    setModeShow(false);
+    toast.success(res.data.message);
+    resetForm(formData);
+    getAllVersion();
    }
   });
  };
 
  const tableCallBack = (option) => {
   set_option(option);
+  getAllVersion(option.search);
  };
 
  return (
@@ -155,41 +200,32 @@ const Version = () => {
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck1"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
-               <label htmlFor="vercheck1" onClick={stopPropagation}>
+               <input type="checkbox" id="version0" name="version0" className="ms-2 me-2" onClick={stopPropagation} />
+               <label htmlFor="version0" onClick={stopPropagation}>
                 All
                </label>
               </Dropdown.Item>
              </li>
-             <li>
-              <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck2"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
-               <label htmlFor="vercheck2" onClick={stopPropagation}>
-                1
-               </label>
-              </Dropdown.Item>
-             </li>
+             {data &&
+              data?.length > 0 &&
+              data?.map((item, i) => {
+               return (
+                <li key={i}>
+                 <Dropdown.Item onClick={stopPropagation}>
+                  <input type="checkbox" id={`version${i + 1}`} name={`version${i + 1}`} className="ms-2 me-2" onClick={stopPropagation} />
+                  <label htmlFor={`version${i + 1}`} onClick={stopPropagation}>
+                   {item?.title}
+                  </label>
+                 </Dropdown.Item>
+                </li>
+               );
+              })}
             </ul>
             {/* <Dropdown.Divider /> */}
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-2  ms-2">
-               <button
-                className="d-flex dropdown-button align-items-center "
-                onClick={() => setVersShow(true)}
-               >
+               <button className="d-flex dropdown-button align-items-center" onClick={() => setVersShow(true)}>
                 <i className="fa fa-plus pe-2"></i>
                 Add
                </button>
@@ -212,13 +248,7 @@ const Version = () => {
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck1"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
+               <input type="checkbox" id="vercheck1" name="vercheck" className="m-2" onClick={stopPropagation} />
                <label htmlFor="vercheck1" onClick={stopPropagation}>
                 All
                </label>
@@ -226,13 +256,7 @@ const Version = () => {
              </li>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck2"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
+               <input type="checkbox" id="vercheck2" name="vercheck" className="m-2" onClick={stopPropagation} />
                <label htmlFor="vercheck2" onClick={stopPropagation}>
                 1
                </label>
@@ -243,10 +267,7 @@ const Version = () => {
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-2  ms-2">
-               <button
-                className="d-flex dropdown-button align-items-center "
-                onClick={() => setAdShow(true)}
-               >
+               <button className="d-flex dropdown-button align-items-center " onClick={() => setAdShow(true)}>
                 <i className="fa fa-plus pe-2"></i>
                 Add
                </button>
@@ -269,13 +290,7 @@ const Version = () => {
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck1"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
+               <input type="checkbox" id="vercheck1" name="vercheck" className="m-2" onClick={stopPropagation} />
                <label htmlFor="vercheck1" onClick={stopPropagation}>
                 All
                </label>
@@ -283,13 +298,7 @@ const Version = () => {
              </li>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck2"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
+               <input type="checkbox" id="vercheck2" name="vercheck" className="m-2" onClick={stopPropagation} />
                <label htmlFor="vercheck2" onClick={stopPropagation}>
                 1
                </label>
@@ -300,10 +309,7 @@ const Version = () => {
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-2  ms-2">
-               <button
-                className="d-flex dropdown-button align-items-center"
-                onClick={() => setAdTitleShow(true)}
-               >
+               <button className="d-flex dropdown-button align-items-center" onClick={() => setAdTitleShow(true)}>
                 <i className="fa fa-plus pe-2"></i>
                 Add
                </button>
@@ -326,13 +332,7 @@ const Version = () => {
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck1"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
+               <input type="checkbox" id="vercheck1" name="vercheck" className="m-2" onClick={stopPropagation} />
                <label htmlFor="vercheck1" onClick={stopPropagation}>
                 All
                </label>
@@ -340,13 +340,7 @@ const Version = () => {
              </li>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input
-                type="checkbox"
-                id="vercheck2"
-                name="vercheck"
-                className="m-2"
-                onClick={stopPropagation}
-               />
+               <input type="checkbox" id="vercheck2" name="vercheck" className="m-2" onClick={stopPropagation} />
                <label htmlFor="vercheck2" onClick={stopPropagation}>
                 1
                </label>
@@ -357,10 +351,7 @@ const Version = () => {
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-2  ms-2">
-               <button
-                className="d-flex dropdown-button align-items-center "
-                onClick={() => setModeShow(true)}
-               >
+               <button className="d-flex dropdown-button align-items-center " onClick={() => setModeShow(true)}>
                 <i className="fa fa-plus pe-2"></i>
                 Add
                </button>
@@ -387,404 +378,30 @@ const Version = () => {
 
       <div className="col-12 mt-3">
        <div className="table-custom-info">
-        <RtdDatatable
-         data={data}
-         columns={columns}
-         option={option}
-         needPagination={true}
-         tableCallBack={tableCallBack}
-        />
+        <RtdDatatable data={data} columns={columns} option={option} needPagination={true} tableCallBack={tableCallBack} />
        </div>
       </div>
      </div>
     </div>
-    <Modal
-     show={versShow}
-     onHide={() => appModalClose()}
-     size="md"
-     className="cust-comn-modal"
-     aria-labelledby="contained-modal-title-vcenter"
-     centered
-    >
-     <Modal.Header closeButton className="">
-      <div className="cust-comn-modal-hdr">
-       <p>Add Version</p>
-      </div>
-     </Modal.Header>
-     <Modal.Body>
-      <Formik
-       enableReinitialize
-       initialValues={{
-        _id: "",
-        title: "",
-        features: "",
-        code: "",
-        enabled: "",
-        is_force: "",
-        table_prefix: table_prefix,
-       }}
-       validationSchema={Yup.object({
-        title: Yup.string().required("Title is required."),
-        features: Yup.string().required("Feature is required."),
-        code: Yup.string().required("Code is required."),
-       })}
-       onSubmit={(formData, { resetForm }) => {
-        formData.enabled = formData.enabled ? 1 : 0;
-        formData.is_force = formData.is_force ? 1 : 0;
-        submitFormData(formData, resetForm);
-       }}
-      >
-       {(runform) => (
-        <form onSubmit={runform.handleSubmit}>
-         <div className="row">
-          <div className="col-md-12 mb-3" id="data_view">
-           <div className="form-group ">
-            <label
-             htmlFor="recipient- onClick={stopPropagation}name"
-             className="form-control-label mt-3"
-            >
-             Version title:
-            </label>
-            <input
-             type="text"
-             name="title"
-             className="form-control"
-             id="title"
-             placeholder="Enter title"
-             {...formAttr(runform, "title")}
-            />
-            {errorContainer(runform, "title")}
-           </div>
-           <div className="form-group">
-            <label
-             htmlFor="recipient- onClick={stopPropagation}name"
-             className="form-control-label mt-3"
-            >
-             New features:
-            </label>
-            <textarea
-             className="form-control"
-             name="features"
-             placeholder="Enter features"
-             id="fetureA"
-             cols="85"
-             rows="5"
-             {...formAttr(runform, "features")}
-            ></textarea>
-            {errorContainer(runform, "features")}
-           </div>
-           <div className="form-group">
-            <label
-             htmlFor="recipient- onClick={stopPropagation}name"
-             className="form-control-label mt-3"
-            >
-             Version code:
-            </label>
-            <input
-             type="number"
-             name="code"
-             placeholder="Enter version code"
-             className="form-control style-input-className"
-             {...formAttr(runform, "code")}
-            />
-            {errorContainer(runform, "code")}
-           </div>
 
-           <div className="row">
-            <div className="col-12 d-flex  mt-3">
-             <div className="col-4 d-flex align-items-center">
-              <label className="col-4">Status</label>
-              <div className="form-check form-switch">
-               <input
-                className="form-check-input"
-                type="checkbox"
-                id="offer-status"
-                name="enabled"
-                {...formAttr(runform, "enabled")}
-
-                // onChange={(e) =>
-                //  updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })
-                // }
-               />
-              </div>
-             </div>
-
-             <div className="col-8 d-flex align-items-center">
-              <label className="col-4"> Is forcefully ?</label>
-              <div className="form-check form-switch">
-               <input
-                className="form-check-input"
-                type="checkbox"
-                id="offer-status"
-                name="is_force"
-                {...formAttr(runform, "is_force")}
-                // onChange={(e) =>
-                //  updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })
-                // }
-               />
-              </div>
-             </div>
-            </div>
-           </div>
-          </div>
-          <div className="text-end me-3 mt-3">
-           <button
-            type="button"
-            className="btn-smart-comn2 me-2"
-            onClick={() => setVersShow(false)}
-           >
-            Close
-           </button>
-           <button type="submit" className="btn-smart-comn">
-            Add
-           </button>
-          </div>
-         </div>
-        </form>
-       )}
-      </Formik>
-     </Modal.Body>
+    <Modal show={versShow} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
+     <VersionModal isUpdate={isUpdate} version={version} table_prefix={table_prefix} submitFormData={submitFormData} setVersShow={setVersShow} />
     </Modal>
 
-    <Modal
-     show={adShow}
-     onHide={() => setAdShow(false)}
-     size="md"
-     className="cust-comn-modal"
-     aria-labelledby="contained-modal-title-vcenter"
-     centered
-    >
-     <Modal.Header closeButton className="">
-      <div className="cust-comn-modal-hdr">
-       <p>Add Ad-type</p>
-      </div>
-     </Modal.Header>
-     <Modal.Body>
-      <Formik
-       enableReinitialize
-       initialValues={{
-        _id: "",
-        title: "",
-       }}
-       validationSchema={Yup.object({
-        title: Yup.string().required("Title is required."),
-       })}
-       onSubmit={(formData, { resetForm }) => {
-        submitFormData(formData, resetForm);
-       }}
-      >
-       {(runform) => (
-        <form onSubmit={runform.handleSubmit}>
-         <div className="row">
-          <div className="col-md-12 mb-3" id="data_view">
-           <div className="form-group ">
-            <label
-             htmlFor="recipient- onClick={stopPropagation}name"
-             className="form-control-label mt-3 mb-2"
-            >
-             Ad-type
-            </label>
-            <input
-             type="text"
-             name="vnm"
-             className="form-control"
-             id="title"
-             placeholder="Enter Ad-type"
-             {...formAttr(runform, "title")}
-            />
-            {errorContainer(runform, "title")}
-           </div>
-          </div>
-          <div className="text-end mt-3">
-           <button
-            type="button"
-            className="btn-smart-comn2 me-2"
-            onClick={() => setAdShow(false)}
-           >
-            Close
-           </button>
-           <button type="submit" onClick={() => {}} className="btn-smart-comn">
-            Add
-           </button>
-          </div>
-         </div>
-        </form>
-       )}
-      </Formik>
-     </Modal.Body>
-    </Modal>
-    <Modal
-     show={adTitleShow}
-     onHide={() => setAdTitleShow(false)}
-     size="md"
-     className="cust-comn-modal"
-     aria-labelledby="contained-modal-title-vcenter"
-     centered
-    >
-     <Modal.Header closeButton className="">
-      <div className="cust-comn-modal-hdr">
-       <p>Add new Ad-title</p>
-      </div>
-     </Modal.Header>
-     <Modal.Body>
-      <Formik
-       enableReinitialize
-       initialValues={{
-        _id: "",
-        title: "",
-       }}
-       validationSchema={Yup.object({
-        title: Yup.string().required("Title is required."),
-       })}
-       onSubmit={(formData, { resetForm }) => {
-        submitFormData(formData, resetForm);
-       }}
-      >
-       {(runform) => (
-        <form onSubmit={runform.handleSubmit}>
-         <div className="modal-body" id="data_view">
-          <div className="form-group">
-           <label
-            htmlFor="recipient-name"
-            className="form-control-label form-lbl-class mt-2"
-           >
-            Advertisement title:
-           </label>
-           <input
-            type="text"
-            name="admnm"
-            placeholder="Enter advertisement title"
-            className="form-control style-input-class"
-           />
-           {errorContainer(runform, "title")}
-          </div>
-          <div className="form-group">
-           <label
-            htmlFor="recipient-name"
-            className="form-control-label form-lbl-class mt-2"
-           >
-            Count:
-           </label>
-           <input
-            type="number"
-            name="count"
-            value="0"
-            placeholder="View on count"
-            className="form-control  style-input-class"
-            min="0"
-           />
-           {errorContainer(runform, "title")}
-          </div>
-          <div className="form-group d-flex mt-3 align-item-center">
-           <label className="col-2  form-lbl-class">Status</label>
-           <div className="form-check form-switch">
-            <input
-             className="form-check-input"
-             type="checkbox"
-             id="offer-status"
-             defaultChecked
-             // onChange={(e) =>
-             //  updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })
-             // }
-            />
-           </div>
-          </div>
-         </div>
-         <div className="text-end m-3">
-          <button
-           type="button"
-           className="btn-smart-comn2 me-2"
-           onClick={() => setAdTitleShow(false)}
-          >
-           Close
-          </button>
-          <button type="submit" onclick={() => {}} className="btn-smart-comn">
-           Add
-          </button>
-         </div>
-        </form>
-       )}
-      </Formik>
-     </Modal.Body>
+    <Modal show={adTitleShow} onHide={() => setAdTitleShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
+     <AdTitleModal setAdTitleShow={setAdTitleShow} submitAdTitle={submitAdTitle} allversion={data} table_prefix={table_prefix} />
     </Modal>
 
-    <Modal
-     show={modeShow}
-     onHide={() => setModeShow(false)}
-     size="md"
-     className="cust-comn-modal"
-     aria-labelledby="contained-modal-title-vcenter"
-     centered
-    >
-     <Modal.Header closeButton className="">
-      <div className="cust-comn-modal-hdr">
-       <p>Add new mode</p>
-      </div>
-     </Modal.Header>
-     <Modal.Body>
-      <Formik
-       enableReinitialize
-       initialValues={{
-        _id: "",
-        title: "",
-       }}
-       validationSchema={Yup.object({
-        title: Yup.string().required("Title is required."),
-       })}
-       onSubmit={(formData, { resetForm }) => {
-        submitFormData(formData, resetForm);
-       }}
-      >
-       {(runform) => (
-        <form onSubmit={runform.handleSubmit}>
-         <div className="modal-body" id="data_view">
-          <div className="form-group">
-           <label
-            htmlFor="recipient-name"
-            className="form-control-label form-lbl-class  mb-1"
-           >
-            Advertisement id:
-           </label>
-           <input
-            type="text"
-            name="admnm"
-            placeholder="Enter advertisement id"
-            className="form-control style-input-class"
-           />
-           {errorContainer(runform, "title")}
-          </div>
-          <div className="form-group mt-3">
-           <label
-            htmlFor="recipient-name"
-            className="form-control-label form-lbl-class  mb-1"
-           >
-            keyword:
-           </label>
-           <input
-            type="text"
-            name="keyword"
-            placeholder="Enter keyword"
-            className="form-control  style-input-class"
-           />
-           {errorContainer(runform, "keyword")}
-          </div>
-         </div>
-         <div className="text-end m-3">
-          <button
-           type="button"
-           className="btn-smart-comn2 me-2"
-           onClick={() => setModeShow(false)}
-          >
-           Close
-          </button>
-          <button type="submit" onclick={() => {}} className="btn-smart-comn">
-           Add
-          </button>
-         </div>
-        </form>
-       )}
-      </Formik>
-     </Modal.Body>
+    <Modal show={modeShow} onHide={() => setModeShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
+     <ModeModal allversion={data} setModeShow={setModeShow} submitAdMode={submitAdMode} table_prefix={table_prefix} />
+    </Modal>
+
+    <Modal show={noteShow} onHide={() => setNoteShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
+     <NoteModal version={version} setNoteShow={setNoteShow} submitFormData={submitFormData} />
+    </Modal>
+
+    <Modal show={adShow} onHide={() => setAdShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
+     <AdTypeModal setAdShow={setAdShow} />
     </Modal>
    </MainLayout>
   </>

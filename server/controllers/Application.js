@@ -26,36 +26,18 @@ exports.updateApp = asyncHandler(async (req, res, next) => {
  let table_prefix;
  table_prefix = title?.toLowerCase();
  table_prefix = title?.trim()?.replaceAll(" ", "_");
- let obj =
-  enable || enable === 0 ? { enable, _id } : { title, _id, table_prefix };
+ let obj = enable || enable === 0 ? { enable, _id } : { title, _id, table_prefix };
  const old = await Application.findById({ _id: _id });
- const newApp = await Application.findByIdAndUpdate(
-  { _id: _id },
-  { $set: { ...obj } },
-  { new: true }
- );
- renameCollection(
-  res,
-  DB,
-  `${old.table_prefix}_privacypolicies`,
-  `${newApp.table_prefix}_privacypolicies`
- );
- renameCollection(
-  res,
-  DB,
-  `${old.table_prefix}_version_tables`,
-  `${newApp.table_prefix}_version_tables`
- );
+ const newApp = await Application.findByIdAndUpdate({ _id: _id }, { $set: { ...obj } }, { new: true });
+ renameCollection(res, DB, `${old.table_prefix}_privacypolicies`, `${newApp.table_prefix}_privacypolicies`);
+ renameCollection(res, DB, `${old.table_prefix}_version_tables`, `${newApp.table_prefix}_version_tables`);
  give_response(res, 200, true, "Details updated", newApp);
 });
 
 exports.updatePosition = asyncHandler(async (req, res, next) => {
  const { newItems } = req.body;
  for (let item of newItems) {
-  await Application.updateMany(
-   { _id: item._id },
-   { $set: { position: item.position } }
-  );
+  await Application.updateMany({ _id: item._id }, { $set: { position: item.position } });
  }
  give_response(res, 200, true, "Details updated");
 });
@@ -79,27 +61,15 @@ exports.getAllApp = asyncHandler(async (req, res, next) => {
  sortObject[stype] = sdir;
 
  if (req.body.search) {
-  find = {
-   $or: [
-    {
-     table_prefix: { $regex: `.*${req.body.search?.trim()}.*`, $options: "i" },
-    },
-    { title: { $regex: `.*${req.body.search?.trim()}.*`, $options: "i" } },
-   ],
-   enable: status,
-  };
+  find = { $or: [{ table_prefix: { $regex: `.*${req.body.search?.trim()}.*`, $options: "i" } }, { title: { $regex: `.*${req.body.search?.trim()}.*`, $options: "i" } }], enable: status };
  } else {
   find = { enable: status };
  }
  const page = req.body.page && req.body.page != 0 ? req.body.page : 1;
- const limit =
-  req.body.sizePerPage && req.body.sizePerPage != 0 ? req.body.sizePerPage : 10;
+ const limit = req.body.sizePerPage && req.body.sizePerPage != 0 ? req.body.sizePerPage : 10;
  const startIndex = (page - 1) * limit;
 
- const allApp = await Application.find(find)
-  .skip(startIndex)
-  .limit(limit)
-  .sort(sortObject);
+ const allApp = await Application.find(find).skip(startIndex).limit(limit).sort(sortObject);
  const activeApp = await Application.find({ enable: 1 });
 
  const totalRecord = await Application.find(find).countDocuments();

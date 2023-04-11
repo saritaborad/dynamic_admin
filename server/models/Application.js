@@ -28,7 +28,7 @@ const appSchema = mongoose.Schema(
   },
   date: {
    type: Date,
-   default: Date.now(),
+   default: Date.now,
   },
  },
  {
@@ -42,11 +42,7 @@ appSchema.pre("save", async function (next) {
   next();
   return;
  }
- const count = await counter.findByIdAndUpdate(
-  { _id: "entityId" },
-  { $inc: { seq: 1 } },
-  { new: true, upsert: true }
- );
+ const count = await counter.findByIdAndUpdate({ _id: "entityId" }, { $inc: { seq: 1 } }, { new: true, upsert: true });
  doc.position = count.seq;
 });
 
