@@ -8,8 +8,10 @@ const versionSchema = mongoose.Schema({
  enabled: { type: Number },
  is_force: { type: Number },
  version_note: { type: String },
+ date: { type: Date, default: Date.now },
  ad_master: [
   {
+   version: { type: String },
    adm_name: { type: String, trim: true },
    version_Id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,6 +21,7 @@ const versionSchema = mongoose.Schema({
    adm_date: { type: Date, default: Date.now },
    ad_chield: [
     {
+     version: { type: String },
      ad_token: { type: String, trim: true },
      ad_keyword: { type: String, trim: true },
      version_Id: { type: mongoose.Schema.Types.ObjectId },
@@ -31,7 +34,6 @@ const versionSchema = mongoose.Schema({
    ],
   },
  ],
- date: { type: Date, default: Date.now },
 });
 
 const verionTable = (name) => {

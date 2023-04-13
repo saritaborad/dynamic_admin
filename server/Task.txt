@@ -1,0 +1,19 @@
+================= un done ====================
+
+=> when adding mode if no add title is selected => don't allow to ad mode
+
+=> don't allow to delete ad mode with keyword custom and alternate
+
+=> if two titles are selected and ad mode is added then mode will be added two all two titles
+
+=> add filter for version, ad title, ad mode => use session 
+
+=> selected value should be selected even on refresh and only by resetting it should be removed
+
+=>filter by selected on sybmit 
+=> if version is selected then show that version related ad title and ad mode
+
+================= done ====================
+=> if we edit version, all the ad title and ad modes of that version should be updated
+=> if we delete that version, all the ad title and ad mode delte 
+=> if ad type exists and ad mode exists and we create version then that version's all existing ad title should be creted and that version's all existing admode shold be creted 

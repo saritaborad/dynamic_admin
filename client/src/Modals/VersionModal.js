@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-export const VersionModal = ({ isUpdate, version, table_prefix, setVersShow, submitFormData }) => {
+export const VersionModal = ({ isUpdate, version, adTitle, adMode, table_prefix, setVersShow, submitFormData }) => {
  return (
   <>
    <Modal.Header closeButton className="">
@@ -23,6 +23,8 @@ export const VersionModal = ({ isUpdate, version, table_prefix, setVersShow, sub
       enabled: version ? version?.enabled : 0,
       is_force: version ? version?.is_force : 0,
       table_prefix: table_prefix,
+      adTitle: adTitle,
+      adMode: adMode,
      }}
      validationSchema={Yup.object({
       title: Yup.string().required("Title is required."),
@@ -162,23 +164,24 @@ export const NoteModal = ({ version, setNoteShow, submitFormData }) => {
  );
 };
 
-export const ModeModal = ({ allversion, table_prefix, setModeShow, submitAdMode }) => {
+export const ModeModal = ({ isUpdate, adMode, latestVersion, allversion, table_prefix, setModeShow, submitAdMode }) => {
  return (
   <>
    <Modal.Header closeButton className="">
     <div className="cust-comn-modal-hdr">
-     <p>Add new mode</p>
+     <p>{isUpdate ? "Edit ad mode" : "Add new mode"}</p>
     </div>
    </Modal.Header>
    <Modal.Body>
     <Formik
      enableReinitialize
      initialValues={{
-      _id: "",
-      ad_token: "",
-      ad_keyword: "",
-      version_Id: allversion[0]?._id,
-      enable: 0,
+      _id: isUpdate && adMode?._id,
+      ad_token: adMode ? adMode?.ad_token : "",
+      ad_keyword: adMode ? adMode?.ad_keyword : "",
+      enable: adMode ? adMode?.enable : 0,
+      version_Id: latestVersion?._id,
+      version: latestVersion?.title,
       table_prefix,
      }}
      validationSchema={Yup.object({
@@ -212,7 +215,7 @@ export const ModeModal = ({ allversion, table_prefix, setModeShow, submitAdMode 
          Close
         </button>
         <button type="submit" className="btn-smart-comn">
-         Add
+         {isUpdate ? "Edit" : "Add"}
         </button>
        </div>
       </form>
@@ -223,22 +226,24 @@ export const ModeModal = ({ allversion, table_prefix, setModeShow, submitAdMode 
  );
 };
 
-export const AdTitleModal = ({ allversion, table_prefix, setAdTitleShow, submitAdTitle }) => {
+export const AdTitleModal = ({ isUpdate, adTitle, latestVersion, table_prefix, setAdTitleShow, submitAdTitle }) => {
  return (
   <>
    <Modal.Header closeButton className="">
     <div className="cust-comn-modal-hdr">
-     <p>Add new Ad-title</p>
+     <p>{isUpdate ? "Edit Ad-title" : "Add new Ad-title"}</p>
     </div>
    </Modal.Header>
    <Modal.Body>
     <Formik
      enableReinitialize
      initialValues={{
-      version_Id: allversion[0]?._id,
-      adm_name: "",
-      count: 0,
-      enable: 0,
+      _id: isUpdate && adTitle?._id,
+      version_Id: latestVersion?._id,
+      adm_name: adTitle ? adTitle?.adm_name : "",
+      count: adTitle ? adTitle?.count : 0,
+      enable: adTitle ? adTitle?.enable : 0,
+      version: latestVersion?.title,
       table_prefix,
      }}
      validationSchema={Yup.object({
@@ -286,7 +291,7 @@ export const AdTitleModal = ({ allversion, table_prefix, setAdTitleShow, submitA
          Close
         </button>
         <button type="submit" className="btn-smart-comn">
-         Add
+         {isUpdate ? "Edit" : "Add"}
         </button>
        </div>
       </form>

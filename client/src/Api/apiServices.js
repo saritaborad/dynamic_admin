@@ -71,3 +71,24 @@ export const ImageApi = async (path, body) => {
   });
  return PostApiData;
 };
+
+export function SessionPostAPI(path, body, type) {
+ let Ctype = type === "image" ? "multipart/form-data" : "application/json";
+ let token = "";
+ if (localStorage.getItem("startgeekuser")) {
+  token = "Bearer " + localStorage.getItem("startgeekuser");
+ }
+ let headers = { Authorization: token, "Content-Type": Ctype, Accept: "application/pdf", withCredentials: true };
+ const PostApiData = axios
+  .post(path, body, { headers: headers })
+  .then((response) => {
+   return response;
+  })
+  .catch((err) => {
+   if (err.response.status === 401) {
+    window.location.href = "/login";
+   }
+   return err.response;
+  });
+ return PostApiData;
+}

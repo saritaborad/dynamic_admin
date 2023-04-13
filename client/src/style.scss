@@ -2090,7 +2090,7 @@ color: #7b838a;
     padding: 5px 0px 5px 0px;
 }
 
-.version-btn2:hover {
+.version-btn2:hover  {
     transition: all 0.3s ease 0s;
     background-color: #5d78ff;
     color: white;
@@ -2104,6 +2104,13 @@ color: #7b838a;
 .version-btn2:hover span {
     color: #ffffff;
   }
+
+.version-btn2.active {
+    transition: all 0.3s ease 0s;
+    background-color: #5d78ff;
+    color: white;
+    border-color: #5d78ff;
+}
 
 .dropdown-menu {
     position: relative;
@@ -2141,6 +2148,23 @@ color: #7b838a;
     background-color: #5e70f8;
 }
 
+.online {
+    background-color: #5867dd;
+    color: #ffffff;
+     padding:   0.15rem 0.75rem; 
+     border-radius: 3px;
+     text-align: center;
+
+}
+
+.offline {
+    background-color: #282a3c;
+    color: #ffffff;
+    padding: 0.15rem 0.75rem;
+     border-radius: 3px;
+     text-align: center;
+
+}
 
 //------------------------------------------------- media query -------------------------------------------------
 @media (max-width: 1599px) {
