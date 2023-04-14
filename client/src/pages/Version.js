@@ -3,7 +3,7 @@ import MainLayout from "../components/layout/MainLayout";
 import { Dropdown, Modal } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { PostApi, SessionPostAPI } from "../Api/apiServices";
+import { PostApi, SessionGetAPI, SessionPostAPI } from "../Api/apiServices";
 import { API_PATH } from "../const";
 import { errorContainer, formAttr } from "../CommonFun/CommonFun";
 import RtdDatatable from "./Common/DataTable/DataTable";
@@ -16,18 +16,22 @@ const Version = () => {
  const [adTitleData, setAdTitleData] = useState([]);
  const [adModeData, setAdModeData] = useState([]);
  const [uniqueAdMode, setUniqueAdMode] = useState([]);
+ const [uniqueTitle, setUniqueTitle] = useState([]);
 
  const [tableData, setTableData] = useState([]);
  const [tableColumn, setTableColumn] = useState([]);
 
- const [verFilter, setVerFilter] = useState("");
- const [titleFilter, setTitleFilter] = useState("");
- const [modeFilter, setModeFilter] = useState("");
+ const [verFilter, setVerFilter] = useState(JSON.parse(localStorage.getItem("verFilter")) || []);
+ const [titleFilter, setTitleFilter] = useState(JSON.parse(localStorage.getItem("titleFilter")) || []);
+ const [modeFilter, setModeFilter] = useState([]);
 
  const [version, setVersion] = useState("");
  const [adTitle, setAdTitle] = useState("");
  const [adMode, setAdMode] = useState("");
  const [latestVersion, setLatestVersion] = useState("");
+ const [verToggle, setVerToggle] = useState(false);
+ const [titleToggle, setTitleToggle] = useState(false);
+ const [modeToggle, setModeToggle] = useState(false);
 
  const [isUpdate, setIsUpdate] = useState(false);
  const [versShow, setVersShow] = useState(false);
@@ -48,6 +52,7 @@ const Version = () => {
   sort: "code",
   order: "DSC",
  });
+
  const columns1 = [
   {
    value: "title",
@@ -295,20 +300,21 @@ const Version = () => {
  ];
 
  useEffect(() => {
+  setModeFilter(JSON.parse(localStorage.getItem("modeFilter")));
   getAllAdTitle();
   getAllAdMode();
   getAllVersion();
  }, []);
 
  const getAllVersion = (search) => {
-  let data = { table_prefix: table_prefix, ...option, search: search };
+  let data = { table_prefix: table_prefix, ...option, search: search, verFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllVersion, data))).then((res) => {
    if (res.status === 200) {
     const maxObject = res.data.data?.length > 0 ? res.data.data?.reduce((a, b) => (a?.code > b?.code ? a : b)) : null;
     setLatestVersion(maxObject);
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
-    setVersionData(res.data.data);
-    setTableData(res.data.data);
+    setVersionData(res.data.data?.allVersion);
+    setTableData(res.data.data?.version);
     setTableColumn(columns1);
     setActive(1);
    }
@@ -316,11 +322,12 @@ const Version = () => {
  };
 
  const getAllAdTitle = () => {
-  let data = { table_prefix: table_prefix };
+  let data = { table_prefix: table_prefix, titleFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdTitle, data))).then((res) => {
    if (res.status === 200) {
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
     setAdTitleData(res.data.data);
+    setUniqueTitle(res.data.data?.filter((obj, index, self) => index === self?.findIndex((t) => t?.adm_name === obj?.adm_name)));
     setTableData(res.data.data);
     setTableColumn(columns2);
     setActive(2);
@@ -329,12 +336,12 @@ const Version = () => {
  };
 
  const getAllAdMode = () => {
-  let data = { table_prefix: table_prefix };
+  let data = { table_prefix: table_prefix, titleFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data))).then((res) => {
    if (res.status === 200) {
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
     setAdModeData(res.data.data);
-    setUniqueAdMode(adModeData?.filter((obj, index, self) => index === self?.findIndex((t) => t?.ad_keyword === obj?.ad_keyword)));
+    setUniqueAdMode(res.data.data?.filter((obj, index, self) => index === self?.findIndex((t) => t?.ad_keyword === obj?.ad_keyword)));
     setTableData(res.data.data);
     setTableColumn(columns3);
     setActive(3);
@@ -434,13 +441,51 @@ const Version = () => {
   if (e.target.checked) {
    setVerFilter((prev) => [...prev, item]);
   } else {
-   setVerFilter((prev) => prev?.filter((item1) => item?._id !== item1?._id));
+   setVerFilter((prev) => prev?.filter((item1) => item !== item1));
   }
  };
 
- const addFilter = (filter, type) => {
-  let data = type === 1 ? { verFilter: filter } : type === 2 ? { titleFilter: filter } : type === 3 && { modeFilter: filter };
-  new Promise((resolve) => resolve(PostApi(API_PATH.addFilter, data))).then((res) => {});
+ const handleAdFilter = (e, item) => {
+  if (e.target.checked) {
+   setTitleFilter((prev) => (prev ? [...prev, item] : [item]));
+  } else {
+   setTitleFilter((prev) => prev?.filter((item1) => item !== item1));
+  }
+ };
+
+ const handleModeFilter = (e, item) => {
+  if (e.target.checked) {
+   setModeFilter((prev) => [...prev, item]);
+  } else {
+   setModeFilter((prev) => prev?.filter((item1) => item?._id !== item1?._id));
+  }
+ };
+
+ const addFilter = (filterData, type) => {
+  localStorage.removeItem("verFilter");
+  localStorage.removeItem("titleFilter");
+  // const filterArr = type === 1 ? JSON.parse(localStorage.getItem("verFilter")) : type === 2 ? JSON.parse(localStorage.getItem("titleFilter")) : type === 3 && JSON.parse(localStorage.getItem("modeFilter"));
+
+  // let arr = [];
+  // if (filterArr?.length > 0) {
+  //  const uniqueArr = filterArr?.filter((item) => {
+  //   return filterData?.map((item1) => item1 !== item);
+  //  });
+  //  arr = uniqueArr;
+  // } else {
+  //  arr = filterData;
+  // // }
+  // console.log(arr);
+  let path = type === 1 ? API_PATH.getAllVersion : type === 2 ? API_PATH.getAllAdTitle : type === 3 && API_PATH.getAllAdMode;
+  let data = type === 1 ? { verFilter: filterData, table_prefix } : type === 2 ? { titleFilter: filterData, table_prefix } : type === 3 && { modeFilter: filterData, table_prefix };
+  new Promise((resolve) => resolve(PostApi(path, data))).then((res) => {
+   setVerToggle(false);
+   setTitleToggle(false);
+   getAllAdTitle();
+   type === 1 && localStorage.setItem("verFilter", JSON.stringify(filterData));
+   type === 2 && localStorage.setItem("titleFilter", JSON.stringify(filterData));
+   type === 3 && localStorage.setItem("modeFilter", JSON.stringify(filterData));
+  });
  };
 
  return (
@@ -460,10 +505,10 @@ const Version = () => {
         <div className="version-row1 p-2">
          <div className="version-btn cust-drop-down mytoggle">
           <Dropdown drop="left-start">
-           <Dropdown.Toggle className="mytoggle" id="dropdown">
+           <Dropdown.Toggle className="mytoggle" id="dropdown" onClick={() => setVerToggle(!verToggle)}>
             <span>Version</span>
            </Dropdown.Toggle>
-           <Dropdown.Menu className="mymenu">
+           <Dropdown.Menu className="mymenu" show={verToggle}>
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
@@ -480,8 +525,8 @@ const Version = () => {
                return (
                 <li key={i}>
                  <Dropdown.Item onClick={stopPropagation}>
-                  <input type="checkbox" id={`version${i + 1}`} name={`version${i + 1}`} className="ms-2 me-2" onClick={stopPropagation} onChange={(e) => versionFilter(e, item)} />
-                  <label htmlFor={`version${i + 1}`} onClick={stopPropagation}>
+                  <input type="checkbox" id={`v${item._id}`} name={`v${item._id}`} className="ms-2 me-2" onClick={stopPropagation} onChange={(e) => versionFilter(e, item?._id)} checked={verFilter?.includes(item?._id)} />
+                  <label htmlFor={`v${item._id}`} onClick={stopPropagation}>
                    {item?.title}
                   </label>
                  </Dropdown.Item>
@@ -553,10 +598,10 @@ const Version = () => {
          </div> */}
          <div className="version-btn cust-drop-down mytoggle">
           <Dropdown drop="left-start">
-           <Dropdown.Toggle className="mytoggle" id="dropdown">
+           <Dropdown.Toggle className="mytoggle" id="dropdown" onClick={() => setTitleToggle(!verToggle)}>
             <span>Ad Title</span>
            </Dropdown.Toggle>
-           <Dropdown.Menu className="mymenu">
+           <Dropdown.Menu className="mymenu" show={titleToggle}>
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
@@ -566,12 +611,22 @@ const Version = () => {
                </label>
               </Dropdown.Item>
              </li>
-             {adTitleData?.length > 0 &&
-              adTitleData?.map((item, i) => {
+             {uniqueTitle?.length > 0 &&
+              uniqueTitle?.map((item, i) => {
                return (
-                <li>
+                <li key={i}>
                  <Dropdown.Item onClick={stopPropagation}>
-                  <input type="checkbox" id={`adtitle${i + 1}`} name={`adtitle${i + 1}`} className="m-2" onClick={stopPropagation} />
+                  <input
+                   type="checkbox"
+                   id={`adtitle${i + 1}`}
+                   name={`adtitle${i + 1}`}
+                   className="m-2"
+                   onClick={stopPropagation}
+                   onChange={(e) => {
+                    handleAdFilter(e, item?.adm_name);
+                   }}
+                   checked={titleFilter?.includes(item?.adm_name)}
+                  />
                   <label htmlFor={`adtitle${i + 1}`} onClick={stopPropagation}>
                    {item?.adm_name}
                   </label>
@@ -591,7 +646,9 @@ const Version = () => {
               </div>
               <div className="col-10 text-end ">
                <button className="dropdown-button2 mx-2">Reset</button>
-               <button className="dropdown-button">Submit</button>
+               <button className="dropdown-button" onClick={() => addFilter(titleFilter, 2)}>
+                Submit
+               </button>
               </div>
              </div>
             </div>
@@ -617,9 +674,9 @@ const Version = () => {
              {uniqueAdMode?.length > 0 &&
               uniqueAdMode?.map((item, i) => {
                return (
-                <li>
+                <li key={i}>
                  <Dropdown.Item onClick={stopPropagation}>
-                  <input type="checkbox" id={`admode${i + 1}`} name={`admode${i + 1}`} className="m-2" onClick={stopPropagation} />
+                  <input type="checkbox" id={`admode${i + 1}`} name={`admode${i + 1}`} className="m-2" onClick={stopPropagation} onChange={(e) => handleModeFilter(e, item)} />
                   <label htmlFor={`admode${i + 1}`} onClick={stopPropagation}>
                    {item?.ad_keyword}
                   </label>
@@ -639,7 +696,9 @@ const Version = () => {
               </div>
               <div className="col-10 text-end ">
                <button className="dropdown-button2 mx-2">Reset</button>
-               <button className="dropdown-button">Submit</button>
+               <button className="dropdown-button" onClick={() => addFilter(modeFilter, 3)}>
+                Submit
+               </button>
               </div>
              </div>
             </div>

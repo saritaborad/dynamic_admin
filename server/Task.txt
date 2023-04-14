@@ -10,8 +10,13 @@
 
 => selected value should be selected even on refresh and only by resetting it should be removed
 
-=>filter by selected on sybmit 
+=>filter by selected on submit 
 => if version is selected then show that version related ad title and ad mode
+
+=> use localstorage
+
+=> when checkbox is selected and submited => filter checkbox wise => addfilter API => send local storage data
+=> on refresh get selected checkbox => and filter as per selection
 
 ================= done ====================
 => if we edit version, all the ad title and ad modes of that version should be updated

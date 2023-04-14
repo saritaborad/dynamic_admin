@@ -26,4 +26,5 @@ export const API_PATH = {
  delMode: ApiBaseUrl + "/app/delMode",
 
  addFilter: ApiBaseUrl + "/app/addFilter",
+ getAllFilter: ApiBaseUrl + "/app/getAllFilter",
 };

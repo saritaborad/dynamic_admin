@@ -41,7 +41,7 @@ export const PostApi = (path, data) => {
  return new Promise((resolve, reject) => {
   resolve(
    axios
-    .post(path, data)
+    .post(path, data, { headers: { withCredentials: true } })
     .then((res) => {
      return res;
     })

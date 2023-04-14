@@ -4,9 +4,10 @@ const give_response = require("../middleware/help");
 const { ObjectId } = require("mongodb");
 const isEmptyObj = require("../utils");
 const { addTitleFun, addModeFun, editModeFun, editTitleFun, updateTitleAndMode } = require("../commonFun/commonFun");
+const { default: mongoose } = require("mongoose");
 
 exports.getAllVersion = asyncHandler(async (req, res, next) => {
- const { table_prefix, filter, sort, order } = req.body;
+ const { table_prefix, filter, sort, order, verFilter, titleFilter, modeFilter } = req.body;
 
  let find = {};
  var sortObject = {};
@@ -27,11 +28,19 @@ exports.getAllVersion = asyncHandler(async (req, res, next) => {
 
  const Version = getCollection(`${table_prefix}_version_tables`);
 
- const version = await Version.find(find, options).toArray((err, docs) => {
+ const versionIds = verFilter?.map((id) => new ObjectId(id));
+ let obj;
+ obj = verFilter?.length > 0 ? { _id: { $in: versionIds } } : {};
+
+ const version = await Version.find(obj).toArray((err, docs) => {
   if (err) return give_response(res, 400, false, err.message);
  });
 
- return give_response(res, 200, true, "all version get successfull!", version);
+ const versionList = await Version.find({}, options).toArray((err, docs) => {
+  if (err) return give_response(res, 400, false, err.message);
+ });
+
+ return give_response(res, 200, true, "all version get successfull!", { version: version, allVersion: versionList });
 });
 
 exports.addVersion = asyncHandler(async (req, res, next) => {
@@ -77,11 +86,21 @@ exports.editVersion = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllAdTitle = asyncHandler(async (req, res, next) => {
- const { table_prefix, version_Id, filter, sort, order } = req.body;
+ const { table_prefix, version_Id, filter, sort, order, titleFilter } = req.body;
  let adTitle = [];
  const Version = getCollection(`${table_prefix}_version_tables`);
 
- const version = await Version.find({}, { projection: { ad_master: 1, _id: 0, version: 1 }, sort: { "ad_master.adm_date": 1 } }).toArray((err, docs) => {
+ let obj = {};
+
+ titleFilter?.length > 0
+  ? (obj.ad_master = {
+     $elemMatch: {
+      adm_name: { $in: titleFilter },
+     },
+    })
+  : {};
+ console.log(obj);
+ const version = await Version.find({ "ad_master.adm_name": { $in: titleFilter } }, { projection: { ad_master: 1, _id: 0, version: 1 }, sort: { "ad_master.adm_date": 1 } }).toArray((err, docs) => {
   if (err) return give_response(res, 400, false, err.message);
  });
 
@@ -194,14 +213,20 @@ exports.getAllFilter = asyncHandler(async (req, res, next) => {
  const verFilter = req.session.verFilter;
  const titleFilter = req.session.titleFilter;
  const modeFilter = req.session.modeFilter;
- console.log(req.session);
+ return give_response(res, 200, true, "session get successfull", verFilter);
 });
 
 exports.addFilter = asyncHandler(async (req, res, next) => {
- const { verFilter, titleFilter, modeFilter } = req.body;
-
+ const { verFilter, titleFilter, modeFilter, table_prefix } = req.body;
  if (verFilter) req.session.verFilter = verFilter;
  if (titleFilter) req.session.titleFilter = titleFilter;
  if (modeFilter) req.session.modeFilter = modeFilter;
- return give_response(res, 200, true);
+ const objectIds = verFilter?.map((id) => new ObjectId(id));
+ const Version = getCollection(`${table_prefix}_version_tables`);
+
+ const version = await Version.find({ _id: { $in: objectIds } }).toArray((err, docs) => {
+  if (err) return give_response(res, 400, false, err.message);
+ });
+
+ return give_response(res, 200, true, "session added", version);
 });
