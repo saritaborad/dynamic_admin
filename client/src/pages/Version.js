@@ -21,8 +21,8 @@ const Version = () => {
  const [tableData, setTableData] = useState([]);
  const [tableColumn, setTableColumn] = useState([]);
 
- const [verFilter, setVerFilter] = useState(JSON.parse(localStorage.getItem("verFilter")) || []);
- const [titleFilter, setTitleFilter] = useState(JSON.parse(localStorage.getItem("titleFilter")) || []);
+ const [verFilter, setVerFilter] = useState([]);
+ const [titleFilter, setTitleFilter] = useState([]);
  const [modeFilter, setModeFilter] = useState([]);
 
  const [version, setVersion] = useState("");
@@ -266,8 +266,14 @@ const Version = () => {
     customBodyRender: (data, i) => {
      return (
       <div className="action-icons">
+       <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemUp(data[i]._id)}>
+        <i className="fa fa-arrow-up"></i>
+       </span>
+       <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemDown(data[i]._id)}>
+        <i className="fa fa-arrow-down"></i>
+       </span>
        <span
-        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
+        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }}
         className="pe-2"
         onClick={() => {
          setIsUpdate(true);
@@ -278,7 +284,7 @@ const Version = () => {
         <i className="fa fa-clipboard"></i>
        </span>
        <span
-        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
+        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }}
         className="pe-2"
         onClick={() => {
          setIsUpdate(true);
@@ -289,8 +295,8 @@ const Version = () => {
         <i className="fa fa-edit "></i>
        </span>
 
-       <span style={{ color: "red", cursor: "pointer", fontSize: "20px" }} onClick={() => delMode(data[i]?._id, data[i]?.version_Id)}>
-        <i className="fa fa-trash"></i>
+       <span style={{ color: "red", cursor: "pointer", fontSize: "18px" }} onClick={() => delMode(data[i]?._id, data[i]?.version_Id)}>
+        {data[i]?.ad_keyword !== "CUSTOM" && data[i]?.ad_keyword !== "ALTERNATIVE" ? <i className="fa fa-trash"></i> : null}
        </span>
       </div>
      );
@@ -300,7 +306,6 @@ const Version = () => {
  ];
 
  useEffect(() => {
-  setModeFilter(JSON.parse(localStorage.getItem("modeFilter")));
   getAllAdTitle();
   getAllAdMode();
   getAllVersion();
@@ -310,10 +315,12 @@ const Version = () => {
   let data = { table_prefix: table_prefix, ...option, search: search, verFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllVersion, data))).then((res) => {
    if (res.status === 200) {
-    const maxObject = res.data.data?.length > 0 ? res.data.data?.reduce((a, b) => (a?.code > b?.code ? a : b)) : null;
+    const maxObject = res.data.data?.allVersion?.length > 0 ? res.data.data?.allVersion?.reduce((a, b) => (a?.code > b?.code ? a : b)) : null;
     setLatestVersion(maxObject);
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
     setVersionData(res.data.data?.allVersion);
+    setVerFilter(res.data.data?.verFilter);
+
     setTableData(res.data.data?.version);
     setTableColumn(columns1);
     setActive(1);
@@ -326,9 +333,11 @@ const Version = () => {
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdTitle, data))).then((res) => {
    if (res.status === 200) {
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
-    setAdTitleData(res.data.data);
-    setUniqueTitle(res.data.data?.filter((obj, index, self) => index === self?.findIndex((t) => t?.adm_name === obj?.adm_name)));
-    setTableData(res.data.data);
+    setAdTitleData(res.data.data?.adTitle);
+    setUniqueTitle(res.data.data?.adTitleList);
+    setTitleFilter(res.data.data?.titleFilter);
+
+    setTableData(res.data.data?.adTitle);
     setTableColumn(columns2);
     setActive(2);
    }
@@ -340,13 +349,39 @@ const Version = () => {
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data))).then((res) => {
    if (res.status === 200) {
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
-    setAdModeData(res.data.data);
-    setUniqueAdMode(res.data.data?.filter((obj, index, self) => index === self?.findIndex((t) => t?.ad_keyword === obj?.ad_keyword)));
-    setTableData(res.data.data);
+    setAdModeData(res.data.data?.adMode);
+    setUniqueAdMode(res.data.data?.adModeList);
+    setModeFilter(res.data.data?.modeFilter);
+
+    setTableData(res.data.data?.adMode);
     setTableColumn(columns3);
     setActive(3);
    }
   });
+ };
+
+ const moveItemUp = (itemId) => {
+  const itemIndex = adModeData.findIndex((item) => item._id === itemId);
+  if (itemIndex > 0) {
+   const updatedItems = [...adModeData];
+   updatedItems[itemIndex].position--;
+   updatedItems[itemIndex - 1].position++;
+   updatedItems.splice(itemIndex - 1, 0, updatedItems.splice(itemIndex, 1)[0]);
+   setAdModeData(updatedItems);
+   updatePosition(updatedItems);
+  }
+ };
+
+ const moveItemDown = (itemId) => {
+  const itemIndex = adModeData.findIndex((item) => item._id === itemId);
+  if (itemIndex < adModeData.length - 1) {
+   const updatedItems = [...adModeData];
+   updatedItems[itemIndex].position++;
+   updatedItems[itemIndex + 1].position--;
+   updatedItems.splice(itemIndex + 1, 0, updatedItems.splice(itemIndex, 1)[0]);
+   setAdModeData(updatedItems);
+   updatePosition(updatedItems);
+  }
  };
 
  const delVersion = (id) => {
@@ -372,6 +407,15 @@ const Version = () => {
  const delMode = (id, vId) => {
   let data = { table_prefix: table_prefix, _id: id, version_Id: vId };
   new Promise((resolve, reject) => resolve(PostApi(API_PATH.delMode, data))).then((res) => {
+   if (res.status === 200) {
+    toast.success(res.data.message);
+    getAllAdMode();
+   }
+  });
+ };
+
+ const updatePosition = (newItems) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.modePosition, { newItems }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
     getAllAdMode();
@@ -411,7 +455,7 @@ const Version = () => {
  };
 
  const submitAdMode = (formData, resetForm) => {
-  if (versionData?.length === 0 || adTitleData?.length === 0) {
+  if (versionData?.length === 0 || adTitleData?.length === 0 || (!isUpdate && titleFilter?.length === 0)) {
    setModeShow(false);
    return;
   }
@@ -439,7 +483,7 @@ const Version = () => {
 
  const versionFilter = (e, item) => {
   if (e.target.checked) {
-   setVerFilter((prev) => [...prev, item]);
+   setVerFilter((prev) => (prev ? [...prev, item] : [item]));
   } else {
    setVerFilter((prev) => prev?.filter((item1) => item !== item1));
   }
@@ -455,36 +499,17 @@ const Version = () => {
 
  const handleModeFilter = (e, item) => {
   if (e.target.checked) {
-   setModeFilter((prev) => [...prev, item]);
+   setModeFilter((prev) => (prev ? [...prev, item] : [item]));
   } else {
-   setModeFilter((prev) => prev?.filter((item1) => item?._id !== item1?._id));
+   setModeFilter((prev) => prev?.filter((item1) => item !== item1));
   }
  };
 
- const addFilter = (filterData, type) => {
-  localStorage.removeItem("verFilter");
-  localStorage.removeItem("titleFilter");
-  // const filterArr = type === 1 ? JSON.parse(localStorage.getItem("verFilter")) : type === 2 ? JSON.parse(localStorage.getItem("titleFilter")) : type === 3 && JSON.parse(localStorage.getItem("modeFilter"));
-
-  // let arr = [];
-  // if (filterArr?.length > 0) {
-  //  const uniqueArr = filterArr?.filter((item) => {
-  //   return filterData?.map((item1) => item1 !== item);
-  //  });
-  //  arr = uniqueArr;
-  // } else {
-  //  arr = filterData;
-  // // }
-  // console.log(arr);
-  let path = type === 1 ? API_PATH.getAllVersion : type === 2 ? API_PATH.getAllAdTitle : type === 3 && API_PATH.getAllAdMode;
-  let data = type === 1 ? { verFilter: filterData, table_prefix } : type === 2 ? { titleFilter: filterData, table_prefix } : type === 3 && { modeFilter: filterData, table_prefix };
-  new Promise((resolve) => resolve(PostApi(path, data))).then((res) => {
-   setVerToggle(false);
-   setTitleToggle(false);
-   getAllAdTitle();
-   type === 1 && localStorage.setItem("verFilter", JSON.stringify(filterData));
-   type === 2 && localStorage.setItem("titleFilter", JSON.stringify(filterData));
-   type === 3 && localStorage.setItem("modeFilter", JSON.stringify(filterData));
+ const addFilter = (filterData, filType, action) => {
+  let data = filType === 1 ? { verFilter: filterData, filType, action } : filType === 2 ? { titleFilter: filterData, filType, action } : filType === 3 && { modeFilter: filterData, filType, action };
+  new Promise((resolve) => resolve(PostApi(API_PATH.addFilter, data))).then((res) => {
+   filType === 1 ? setVerToggle(!verToggle) : filType === 2 ? setTitleToggle(!titleToggle) : filType === 3 && setModeToggle(!modeToggle);
+   filType === 1 ? getAllVersion() : filType === 2 ? getAllAdTitle() : filType === 3 && getAllAdMode();
   });
  };
 
@@ -504,11 +529,11 @@ const Version = () => {
        <div className="row">
         <div className="version-row1 p-2">
          <div className="version-btn cust-drop-down mytoggle">
-          <Dropdown drop="left-start">
-           <Dropdown.Toggle className="mytoggle" id="dropdown" onClick={() => setVerToggle(!verToggle)}>
+          <Dropdown drop="left-start" show={verToggle} onToggle={() => setVerToggle(!verToggle)}>
+           <Dropdown.Toggle className="mytoggle" id="dropdown1">
             <span>Version</span>
            </Dropdown.Toggle>
-           <Dropdown.Menu className="mymenu" show={verToggle}>
+           <Dropdown.Menu className="mymenu">
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
@@ -544,8 +569,10 @@ const Version = () => {
                </button>
               </div>
               <div className="col-10 text-end ">
-               <button className="dropdown-button2 mx-2">Reset</button>
-               <button className="dropdown-button" onClick={() => addFilter(verFilter, 1)}>
+               <button className="dropdown-button2 mx-2" onClick={() => addFilter(verFilter, 1, 2)}>
+                Reset
+               </button>
+               <button className="dropdown-button" onClick={() => addFilter(verFilter, 1, 1)}>
                 Submit
                </button>
               </div>
@@ -597,11 +624,11 @@ const Version = () => {
           </Dropdown>
          </div> */}
          <div className="version-btn cust-drop-down mytoggle">
-          <Dropdown drop="left-start">
-           <Dropdown.Toggle className="mytoggle" id="dropdown" onClick={() => setTitleToggle(!verToggle)}>
+          <Dropdown drop="left-start" show={titleToggle} onToggle={() => setTitleToggle(!titleToggle)}>
+           <Dropdown.Toggle className="mytoggle" id="dropdown2">
             <span>Ad Title</span>
            </Dropdown.Toggle>
-           <Dropdown.Menu className="mymenu" show={titleToggle}>
+           <Dropdown.Menu className="mymenu">
             <ul>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
@@ -645,8 +672,10 @@ const Version = () => {
                </button>
               </div>
               <div className="col-10 text-end ">
-               <button className="dropdown-button2 mx-2">Reset</button>
-               <button className="dropdown-button" onClick={() => addFilter(titleFilter, 2)}>
+               <button className="dropdown-button2 mx-2" onClick={() => addFilter(titleFilter, 2, 2)}>
+                Reset
+               </button>
+               <button className="dropdown-button" onClick={() => addFilter(titleFilter, 2, 1)}>
                 Submit
                </button>
               </div>
@@ -656,8 +685,8 @@ const Version = () => {
           </Dropdown>
          </div>
          <div className="version-btn cust-drop-down mytoggle">
-          <Dropdown drop="left-start">
-           <Dropdown.Toggle className="mytoggle" id="dropdown">
+          <Dropdown drop="left-start" show={modeToggle} onToggle={() => setModeToggle(!modeToggle)}>
+           <Dropdown.Toggle className="mytoggle" id="dropdown3">
             <span>Mode</span>
            </Dropdown.Toggle>
            <Dropdown.Menu className="mymenu">
@@ -676,7 +705,7 @@ const Version = () => {
                return (
                 <li key={i}>
                  <Dropdown.Item onClick={stopPropagation}>
-                  <input type="checkbox" id={`admode${i + 1}`} name={`admode${i + 1}`} className="m-2" onClick={stopPropagation} onChange={(e) => handleModeFilter(e, item)} />
+                  <input type="checkbox" id={`admode${i + 1}`} name={`admode${i + 1}`} className="m-2" onClick={stopPropagation} onChange={(e) => handleModeFilter(e, item?.ad_keyword)} checked={modeFilter?.includes(item?.ad_keyword)} />
                   <label htmlFor={`admode${i + 1}`} onClick={stopPropagation}>
                    {item?.ad_keyword}
                   </label>
@@ -695,8 +724,10 @@ const Version = () => {
                </button>
               </div>
               <div className="col-10 text-end ">
-               <button className="dropdown-button2 mx-2">Reset</button>
-               <button className="dropdown-button" onClick={() => addFilter(modeFilter, 3)}>
+               <button className="dropdown-button2 mx-2" onClick={() => addFilter(modeFilter, 3, 2)}>
+                Reset
+               </button>
+               <button className="dropdown-button" onClick={() => addFilter(modeFilter, 3, 1)}>
                 Submit
                </button>
               </div>

@@ -1,24 +1,20 @@
 ================= un done ====================
 
+
 => when adding mode if no add title is selected => don't allow to ad mode
-
-=> don't allow to delete ad mode with keyword custom and alternate
-
 => if two titles are selected and ad mode is added then mode will be added two all two titles
 
-=> add filter for version, ad title, ad mode => use session 
-
-=> selected value should be selected even on refresh and only by resetting it should be removed
-
-=>filter by selected on submit 
 => if version is selected then show that version related ad title and ad mode
 
-=> use localstorage
 
-=> when checkbox is selected and submited => filter checkbox wise => addfilter API => send local storage data
-=> on refresh get selected checkbox => and filter as per selection
 
 ================= done ====================
+
+=> filter by selected on submit 
+=> on refresh get selected checkbox => and filter as per selection
+=> selected value should be selected even on refresh and only by resetting it should be removed
+=> add filter for version, ad title, ad mode => use session 
 => if we edit version, all the ad title and ad modes of that version should be updated
 => if we delete that version, all the ad title and ad mode delte 
 => if ad type exists and ad mode exists and we create version then that version's all existing ad title should be creted and that version's all existing admode shold be creted 
+=> don't allow to delete ad mode with keyword custom and alternate

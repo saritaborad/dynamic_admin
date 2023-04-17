@@ -1,5 +1,5 @@
 const express = require("express");
-const { addVersion, getAllVersion, delVersion, editVersion, addTitle, addMode, getAllAdTitle, getAllAdMode, editMode, delTitle, editTitle, delMode, addFilter, getAllFilter } = require("../controllers/Version");
+const { addVersion, getAllVersion, delVersion, editVersion, addTitle, addMode, getAllAdTitle, getAllAdMode, editMode, delTitle, editTitle, delMode, addFilter } = require("../controllers/Version");
 const router = express.Router();
 
 router.post("/getAllVersion", getAllVersion);
@@ -18,6 +18,5 @@ router.post("/editMode", editMode);
 router.post("/delMode", delMode);
 
 router.post("/addFilter", addFilter);
-router.post("/getAllFilter", getAllFilter);
 
 module.exports = router;
