@@ -1,18 +1,11 @@
 const mongoose = require("mongoose");
-
-const CounterSchema = mongoose.Schema({
- _id: { type: String },
- seq: { type: Number, default: 0 },
-});
-
-const counter = mongoose.model("counter", CounterSchema);
+const { increseCount } = require("../commonFun/commonFun");
 
 const appSchema = mongoose.Schema(
  {
   title: {
    type: String,
    trim: true,
-   unique: true,
   },
   table_prefix: {
    type: String,
@@ -35,15 +28,15 @@ const appSchema = mongoose.Schema(
   timestamps: true,
  }
 );
-
 appSchema.pre("save", async function (next) {
  var doc = this;
  if (!this.isNew) {
   next();
   return;
  }
- const count = await counter.findByIdAndUpdate({ _id: "entityId" }, { $inc: { seq: 1 } }, { new: true, upsert: true });
- doc.position = count.seq;
+
+ const count = await increseCount("counters");
+ doc.position = count;
 });
 
 module.exports = mongoose.model("Application", appSchema);

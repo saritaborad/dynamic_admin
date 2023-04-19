@@ -3,7 +3,7 @@ const { getCollection } = require("../db/db");
 const give_response = require("../middleware/help");
 const { ObjectId } = require("mongodb");
 const isEmptyObj = require("../utils");
-const { addTitleFun, addModeFun, editModeFun, editTitleFun, updateTitleAndMode } = require("../commonFun/commonFun");
+const { addTitleFun, addModeFun, editModeFun, editTitleFun, updateTitleAndMode, changeModePosition } = require("../commonFun/commonFun");
 
 exports.getAllVersion = asyncHandler(async (req, res, next) => {
  const { table_prefix, filter, sort, order, titleFilter, modeFilter } = req.body;
@@ -186,9 +186,8 @@ exports.getAllAdMode = asyncHandler(async (req, res, next) => {
   adModeList = titleFilData?.length > 0 ? titleFilData?.filter((item) => modeFilter?.includes(item?.ad_keyword)) : adMode?.filter((item) => modeFilter?.includes(item?.ad_keyword));
  }
 
- adMode = adMode?.length > 0 && adMode.sort((a, b) => b?.adc_date - a?.adc_date);
+ //  adMode = adMode?.length > 0 && adMode.sort((a, b) => b?.adc_date - a?.adc_date);
  let adModeData = modeFilter?.length > 0 ? adModeList : titleFilter?.length > 0 ? titleFilData : verFilter?.length > 0 ? verFilData : adMode;
-
  let uniqueAdList = adMode?.length > 0 && adMode?.filter((obj, index, self) => index === self?.findIndex((t) => t?.ad_keyword === obj?.ad_keyword));
 
  return give_response(res, 200, true, "all adMode get successfull!", { adMode: adModeData, adModeList: uniqueAdList, modeFilter: modeFilter });
@@ -206,9 +205,9 @@ exports.addMode = asyncHandler(async (req, res, next) => {
 });
 
 exports.editMode = asyncHandler(async (req, res, next) => {
- const { table_prefix, version_Id, ad_token, enable, _id, version } = req.body;
- await editModeFun(res, table_prefix, version_Id, ad_token, enable, _id, version);
- return give_response(res, 200, true, "Ad title updated!");
+ const { table_prefix, version_Id, ad_token, enable, _id, version, status, newItems } = req.body;
+ await editModeFun(res, _id, status, table_prefix, version_Id, ad_token, enable, version, newItems);
+ return give_response(res, 200, true, "Ad mode updated!");
 });
 
 exports.delMode = asyncHandler(async (req, res, next) => {
@@ -246,13 +245,7 @@ exports.addFilter = asyncHandler(async (req, res, next) => {
 });
 
 exports.modePosition = asyncHandler(async (req, res, next) => {
- const { newItems } = req.body;
- const Version = getCollection(`${table_prefix}_version_tables`);
-
- for (let item of newItems) {
-  await Version.updateMany({ _id: new ObjectId(item._id) }, { $set: { "ad_master.$[item].ad_chield.$[item2].position": item.position } }, { arrayFilters: [{ "item.ad_chield._id": { $eq: new ObjectId(_id) } }, { "item2._id": { $eq: new ObjectId(_id) } }] }, function (err) {
-   if (err) return give_response(res, 400, false, err.message);
-  });
- }
+ const { newItems, table_prefix } = req.body;
+ await changeModePosition(newItems, table_prefix);
  return give_response(res, 200, true, "Details updated");
 });

@@ -1,5 +1,8 @@
 ================= un done ====================
 
+=> when click on block button that item should go to that versions same Advertisement Title's botton position
+
+=> when click on online that item shoould go to that version's sam Advertisement title's top position 
 
 => when adding mode if no add title is selected => don't allow to ad mode
 => if two titles are selected and ad mode is added then mode will be added two all two titles

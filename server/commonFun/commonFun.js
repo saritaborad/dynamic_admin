@@ -2,14 +2,16 @@ const { getCollection } = require("../db/db");
 const { ObjectId } = require("mongodb");
 const give_response = require("../middleware/help");
 
-const increseCount = async () => {
- const count = await Position.findByIdAndUpdate({ _id: "entityId" }, { $inc: { seq: 1 } }, { new: true, upsert: true });
- return count.seq;
+const increseCount = async (name) => {
+ const Counter = getCollection(`${name}`);
+ const count = await Counter.findOneAndUpdate({ _id: "entityId" }, { $inc: { seq: 1 } }, { returnDocument: "after", upsert: true });
+ return count?.value?.seq;
 };
 
 const addTitleFun = async (res, adm_name, version_Id, count, enable, table_prefix, version) => {
  const Version = getCollection(`${table_prefix}_version_tables`);
- let position = increseCount();
+
+ let position = await increseCount("counter2");
 
  const version1 = await Version.updateOne(
   { _id: new ObjectId(version_Id) },
@@ -38,12 +40,12 @@ const addTitleFun = async (res, adm_name, version_Id, count, enable, table_prefi
 };
 
 const addModeFun = async (res, ad_token, ad_keyword, version_Id, enable, table_prefix, version, adm_name) => {
- let position = increseCount();
+ let position = await increseCount("counter2");
  const Version = getCollection(`${table_prefix}_version_tables`);
 
  const newVer = await Version.updateOne(
   { _id: new ObjectId(version_Id) },
-  { $push: { "ad_master.$[item].ad_chield": { _id: new ObjectId(), ad_token, ad_keyword, version_Id: new ObjectId(version_Id), enable, version, adc_date: Date.now() } }, position: position },
+  { $push: { "ad_master.$[item].ad_chield": { _id: new ObjectId(), ad_token, ad_keyword, version_Id: new ObjectId(version_Id), enable, version, position: position, adc_date: Date.now() } } },
   {
    arrayFilters: [
     {
@@ -58,15 +60,19 @@ const addModeFun = async (res, ad_token, ad_keyword, version_Id, enable, table_p
  );
 };
 
-const editModeFun = async (res, table_prefix, version_Id, ad_token, enable, _id, version) => {
+const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_token, enable, version, newItems) => {
  const Version = getCollection(`${table_prefix}_version_tables`);
-
- let obj = {
-  "ad_master.$[item].ad_chield.$[item2].ad_token": ad_token,
-  "ad_master.$[item].ad_chield.$[item2].enable": enable,
-  "ad_master.$[item].ad_chield.$[item2].version": version,
- };
-
+ let obj;
+ status || status === 0
+  ? (obj = {
+     "ad_master.$[item].ad_chield.$[item2].enable": status,
+    })
+  : (obj = {
+     "ad_master.$[item].ad_chield.$[item2].ad_token": ad_token,
+     "ad_master.$[item].ad_chield.$[item2].enable": enable,
+     "ad_master.$[item].ad_chield.$[item2].version": version,
+    });
+ await changeModePosition(newItems, table_prefix);
  const version1 = await Version.updateOne({ _id: new ObjectId(version_Id) }, { $set: { ...obj } }, { arrayFilters: [{ "item.ad_chield._id": { $eq: new ObjectId(_id) } }, { "item2._id": { $eq: new ObjectId(_id) } }] }, function (err) {
   if (err) return give_response(res, 400, false, err.message);
  });
@@ -113,4 +119,13 @@ const updateTitleAndMode = async (table_prefix, _id, title) => {
  }
 };
 
-module.exports = { addTitleFun, addModeFun, editModeFun, editTitleFun, updateTitleAndMode, increseCount };
+const changeModePosition = async (newItems, table_prefix) => {
+ const Version = getCollection(`${table_prefix}_version_tables`);
+
+ for (let item of newItems) {
+  await Version.updateOne({ _id: new ObjectId(item?.version_Id) }, { $set: { "ad_master.$[item].ad_chield.$[item2].position": item?.position } }, { arrayFilters: [{ "item.ad_chield._id": { $eq: new ObjectId(item?._id) } }, { "item2._id": { $eq: new ObjectId(item?._id) } }] }, function (err) {
+   if (err) return give_response(res, 400, false, err.message);
+  });
+ }
+};
+module.exports = { addTitleFun, addModeFun, editModeFun, editTitleFun, updateTitleAndMode, increseCount, changeModePosition };

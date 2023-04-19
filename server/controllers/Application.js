@@ -45,6 +45,7 @@ exports.updatePosition = asyncHandler(async (req, res, next) => {
 exports.deleteApp = asyncHandler(async (req, res, next) => {
  const { _id } = req.body;
  const app = await Application.findByIdAndDelete({ _id });
+
  delCollection(res, DB, `${app?.table_prefix}_version_tables`);
  delCollection(res, DB, `${app?.table_prefix}_privacypolicies`);
  return give_response(res, 200, true, "Application deleted");

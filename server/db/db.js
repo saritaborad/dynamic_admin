@@ -31,7 +31,7 @@ const addCollection = async (res, db, name) => {
  try {
   await db.createCollection(name);
  } catch (error) {
-  // return give_response(res, 500, false, error.message);
+  return give_response(res, 500, false, error.message);
  }
 };
 
@@ -39,7 +39,7 @@ const delCollection = async (res, db, name) => {
  try {
   await db.dropCollection(name);
  } catch (error) {
-  // return give_response(res, 500, false, error.message);
+  return give_response(res, 500, false, error.message);
  }
 };
 
@@ -47,7 +47,7 @@ const renameCollection = async (res, db, oldName, newName) => {
  try {
   await db.renameCollection(oldName, newName);
  } catch (error) {
-  // return give_response(res, 500, false, error.message);
+  return give_response(res, 500, false, error.message);
  }
 };
 

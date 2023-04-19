@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import { Dropdown, Modal } from "react-bootstrap";
-import { Formik } from "formik";
-import * as Yup from "yup";
-import { PostApi, SessionGetAPI, SessionPostAPI } from "../Api/apiServices";
+import { PostApi } from "../Api/apiServices";
 import { API_PATH } from "../const";
-import { errorContainer, formAttr } from "../CommonFun/CommonFun";
 import RtdDatatable from "./Common/DataTable/DataTable";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -17,6 +14,7 @@ const Version = () => {
  const [adModeData, setAdModeData] = useState([]);
  const [uniqueAdMode, setUniqueAdMode] = useState([]);
  const [uniqueTitle, setUniqueTitle] = useState([]);
+ const [isChecked, setIsChecked] = useState(false);
 
  const [tableData, setTableData] = useState([]);
  const [tableColumn, setTableColumn] = useState([]);
@@ -252,11 +250,10 @@ const Version = () => {
     filter: false,
     sort: false,
     customBodyRender: (data, i) => {
-     return <span className={data[i]?.enabled === 1 ? "online" : "offline"}>{data[i]?.enabled === 1 ? "Online" : "Offline"}</span>;
+     return <span className={data[i]?.enable === 1 ? "online" : data[i]?.enable === 2 ? "block" : "offline"}>{data[i]?.enable === 1 ? "Online" : data[i]?.enable === 2 ? "Block" : "Offline"}</span>;
     },
    },
   },
-
   {
    value: "action",
    label: "Action",
@@ -265,24 +262,18 @@ const Version = () => {
     sort: false,
     customBodyRender: (data, i) => {
      return (
-      <div className="action-icons">
-       <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemUp(data[i]._id)}>
-        <i className="fa fa-arrow-up"></i>
-       </span>
-       <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemDown(data[i]._id)}>
-        <i className="fa fa-arrow-down"></i>
-       </span>
-       <span
-        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }}
-        className="pe-2"
-        onClick={() => {
-         setIsUpdate(true);
-         setAdMode(data[i]);
-         setNoteShow(true);
-        }}
-       >
-        <i className="fa fa-clipboard"></i>
-       </span>
+      <div className="action-icons" key={i}>
+       {i !== 0 ? (
+        <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemUp(data[i]._id, i)}>
+         <i className="fa fa-arrow-up"></i>
+        </span>
+       ) : null}
+       {i !== data?.length - 1 ? (
+        <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemDown(data[i]._id, i)}>
+         <i className="fa fa-arrow-down"></i>
+        </span>
+       ) : null}
+
        <span
         style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }}
         className="pe-2"
@@ -292,12 +283,31 @@ const Version = () => {
          setModeShow(true);
         }}
        >
-        <i className="fa fa-edit "></i>
+        <i className="fa fa-edit"></i>
        </span>
 
        <span style={{ color: "red", cursor: "pointer", fontSize: "18px" }} onClick={() => delMode(data[i]?._id, data[i]?.version_Id)}>
         {data[i]?.ad_keyword !== "CUSTOM" && data[i]?.ad_keyword !== "ALTERNATIVE" ? <i className="fa fa-trash"></i> : null}
        </span>
+
+       <div className="form-check form-switch">
+        <input className="form-check-input" type="checkbox" id="offer-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateStatus({ _id: data[i]._id, status: e.target.checked ? 1 : 0, version_Id: data[i]?.version_Id, table_prefix })} />
+       </div>
+
+       <div className="custom-switch-toggle-menu mt-1">
+        <label className="switch">
+         <input
+          type="checkbox"
+          name="status"
+          id={`block${i}`}
+          defaultChecked={data[i]?.enable === 2 ? true : false}
+          onChange={(e) => {
+           updateStatus({ _id: data[i]._id, status: e.target.checked ? 2 : data[i]?.enable, version_Id: data[i]?.version_Id, table_prefix }, data[i]?.enable, `block${i}`);
+          }}
+         />
+         <span className="slider round"></span>
+        </label>
+       </div>
       </div>
      );
     },
@@ -349,19 +359,66 @@ const Version = () => {
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data))).then((res) => {
    if (res.status === 200) {
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
-    setAdModeData(res.data.data?.adMode);
+    setAdModeData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
     setUniqueAdMode(res.data.data?.adModeList);
     setModeFilter(res.data.data?.modeFilter);
 
-    setTableData(res.data.data?.adMode);
+    setTableData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
     setTableColumn(columns3);
     setActive(3);
    }
   });
  };
 
- const moveItemUp = (itemId) => {
+ const updateStatus = (data, block, id) => {
+  data?.status === 1 && position(data._id);
+  if (block && block === 1) {
+   setTimeout(() => {
+    document.getElementById(id).checked = false;
+   }, 100);
+   return;
+  }
+  new Promise((resolve) => resolve(PostApi(API_PATH.editMode, { ...data, newItems: adModeData }))).then((res) => {
+   if (res.status === 200) {
+    // toast.success(res.data.message);
+    getAllAdMode();
+   }
+  });
+ };
+ //  const handleStatusChange = (itemId) => {
+ //   const itemIndex = adModeData.findIndex((item) => item.id === itemId);
+ //   const { title, version } = adModeData[itemIndex];
+
+ //   const filteredArray = adModeData.filter((item) => item.title === title && item.version === version && item.id !== itemId);
+ //   const itemToMove = adModeData[itemIndex];
+ //   const sortedArray = [itemToMove, ...filteredArray];
+
+ //   const otherItems = adModeData.filter((item) => item.title !== title || item.version !== version);
+ //   const updatedData = [...otherItems, ...sortedArray];
+
+ //   setAdModeData(updatedData);
+ //  };
+
+ const position = (itemId) => {
   const itemIndex = adModeData.findIndex((item) => item._id === itemId);
+  const { version, adm_name } = adModeData[itemIndex];
+  let updatedItems = [...adModeData];
+  const moveIndex = adModeData.findIndex((item) => item.version === version && item.adm_name === adm_name && item._id !== itemId);
+  if (moveIndex !== -1) {
+   const currentItem = adModeData[itemIndex];
+   updatedItems.splice(itemIndex, 1);
+   currentItem.position = moveIndex + 1;
+   updatedItems.splice(moveIndex, 0, currentItem);
+   updatedItems.forEach((item, index) => {
+    item.position = index + 1;
+   });
+   setAdModeData(updatedItems);
+  }
+ };
+
+ const moveItemUp = (itemId, index) => {
+  const itemIndex = adModeData.findIndex((item) => item._id === itemId);
+  console.log(index);
   if (itemIndex > 0) {
    const updatedItems = [...adModeData];
    updatedItems[itemIndex].position--;
@@ -372,8 +429,9 @@ const Version = () => {
   }
  };
 
- const moveItemDown = (itemId) => {
+ const moveItemDown = (itemId, index) => {
   const itemIndex = adModeData.findIndex((item) => item._id === itemId);
+  console.log(index);
   if (itemIndex < adModeData.length - 1) {
    const updatedItems = [...adModeData];
    updatedItems[itemIndex].position++;
@@ -415,7 +473,7 @@ const Version = () => {
  };
 
  const updatePosition = (newItems) => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.modePosition, { newItems }))).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.modePosition, { newItems, table_prefix }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
     getAllAdMode();

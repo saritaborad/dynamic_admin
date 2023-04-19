@@ -1,12 +1,5 @@
 const mongoose = require("mongoose");
 
-const CounterSchema = mongoose.Schema({
- _id: { type: String },
- seq: { type: Number, default: 0 },
-});
-
-const Position = mongoose.model("counter2", CounterSchema);
-
 const versionSchema = mongoose.Schema({
  title: { type: String, trim: true },
  code: { type: Number },
@@ -32,7 +25,7 @@ const versionSchema = mongoose.Schema({
      ad_token: { type: String, trim: true },
      ad_keyword: { type: String, trim: true },
      version_Id: { type: mongoose.Schema.Types.ObjectId },
-     enable: { type: Number, default: 0 },
+     enable: { type: Number, default: 0 }, // enable - 1, disable-0 , blocked-2 
      position: { type: Number, default: 0 },
      adc_date: {
       type: Date,
@@ -48,4 +41,4 @@ const verionTable = (name) => {
  mongoose.model(name, versionSchema);
 };
 
-module.exports = { verionTable, Position };
+module.exports = { verionTable };

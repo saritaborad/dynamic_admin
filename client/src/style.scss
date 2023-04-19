@@ -2037,6 +2037,82 @@ color: #7b838a;
 .form-switch .form-check-input:checked {
     background-color: #e8ebf1;
 }
+
+.form-switch .form-check-input:checked {
+    background-image: url("./Images/check-circle.svg");
+}
+
+
+.custom-switch-toggle-menu .switch {
+	position: relative;
+	display: inline-flex;
+	cursor: pointer;
+}
+
+.custom-switch-toggle-menu .switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.custom-switch-toggle-menu .slider {
+    cursor: pointer;
+	background-color: #e8ebf1;
+	border-radius: 100px;
+	transition: 0.4s;
+	width: 30px;
+	height: 18px;
+}
+
+.custom-switch-toggle-menu input:checked + .slider {
+	background-color: #fff;
+    border: 1px solid #e8ebf1;
+}
+
+.custom-switch-toggle-menu input:checked + .slider:before {
+	transform: translateX(16px);
+	background-color: #fff;
+}
+
+.custom-switch-toggle-menu .slider.round:before {
+	border-radius: 100px;
+}
+
+.custom-switch-toggle-menu .slider:before {
+	position: absolute;
+	content: "";
+	height: 15px;
+	width: 15px;
+	left: 3px;
+	bottom: 2px;
+	transition: 0.4s;
+	background-color: #fff;
+	border-radius: 100px;
+	transform: translateX(-3px);
+	cursor: pointer;
+}
+
+.custom-switch-toggle-menu {
+	display: flex;
+	align-items: center;
+}
+
+.custom-switch-toggle-menu input:checked + .slider:after {
+    content: "\2714"; /* checkmark character */
+	position: absolute;
+    height: 16px;
+	width: 16px;
+  	transition: 0.3s;
+	border-radius: 100px;
+	transform: translateX(-3px);
+	cursor: pointer;
+    display: inline-block;
+    font-size: 11px;
+    background-color: #fd397a;
+    color: white;
+    text-align: center;
+    
+  }
   
 .form-switch {
     min-width: 0;
@@ -2151,9 +2227,9 @@ color: #7b838a;
 .online {
     background-color: #5867dd;
     color: #ffffff;
-     padding:   0.15rem 0.75rem; 
-     border-radius: 3px;
-     text-align: center;
+    padding:   0.15rem 0.75rem; 
+    border-radius: 3px;
+    text-align: center;
 
 }
 
@@ -2161,9 +2237,17 @@ color: #7b838a;
     background-color: #282a3c;
     color: #ffffff;
     padding: 0.15rem 0.75rem;
-     border-radius: 3px;
-     text-align: center;
+    border-radius: 3px;
+    text-align: center;
 
+}
+
+.block {
+    background-color: #fd397a;
+    color: #ffffff;
+    padding: 0.15rem 0.75rem;
+    border-radius: 3px;
+    text-align: center;
 }
 
 //------------------------------------------------- media query -------------------------------------------------

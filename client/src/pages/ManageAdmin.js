@@ -75,16 +75,10 @@ const ManageAdmin = () => {
     customBodyRender: (data, i) => {
      return (
       <div className="action-icons">
-       <span
-        style={{ color: "#93a2dd", cursor: "pointer" }}
-        onClick={() => moveItemUp(data[i]._id)}
-       >
+       <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemUp(data[i]._id, i)}>
         <i className="fa fa-arrow-up"></i>
        </span>
-       <span
-        style={{ color: "#93a2dd", cursor: "pointer" }}
-        onClick={() => moveItemDown(data[i]._id)}
-       >
+       <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemDown(data[i]._id)}>
         <i className="fa fa-arrow-down"></i>
        </span>
 
@@ -128,21 +122,10 @@ const ManageAdmin = () => {
        </div>
 
        <div className="form-check form-switch" key={i}>
-        <input
-         className="form-check-input"
-         type="checkbox"
-         id="offer-status"
-         defaultChecked={data[i]?.enable == 1 ? true : false}
-         onChange={(e) =>
-          updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })
-         }
-        />
+        <input className="form-check-input" type="checkbox" id="offer-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
        </div>
 
-       <span
-        style={{ color: "red", cursor: "pointer" }}
-        onClick={() => deleteItem(data[i]?._id)}
-       >
+       <span style={{ color: "red", cursor: "pointer" }} onClick={() => deleteItem(data[i]?._id)}>
         <i className="fa fa-trash"></i>
        </span>
       </div>
@@ -229,27 +212,18 @@ const ManageAdmin = () => {
  };
 
  const getAllApp = (status, search) => {
-  let data =
-   status || status == 0
-    ? { enable: status, ...option }
-    : { ...option, search: search };
-  new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp, data))).then(
-   (res) => {
-    if (res.status === 200) {
-     setData(res.data.data.allApp?.sort((a, b) => a.position - b.position));
-     setActiveApp(
-      res.data.data.activeApp?.sort((a, b) => a.position - b.position)
-     );
-     set_option({ ...option, totalRecord: res.data.data.totalRecord });
-    }
+  let data = status || status == 0 ? { enable: status, ...option } : { ...option, search: search };
+  new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp, data))).then((res) => {
+   if (res.status === 200) {
+    setData(res.data.data.allApp?.sort((a, b) => a.position - b.position));
+    setActiveApp(res.data.data.activeApp?.sort((a, b) => a.position - b.position));
+    set_option({ ...option, totalRecord: res.data.data.totalRecord });
    }
-  );
+  });
  };
 
  const updatePosition = (newItems) => {
-  new Promise((resolve) =>
-   resolve(PostApi(API_PATH.updatePosition, { newItems }))
-  ).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.updatePosition, { newItems }))).then((res) => {
    if (res.status === 200) {
     setShow(false);
     toast.success(res.data.message);
@@ -259,22 +233,18 @@ const ManageAdmin = () => {
  };
 
  const submitFormData = (formData, resetForm) => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.addApp, formData))).then(
-   (res) => {
-    if (res.status === 200) {
-     toast.success(res.data.message);
-     resetForm(formData);
-     getAllApp();
-     setShow(false);
-    }
+  new Promise((resolve) => resolve(PostApi(API_PATH.addApp, formData))).then((res) => {
+   if (res.status === 200) {
+    toast.success(res.data.message);
+    resetForm(formData);
+    getAllApp();
+    setShow(false);
    }
-  );
+  });
  };
 
  const deleteItem = (id) => {
-  new Promise((resolve) =>
-   resolve(PostApi(API_PATH.deleteApp, { _id: id }))
-  ).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.deleteApp, { _id: id }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
     getAllApp();
@@ -283,16 +253,14 @@ const ManageAdmin = () => {
  };
 
  const updateApp = (formData, resetForm) => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.updateApp, formData))).then(
-   (res) => {
-    if (res.status === 200) {
-     setShow(false);
-     getAllApp();
-     resetForm && resetForm(formData);
-     toast.success(res.data.message);
-    }
+  new Promise((resolve) => resolve(PostApi(API_PATH.updateApp, formData))).then((res) => {
+   if (res.status === 200) {
+    setShow(false);
+    getAllApp();
+    resetForm && resetForm(formData);
+    toast.success(res.data.message);
    }
-  );
+  });
  };
 
  const appModalClose = () => {
@@ -318,36 +286,17 @@ const ManageAdmin = () => {
         <div className="custom-design-dropdwon">
          <Dropdown>
           <Dropdown.Toggle id="dropdown">
-           <svg
-            className="me-2"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-           >
-            <path
-             d="M8.18126 5.17527C8.49179 4.86473 8.49179 4.34718 8.18126 4.01076L5.17942 0.982901C4.86889 0.672366 4.35133 0.672366 4.01491 0.982901L0.987052 4.01076C0.676517 4.3213 0.676517 4.83886 0.987052 5.17527C1.29759 5.4858 1.81514 5.4858 2.15156 5.17527L3.75599 3.57084V14.4396C3.75599 14.8795 4.11828 15.2677 4.58408 15.2677C5.024 15.2677 5.41217 14.9054 5.41217 14.4396V3.57084L7.0166 5.17527C7.17187 5.33054 7.37889 5.40817 7.58592 5.40817C7.79294 5.40817 8.02584 5.33054 8.18111 5.17527H8.18126Z"
-             fill="#333333"
-            />
-            <path
-             d="M15.013 10.817C14.7025 10.5065 14.1849 10.5065 13.8485 10.817L12.2441 12.4214V1.5527C12.2441 1.11278 11.8818 0.724609 11.416 0.724609C10.9502 0.750487 10.5879 1.11278 10.5879 1.57858V12.4473L8.98347 10.8429C8.8282 10.6876 8.62118 10.61 8.41415 10.61C8.20713 10.61 8.00011 10.6876 7.84484 10.8429C7.5343 11.1534 7.5343 11.671 7.84484 12.0074L10.8467 15.0092C11.1572 15.3197 11.6748 15.3197 12.0112 15.0092L15.013 12.0074C15.3236 11.671 15.3236 11.1534 15.013 10.817Z"
-             fill="#333333"
-            />
+           <svg className="me-2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.18126 5.17527C8.49179 4.86473 8.49179 4.34718 8.18126 4.01076L5.17942 0.982901C4.86889 0.672366 4.35133 0.672366 4.01491 0.982901L0.987052 4.01076C0.676517 4.3213 0.676517 4.83886 0.987052 5.17527C1.29759 5.4858 1.81514 5.4858 2.15156 5.17527L3.75599 3.57084V14.4396C3.75599 14.8795 4.11828 15.2677 4.58408 15.2677C5.024 15.2677 5.41217 14.9054 5.41217 14.4396V3.57084L7.0166 5.17527C7.17187 5.33054 7.37889 5.40817 7.58592 5.40817C7.79294 5.40817 8.02584 5.33054 8.18111 5.17527H8.18126Z" fill="#333333" />
+            <path d="M15.013 10.817C14.7025 10.5065 14.1849 10.5065 13.8485 10.817L12.2441 12.4214V1.5527C12.2441 1.11278 11.8818 0.724609 11.416 0.724609C10.9502 0.750487 10.5879 1.11278 10.5879 1.57858V12.4473L8.98347 10.8429C8.8282 10.6876 8.62118 10.61 8.41415 10.61C8.20713 10.61 8.00011 10.6876 7.84484 10.8429C7.5343 11.1534 7.5343 11.671 7.84484 12.0074L10.8467 15.0092C11.1572 15.3197 11.6748 15.3197 12.0112 15.0092L15.013 12.0074C15.3236 11.671 15.3236 11.1534 15.013 10.817Z" fill="#333333" />
            </svg>
            {selectedItem}
            <img src={Arrow} alt="arrow" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
-           <Dropdown.Item onClick={() => handleSelect("All")}>
-            All
-           </Dropdown.Item>
-           <Dropdown.Item onClick={() => handleSelect("Online")}>
-            Online
-           </Dropdown.Item>
-           <Dropdown.Item onClick={() => handleSelect("Offline")}>
-            Offline
-           </Dropdown.Item>
+           <Dropdown.Item onClick={() => handleSelect("All")}>All</Dropdown.Item>
+           <Dropdown.Item onClick={() => handleSelect("Online")}>Online</Dropdown.Item>
+           <Dropdown.Item onClick={() => handleSelect("Offline")}>Offline</Dropdown.Item>
           </Dropdown.Menu>
          </Dropdown>
         </div>
@@ -371,25 +320,12 @@ const ManageAdmin = () => {
       </div>
       <div className="col-12">
        <div className="table-custom-info">
-        <RtdDatatable
-         data={data}
-         columns={columns}
-         option={option}
-         needPagination={true}
-         tableCallBack={tableCallBack}
-        />
+        <RtdDatatable data={data} columns={columns} option={option} needPagination={true} tableCallBack={tableCallBack} />
        </div>
       </div>
      </div>
     </div>
-    <Modal
-     show={show}
-     onHide={() => appModalClose()}
-     size="md"
-     className="cust-comn-modal"
-     aria-labelledby="contained-modal-title-vcenter"
-     centered
-    >
+    <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
      <Modal.Header closeButton className="">
       <div className="cust-comn-modal-hdr">
        <p>{update ? "Edit Application" : "Add New Application"}</p>
@@ -406,9 +342,7 @@ const ManageAdmin = () => {
         title: Yup.string().required("Title is required."),
        })}
        onSubmit={(formData, { resetForm }) => {
-        update
-         ? updateApp(formData, resetForm)
-         : submitFormData(formData, resetForm);
+        update ? updateApp(formData, resetForm) : submitFormData(formData, resetForm);
        }}
       >
        {(runform) => (
@@ -416,24 +350,14 @@ const ManageAdmin = () => {
          <div className="row">
           <div className="col-md-12 mb-3">
            <label className="form-lbl-class mb-2">Title</label>
-           <input
-            type="text"
-            {...formAttr(runform, "title")}
-            className="form-control style-input-class"
-            name="title"
-            placeholder="Enter title here"
-           />
+           <input type="text" {...formAttr(runform, "title")} className="form-control style-input-class" name="title" placeholder="Enter title here" />
            {errorContainer(runform, "title")}
           </div>
           <div className="col-12 text-end mt-5 mb-4">
            <button type="submit" className="btn-smart-comn px-4 me-2">
             {update ? "Update" : "Add"}
            </button>
-           <button
-            className="btn-smart-comn2 px-4"
-            type="button"
-            onClick={() => appModalClose()}
-           >
+           <button className="btn-smart-comn2 px-4" type="button" onClick={() => appModalClose()}>
             Cancel
            </button>
           </div>
