@@ -10,9 +10,7 @@ const increseCount = async (name) => {
 
 const addTitleFun = async (res, adm_name, version_Id, count, enable, table_prefix, version) => {
  const Version = getCollection(`${table_prefix}_version_tables`);
-
  let position = await increseCount("counter2");
-
  const version1 = await Version.updateOne(
   { _id: new ObjectId(version_Id) },
   {
@@ -26,8 +24,8 @@ const addTitleFun = async (res, adm_name, version_Id, count, enable, table_prefi
      version,
      _id: new ObjectId(),
      ad_chield: [
-      { _id: new ObjectId(), ad_token: "CUSTOM", ad_keyword: "CUSTOM", version_Id: new ObjectId(version_Id), version, adc_date: Date.now(), position: position },
-      { _id: new ObjectId(), ad_token: "ALTERNATIVE", ad_keyword: "ALTERNATIVE", version_Id: new ObjectId(version_Id), version, adc_date: Date.now(), position: position + 1 },
+      { _id: new ObjectId(), ad_token: "CUSTOM", ad_keyword: "CUSTOM", version_Id: new ObjectId(version_Id), version, adc_date: Date.now(), position: position, enable: 0 },
+      { _id: new ObjectId(), ad_token: "ALTERNATIVE", ad_keyword: "ALTERNATIVE", version_Id: new ObjectId(version_Id), version, adc_date: Date.now(), position: position + 1, enable: 0 },
      ],
     },
    },
@@ -53,6 +51,7 @@ const addModeFun = async (res, ad_token, ad_keyword, version_Id, enable, table_p
      "item.adm_name": adm_name,
     },
    ],
+   upsert: true,
   },
   function (err, result) {
    if (err) return give_response(res, 400, false, err.message);
@@ -60,7 +59,7 @@ const addModeFun = async (res, ad_token, ad_keyword, version_Id, enable, table_p
  );
 };
 
-const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_token, enable, version, newItems) => {
+const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_token, enable, version, newItems, positionChange = false) => {
  const Version = getCollection(`${table_prefix}_version_tables`);
  let obj;
  status || status === 0
@@ -72,7 +71,7 @@ const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_t
      "ad_master.$[item].ad_chield.$[item2].enable": enable,
      "ad_master.$[item].ad_chield.$[item2].version": version,
     });
- await changeModePosition(newItems, table_prefix);
+ positionChange && (await changeModePosition(newItems, table_prefix));
  const version1 = await Version.updateOne({ _id: new ObjectId(version_Id) }, { $set: { ...obj } }, { arrayFilters: [{ "item.ad_chield._id": { $eq: new ObjectId(_id) } }, { "item2._id": { $eq: new ObjectId(_id) } }] }, function (err) {
   if (err) return give_response(res, 400, false, err.message);
  });
@@ -119,11 +118,11 @@ const updateTitleAndMode = async (table_prefix, _id, title) => {
  }
 };
 
-const changeModePosition = async (newItems, table_prefix) => {
+const changeModePosition = async (newItems = [], table_prefix) => {
  const Version = getCollection(`${table_prefix}_version_tables`);
 
  for (let item of newItems) {
-  await Version.updateOne({ _id: new ObjectId(item?.version_Id) }, { $set: { "ad_master.$[item].ad_chield.$[item2].position": item?.position } }, { arrayFilters: [{ "item.ad_chield._id": { $eq: new ObjectId(item?._id) } }, { "item2._id": { $eq: new ObjectId(item?._id) } }] }, function (err) {
+  await Version.updateOne({ _id: new ObjectId(item?.version_Id) }, { $set: { "ad_master.$[item].ad_chield.$[item2].position": item?.position, "ad_master.$[item].ad_chield.$[item2].enable": item?.enable } }, { arrayFilters: [{ "item.ad_chield._id": { $eq: new ObjectId(item?._id) } }, { "item2._id": { $eq: new ObjectId(item?._id) } }] }, function (err) {
    if (err) return give_response(res, 400, false, err.message);
   });
  }

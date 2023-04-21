@@ -6,7 +6,8 @@ import { API_PATH } from "../const";
 import RtdDatatable from "./Common/DataTable/DataTable";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AdTitleModal, AdTypeModal, ModeModal, NoteModal, VersionModal } from "../Modals/VersionModal";
+import { AdTitleModal, AdTypeModal, DeleteConfirmModal, ModeModal, NoteModal, VersionModal } from "../Modals/VersionModal";
+import { type } from "@testing-library/user-event/dist/type";
 
 const Version = () => {
  const [versionData, setVersionData] = useState([]);
@@ -14,7 +15,6 @@ const Version = () => {
  const [adModeData, setAdModeData] = useState([]);
  const [uniqueAdMode, setUniqueAdMode] = useState([]);
  const [uniqueTitle, setUniqueTitle] = useState([]);
- const [isChecked, setIsChecked] = useState(false);
 
  const [tableData, setTableData] = useState([]);
  const [tableColumn, setTableColumn] = useState([]);
@@ -37,9 +37,10 @@ const Version = () => {
  const [adTitleShow, setAdTitleShow] = useState(false);
  const [modeShow, setModeShow] = useState(false);
  const [noteShow, setNoteShow] = useState(false);
+ const [deleteConfirm, setDeleteConfirm] = useState(false);
 
  const [active, setActive] = useState(1);
- const [isOpen, setIsOpen] = useState(false);
+
  const table_prefix = useLocation()?.search?.substring(1);
  const stopPropagation = (e) => e.stopPropagation();
 
@@ -113,7 +114,13 @@ const Version = () => {
         <i className="fa fa-edit "></i>
        </span>
 
-       <span style={{ color: "red", cursor: "pointer", fontSize: "20px" }} onClick={() => delVersion(data[i]?._id)}>
+       <span
+        style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
+        onClick={() => {
+         setVersion(data[i]);
+         setDeleteConfirm(true);
+        }}
+       >
         <i className="fa fa-trash"></i>
        </span>
       </div>
@@ -178,32 +185,41 @@ const Version = () => {
     customBodyRender: (data, i) => {
      return (
       <div className="action-icons">
-       <span
-        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
-        className="pe-2"
-        onClick={() => {
-         setIsUpdate(true);
-         setAdTitle(data[i]);
-         setNoteShow(true);
-        }}
-       >
-        <i className="fa fa-clipboard"></i>
-       </span>
-       <span
-        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
-        className="pe-2"
-        onClick={() => {
-         setIsUpdate(true);
-         setAdTitle(data[i]);
-         setAdTitleShow(true);
-        }}
-       >
-        <i className="fa fa-edit "></i>
-       </span>
-
-       <span style={{ color: "red", cursor: "pointer", fontSize: "20px" }} onClick={() => delTitle(data[i]?._id, data[i]?.version_Id)}>
-        <i className="fa fa-trash"></i>
-       </span>
+       <div>
+        <span
+         style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
+         className="pe-2"
+         onClick={() => {
+          setIsUpdate(true);
+          setAdTitle(data[i]);
+          setAdTitleShow(true);
+         }}
+        >
+         <i className="fa fa-edit "></i>
+        </span>
+       </div>
+       <div className="form-check form-switch pb-1">
+        <input
+         className="form-check-input"
+         type="checkbox"
+         id="offer-status"
+         defaultChecked={data[i]?.enable == 1 ? true : false}
+         onChange={(e) => {
+          updateStatus(false, { _id: data._id, status: e.target.checked ? 1 : 0, version_Id: data?.version_Id, table_prefix: table_prefix });
+         }}
+        />
+       </div>
+       <div>
+        <span
+         style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
+         onClick={() => {
+          setAdTitle(data[i]);
+          setDeleteConfirm(true);
+         }}
+        >
+         <i className="fa fa-trash"></i>
+        </span>
+       </div>
       </div>
      );
     },
@@ -262,47 +278,75 @@ const Version = () => {
     sort: false,
     customBodyRender: (data, i) => {
      return (
-      <div className="action-icons" key={i}>
-       {i !== 0 ? (
-        <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemUp(data[i]._id, i)}>
-         <i className="fa fa-arrow-up"></i>
+      <div className="action-icons">
+       <div>
+        {i !== 0 ? (
+         <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemUp(data[i]._id, i)}>
+          <i className="fa fa-arrow-up"></i>
+         </span>
+        ) : (
+         <span className="ms-3"></span>
+        )}
+       </div>
+       <div>
+        {i !== data?.length - 1 ? (
+         <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemDown(data[i]._id, i)}>
+          <i className="fa fa-arrow-down"></i>
+         </span>
+        ) : (
+         <span className="p-2"></span>
+        )}
+       </div>
+       <div>
+        <span
+         style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }}
+         className="pe-2"
+         onClick={() => {
+          setIsUpdate(true);
+          setAdMode(data[i]);
+          setModeShow(true);
+         }}
+        >
+         <i className="fa fa-edit"></i>
         </span>
-       ) : null}
-       {i !== data?.length - 1 ? (
-        <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemDown(data[i]._id, i)}>
-         <i className="fa fa-arrow-down"></i>
-        </span>
-       ) : null}
-
-       <span
-        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }}
-        className="pe-2"
-        onClick={() => {
-         setIsUpdate(true);
-         setAdMode(data[i]);
-         setModeShow(true);
-        }}
-       >
-        <i className="fa fa-edit"></i>
-       </span>
-
-       <span style={{ color: "red", cursor: "pointer", fontSize: "18px" }} onClick={() => delMode(data[i]?._id, data[i]?.version_Id)}>
-        {data[i]?.ad_keyword !== "CUSTOM" && data[i]?.ad_keyword !== "ALTERNATIVE" ? <i className="fa fa-trash"></i> : null}
-       </span>
-
-       <div className="form-check form-switch">
-        <input className="form-check-input" type="checkbox" id="offer-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateStatus({ _id: data[i]._id, status: e.target.checked ? 1 : 0, version_Id: data[i]?.version_Id, table_prefix })} />
+       </div>
+       <div>
+        {data[i]?.ad_keyword !== "CUSTOM" && data[i]?.ad_keyword !== "ALTERNATIVE" ? (
+         <span
+          style={{ color: "red", cursor: "pointer", fontSize: "18px" }}
+          onClick={() => {
+           setAdMode(data[i]);
+           setDeleteConfirm(true);
+          }}
+         >
+          <i className="fa fa-trash"></i>
+         </span>
+        ) : (
+         <span className="ps-1 ms-2"></span>
+        )}
        </div>
 
-       <div className="custom-switch-toggle-menu mt-1">
-        <label className="switch">
+       <div className="form-check form-switch" key={i}>
+        <input
+         className="form-check-input"
+         type="checkbox"
+         id={`mode${i}`}
+         defaultChecked={data[i]?.enable == 1 ? true : false}
+         onChange={(e) => {
+          onlinePosition(data[i], i, e.target.checked ? 1 : 0);
+         }}
+        />
+       </div>
+
+       <div className="custom-switch-toggle-menu mt-1" key={data[i]?._id}>
+        <label className="switch" htmlFor={`block${i}`}>
          <input
           type="checkbox"
           name="status"
           id={`block${i}`}
           defaultChecked={data[i]?.enable === 2 ? true : false}
           onChange={(e) => {
-           updateStatus({ _id: data[i]._id, status: e.target.checked ? 2 : data[i]?.enable, version_Id: data[i]?.version_Id, table_prefix }, data[i]?.enable, `block${i}`);
+           blockPosition(data[i], i, e.target.checked ? 2 : 3, data[i]?.enable, `block${i}`);
           }}
          />
          <span className="slider round"></span>
@@ -370,103 +414,131 @@ const Version = () => {
   });
  };
 
- const updateStatus = (data, block, id) => {
-  data?.status === 1 && position(data._id);
+ const updateStatus = (positionChange, data, newItems = [], block, id) => {
   if (block && block === 1) {
    setTimeout(() => {
     document.getElementById(id).checked = false;
    }, 100);
    return;
   }
-  new Promise((resolve) => resolve(PostApi(API_PATH.editMode, { ...data, newItems: adModeData }))).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.editMode, { ...data, newItems: newItems, positionChange }))).then((res) => {
    if (res.status === 200) {
     // toast.success(res.data.message);
-    getAllAdMode();
+    (data?.status === 1 || data?.status === 2) && positionChange ? window.location.reload() : changeTable(3);
    }
   });
  };
- //  const handleStatusChange = (itemId) => {
- //   const itemIndex = adModeData.findIndex((item) => item.id === itemId);
- //   const { title, version } = adModeData[itemIndex];
 
- //   const filteredArray = adModeData.filter((item) => item.title === title && item.version === version && item.id !== itemId);
- //   const itemToMove = adModeData[itemIndex];
- //   const sortedArray = [itemToMove, ...filteredArray];
-
- //   const otherItems = adModeData.filter((item) => item.title !== title || item.version !== version);
- //   const updatedData = [...otherItems, ...sortedArray];
-
- //   setAdModeData(updatedData);
- //  };
-
- const position = (itemId) => {
-  const itemIndex = adModeData.findIndex((item) => item._id === itemId);
-  const { version, adm_name } = adModeData[itemIndex];
-  let updatedItems = [...adModeData];
-  const moveIndex = adModeData.findIndex((item) => item.version === version && item.adm_name === adm_name && item._id !== itemId);
-  if (moveIndex !== -1) {
-   const currentItem = adModeData[itemIndex];
-   updatedItems.splice(itemIndex, 1);
-   currentItem.position = moveIndex + 1;
+ const onlinePosition = (data, index, status) => {
+  let updatedItems = status === 1 ? adModeData?.map((obj) => JSON.parse(JSON.stringify(obj))) : [];
+  let currentItem = updatedItems[index];
+  if (status === 1 && currentItem) {
+   if (index === 0) {
+    updatedItems.forEach((item) => {
+     if (item.version === data?.version && item.adm_name === data?.adm_name && item._id !== data?._id) {
+      item.enable = 0;
+     }
+    });
+    updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, updatedItems);
+    return;
+   }
+   const moveIndex = updatedItems.findIndex((item) => item.version === currentItem?.version && item.adm_name === currentItem?.adm_name && item._id !== data?._id);
+   let positionToMove = updatedItems[moveIndex]?.position;
+   currentItem.position = positionToMove;
+   updatedItems.splice(index, 1);
    updatedItems.splice(moveIndex, 0, currentItem);
-   updatedItems.forEach((item, index) => {
-    item.position = index + 1;
+   for (let i = moveIndex + 1; i <= index; i++) {
+    updatedItems[i].position = updatedItems[i].position + 1;
+   }
+   updatedItems.forEach((item) => {
+    if (item.version === data?.version && item.adm_name === data?.adm_name && item._id !== data?._id) {
+     item.enable = 0;
+    }
    });
-   setAdModeData(updatedItems);
   }
+
+  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, updatedItems);
+ };
+
+ const blockPosition = (data, index, status, block, id) => {
+  const updatedItems = status === 2 ? adModeData?.map((obj) => JSON.parse(JSON.stringify(obj))) : [];
+  const currentItem = updatedItems[index];
+  if (status === 2 && currentItem) {
+   if (index === adModeData?.length - 1) return;
+
+   const filtered = updatedItems.filter((item, i) => item.version === data?.version && item.adm_name === data?.adm_name);
+   const lastIdx = updatedItems.length - 1 - filtered.reverse().findIndex((item) => item.version === data?.version && item.adm_name === data?.adm_name);
+
+   const positionToMove = updatedItems[lastIdx]?.position;
+   currentItem.position = positionToMove;
+   updatedItems.splice(index, 1);
+   updatedItems.splice(lastIdx, 0, currentItem);
+
+   for (let i = lastIdx + 1; i <= updatedItems.length - 1; i++) {
+    updatedItems[i].position = updatedItems[i].position + 1;
+   }
+   for (let i = lastIdx - 1; i >= index; i--) {
+    updatedItems[i].position = updatedItems[i].position - 1;
+   }
+  }
+  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, updatedItems, block, id);
  };
 
  const moveItemUp = (itemId, index) => {
-  const itemIndex = adModeData.findIndex((item) => item._id === itemId);
-  console.log(index);
-  if (itemIndex > 0) {
-   const updatedItems = [...adModeData];
-   updatedItems[itemIndex].position--;
-   updatedItems[itemIndex - 1].position++;
-   updatedItems.splice(itemIndex - 1, 0, updatedItems.splice(itemIndex, 1)[0]);
-   setAdModeData(updatedItems);
+  let updatedItems = adModeData?.map((obj) => JSON.parse(JSON.stringify(obj)));
+
+  if (index > 0 && updatedItems[index]) {
+   updatedItems[index].position--;
+   updatedItems[index - 1].position++;
+   updatedItems.splice(index - 1, 0, updatedItems.splice(index, 1)[0]);
    updatePosition(updatedItems);
   }
  };
 
  const moveItemDown = (itemId, index) => {
-  const itemIndex = adModeData.findIndex((item) => item._id === itemId);
-  console.log(index);
-  if (itemIndex < adModeData.length - 1) {
-   const updatedItems = [...adModeData];
-   updatedItems[itemIndex].position++;
-   updatedItems[itemIndex + 1].position--;
-   updatedItems.splice(itemIndex + 1, 0, updatedItems.splice(itemIndex, 1)[0]);
-   setAdModeData(updatedItems);
+  let updatedItems = adModeData?.map((obj) => JSON.parse(JSON.stringify(obj)));
+
+  if (index < adModeData.length - 1 && updatedItems[index]) {
+   updatedItems[index].position++;
+   updatedItems[index + 1].position--;
+   updatedItems.splice(index + 1, 0, updatedItems.splice(index, 1)[0]);
    updatePosition(updatedItems);
   }
  };
 
- const delVersion = (id) => {
-  let data = { table_prefix: table_prefix, _id: id };
+ const delVersion = () => {
+  let data = { table_prefix: table_prefix, _id: version?._id };
   new Promise((resolve, reject) => resolve(PostApi(API_PATH.delVersion, data))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
+    setVersion([]);
+    setDeleteConfirm(false);
     getAllVersion();
    }
   });
  };
 
- const delTitle = (id, vId) => {
-  let data = { table_prefix: table_prefix, _id: id, version_Id: vId };
+ const delTitle = () => {
+  let isFilter = adTitleData.some((obj) => obj?.adm_name === adTitle?.adm_name);
+  let data = { table_prefix: table_prefix, _id: adTitle?._id, version_Id: adTitle?.version_Id, adm_name: adTitle?.adm_name, isFilter };
+
   new Promise((resolve, reject) => resolve(PostApi(API_PATH.delTitle, data))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
+    setAdTitle([]);
+    setDeleteConfirm(false);
     getAllAdTitle();
    }
   });
  };
 
- const delMode = (id, vId) => {
-  let data = { table_prefix: table_prefix, _id: id, version_Id: vId };
+ const delMode = () => {
+  let data = { table_prefix: table_prefix, _id: adMode?._id, version_Id: adMode?.version_Id };
   new Promise((resolve, reject) => resolve(PostApi(API_PATH.delMode, data))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
+    setAdMode([]);
+    setDeleteConfirm(false);
     getAllAdMode();
    }
   });
@@ -476,7 +548,8 @@ const Version = () => {
   new Promise((resolve) => resolve(PostApi(API_PATH.modePosition, { newItems, table_prefix }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
-    getAllAdMode();
+    // getAllAdMode();
+    window.location.reload();
    }
   });
  };
@@ -620,13 +693,13 @@ const Version = () => {
             {/* <Dropdown.Divider /> */}
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
-              <div className="col-2  ms-2">
+              <div className="col-4  ms-2">
                <button className="d-flex dropdown-button align-items-center" onClick={() => setVersShow(true)}>
                 <i className="fa fa-plus pe-2"></i>
                 Add
                </button>
               </div>
-              <div className="col-10 text-end ">
+              <div className="col-8 text-end ">
                <button className="dropdown-button2 mx-2" onClick={() => addFilter(verFilter, 1, 2)}>
                 Reset
                </button>
@@ -723,13 +796,13 @@ const Version = () => {
             {/* <Dropdown.Divider /> */}
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
-              <div className="col-2  ms-2">
+              <div className="col-4 ms-2">
                <button className="d-flex dropdown-button align-items-center" onClick={() => setAdTitleShow(true)}>
                 <i className="fa fa-plus pe-2"></i>
                 Add
                </button>
               </div>
-              <div className="col-10 text-end ">
+              <div className="col-8 text-end ">
                <button className="dropdown-button2 mx-2" onClick={() => addFilter(titleFilter, 2, 2)}>
                 Reset
                </button>
@@ -775,13 +848,13 @@ const Version = () => {
             {/* <Dropdown.Divider /> */}
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
-              <div className="col-2  ms-2">
+              <div className="col-4  ms-2">
                <button className="d-flex dropdown-button align-items-center " onClick={() => setModeShow(true)}>
                 <i className="fa fa-plus pe-2"></i>
                 Add
                </button>
               </div>
-              <div className="col-10 text-end ">
+              <div className="col-8 text-end ">
                <button className="dropdown-button2 mx-2" onClick={() => addFilter(modeFilter, 3, 2)}>
                 Reset
                </button>
@@ -811,16 +884,18 @@ const Version = () => {
        </div>
       </div>
 
-      <div className="col-12 mt-3">
-       <div className="table-custom-info">
-        <RtdDatatable data={tableData} columns={tableColumn} option={option} needPagination={true} tableCallBack={tableCallBack} />
+      {tableData && (
+       <div className="col-12 mt-3">
+        <div className="table-custom-info">
+         <RtdDatatable data={tableData} columns={tableColumn} option={option} needPagination={true} tableCallBack={tableCallBack} />
+        </div>
        </div>
-      </div>
+      )}
      </div>
     </div>
 
     <Modal show={versShow} onHide={() => setVersShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
-     <VersionModal isUpdate={isUpdate} version={version} adTitle={adTitleData} adMode={uniqueAdMode} table_prefix={table_prefix} submitFormData={submitFormData} setVersShow={setVersShow} />
+     <VersionModal isUpdate={isUpdate} version={version} adTitle={uniqueTitle} adMode={uniqueAdMode} table_prefix={table_prefix} submitFormData={submitFormData} setVersShow={setVersShow} />
     </Modal>
 
     <Modal show={adTitleShow} onHide={() => setAdTitleShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -828,7 +903,7 @@ const Version = () => {
     </Modal>
 
     <Modal show={modeShow} onHide={() => setModeShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
-     <ModeModal isUpdate={isUpdate} adMode={adMode} latestVersion={latestVersion} allversion={versionData} setModeShow={setModeShow} submitAdMode={submitAdMode} table_prefix={table_prefix} />
+     <ModeModal isUpdate={isUpdate} adMode={adMode} latestVersion={latestVersion} allversion={versionData} setModeShow={setModeShow} submitAdMode={submitAdMode} table_prefix={table_prefix} titleFilter={titleFilter} />
     </Modal>
 
     <Modal show={noteShow} onHide={() => setNoteShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -837,6 +912,10 @@ const Version = () => {
 
     <Modal show={adShow} onHide={() => setAdShow(false)} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
      <AdTypeModal setAdShow={setAdShow} />
+    </Modal>
+
+    <Modal show={deleteConfirm} onHide={() => setDeleteConfirm(false)} size="sm" className="cust-comn-modal p-5" centered>
+     <DeleteConfirmModal setDelete={setDeleteConfirm} setConfirmDel={active === 1 ? delVersion : active === 2 ? delTitle : active === 3 && delMode} />
     </Modal>
    </MainLayout>
   </>

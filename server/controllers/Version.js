@@ -45,23 +45,24 @@ exports.getAllVersion = asyncHandler(async (req, res, next) => {
 
 exports.addVersion = asyncHandler(async (req, res, next) => {
  const { is_force, enabled, features, code, title, table_prefix, adMode, adTitle } = req.body;
+ let version_Id;
 
  const Version = getCollection(`${table_prefix}_version_tables`);
- const version = await Version.insertOne({ title, is_force, enabled, features, code, date: Date.now() }, function (err, res) {
-  return give_response(res, 400, false, err.message);
- });
+ const version = await Version.insertOne({ title, is_force, enabled, features, code, date: Date.now() })
+  .then((result) => (version_Id = result.insertedId?.toString()))
+  .catch((err) => {
+   return give_response(res, 400, false, err.message);
+  });
 
  if (adTitle?.length > 0) {
-  adTitle?.map(async (item, i) => {
-   await addTitleFun(res, item?.adm_name, item?.version_Id, item?.count, item?.enable, table_prefix, title, res);
-  });
+  adTitle?.map(async (item, i) => await addTitleFun(res, item?.adm_name, version_Id, item?.count, item?.enable, table_prefix, title));
  }
 
  if (adMode?.length > 0 && adMode?.some((item) => item?.ad_keyword !== "CUSTOM" && item?.ad_keyword !== "ALTERNATIVE")) {
   const filterAdMode = adMode?.filter((item) => item?.ad_keyword !== "CUSTOM" && item?.ad_keyword !== "ALTERNATIVE");
-  filterAdMode?.map(async (item, i) => {
-   await addModeFun(res, ad_token, ad_keyword, item?.version_Id, item?.enable, table_prefix, title);
-  });
+  for (item of filterAdMode) {
+   await addModeFun(res, item?.ad_token, item?.ad_keyword, version_Id, 0, table_prefix, title, item?.adm_name);
+  }
  }
  return give_response(res, 200, true, "Version added!");
 });
@@ -117,7 +118,6 @@ exports.getAllAdTitle = asyncHandler(async (req, res, next) => {
 
  let adTitleData = titleFilter?.length > 0 ? adTitleList : verFilter?.length > 0 ? verFilData : adTitle;
  let uniqueList = adTitle?.length > 0 && adTitle?.filter((obj, index, self) => index === self?.findIndex((t) => t?.adm_name === obj?.adm_name));
-
  adTitle?.length > 0 && adTitle?.sort((a, b) => b?.adm_date - a?.adm_date);
  return give_response(res, 200, true, "all ad title get successfull!", { adTitle: adTitleData, adTitleList: uniqueList, titleFilter: titleFilter });
 });
@@ -135,8 +135,11 @@ exports.editTitle = asyncHandler(async (req, res, next) => {
 });
 
 exports.delTitle = asyncHandler(async (req, res, next) => {
- const { _id, version_Id, table_prefix } = req.body;
+ const { _id, version_Id, table_prefix, adm_name, isFilter } = req.body;
  const Version = getCollection(`${table_prefix}_version_tables`);
+ if (!isFilter) {
+  req.session.titleFilter = req.session.titleFilter?.filter((item) => item !== adm_name);
+ }
 
  const version1 = Version.updateOne(
   { _id: new ObjectId(version_Id) },
@@ -205,8 +208,8 @@ exports.addMode = asyncHandler(async (req, res, next) => {
 });
 
 exports.editMode = asyncHandler(async (req, res, next) => {
- const { table_prefix, version_Id, ad_token, enable, _id, version, status, newItems } = req.body;
- await editModeFun(res, _id, status, table_prefix, version_Id, ad_token, enable, version, newItems);
+ const { table_prefix, version_Id, ad_token, enable, _id, version, status, newItems, positionChange } = req.body;
+ await editModeFun(res, _id, status, table_prefix, version_Id, ad_token, enable, version, newItems, positionChange);
  return give_response(res, 200, true, "Ad mode updated!");
 });
 

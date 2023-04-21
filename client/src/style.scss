@@ -1170,6 +1170,10 @@ button:focus {
     padding: 10px 12px;
 }
 
+.modal-sm {
+    --bs-modal-width: 350px;
+}
+
 .btn-close:focus {
     box-shadow: 0 0 3px 1px #6a58fb;
     opacity: 1;
@@ -2250,6 +2254,42 @@ color: #7b838a;
     text-align: center;
 }
 
+.swal2-icon {
+    position: relative;
+    justify-content: center;
+    width: 5em;
+    height: 5em;
+    margin: 1.25em auto 1.875em;
+    border: 0.25em solid transparent;
+    border-radius: 50%;
+    font-family: inherit;
+    line-height: 5em;
+    cursor: default;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.swal2-popup .swal2-icon {
+    margin: 2rem 0 0rem 0;
+}
+
+.swal2-icon.swal2-warning::before {
+    content: "!";
+}
+
+.swal2-icon.swal2-warning {
+    border-color: #facea8;
+    color: #f8bb86;
+}
+.swal2-icon::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 92%;
+    font-size: 3.75em;
+}
 //------------------------------------------------- media query -------------------------------------------------
 @media (max-width: 1599px) {
     .cust-col-team {
