@@ -1,10 +1,7 @@
 ================= un done ====================
-=>when I block one item all item get's block
 
-=> at least one mode sholud be enabled
-=> don't allow to disable mode if no other is online and when any other is enabled all enabled should be disabled
-=>session is not getting cleared even if no array
-=> when ad title is added and title get API call =>title doen't come because session is not getting cleared
+
+=> when ad title is added and title get API call
 
 ================= done ====================
 
@@ -22,7 +19,19 @@
 => add filter for version, ad title, ad mode => use session 
 => if we edit version, all the ad title and ad modes of that version should be updated
 
-
 => if we delete that version, all the ad title and ad mode should be deleted 
 => if ad type exists and ad mode exists and we create version then that version's all existing ad title should be creted and that version's all existing admode shold be created from frontend and API side changes
 => don't allow to delete ad mode with keyword custom and alternate
+
+=> visibilty mode set as per online ad mode of specific version
+=> for block move item, online issue of refreshing resolved
+=> title data was not coming because session is not getting cleared issue resolved
+=> don't allow to disable mode if no other is online 
+=> when any mode is enabled all other mode should be disabled
+=> when block one item all item get's block issue resolved
+=> at least one mode sholud be enabled feature added
+
+
+
+
+

@@ -156,11 +156,14 @@ const Version = () => {
    },
   },
   {
-   value: "count",
+   value: "visibility",
    label: "Visibility mode",
    options: {
     filter: false,
     sort: false,
+    // customBodyRender: (data, i) => {
+    //  return <span className={data[i]?.enabled === 1 ? "online" : "offline"}>{data[i]?.enabled === 1 ? "Online" : "Offline"}</span>;
+    // },
    },
   },
 
@@ -333,7 +336,7 @@ const Version = () => {
          id={`mode${i}`}
          defaultChecked={data[i]?.enable == 1 ? true : false}
          onChange={(e) => {
-          onlinePosition(data[i], i, e.target.checked ? 1 : 0);
+          onlinePosition(data[i], i, e.target.checked ? 1 : 0, data[i]?.ad_keyword, `mode${i}`);
          }}
         />
        </div>
@@ -434,7 +437,7 @@ const Version = () => {
   });
  };
 
- const onlinePosition = (data, index, status) => {
+ const onlinePosition = (data, index, status, visibility, docId) => {
   let updatedItems = status === 1 ? adModeData?.map((obj) => JSON.parse(JSON.stringify(obj))) : [];
   let currentItem = updatedItems[index];
   if (status === 1 && currentItem) {
@@ -444,7 +447,7 @@ const Version = () => {
       item.enable === 2 ? (item.enable = 2) : (item.enable = 0);
      }
     });
-    updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, 3, updatedItems);
+    updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, visibility: visibility, table_prefix: table_prefix }, 3, updatedItems);
     return;
    }
    const moveIndex = updatedItems.findIndex((item) => item.version === currentItem?.version && item.adm_name === currentItem?.adm_name && item._id !== data?._id);
@@ -461,8 +464,17 @@ const Version = () => {
     }
    });
   }
+  if (status === 0) {
+   let filterArr = updatedItems.filter((item) => item.version === data?.version && item.adm_name === data?.adm_name && item.enable === 1);
+   if (filterArr.length === 0) {
+    setTimeout(() => {
+     if (document.getElementById(docId)) document.getElementById(docId).checked = true;
+    }, 100);
+    return;
+   }
+  }
 
-  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, 3, updatedItems);
+  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, visibility: visibility, table_prefix: table_prefix }, 3, updatedItems);
  };
 
  const blockPosition = (data, index, status, block, id) => {

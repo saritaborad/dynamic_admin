@@ -19,13 +19,14 @@ const versionSchema = mongoose.Schema({
    count: { type: Number },
    enable: { type: Number, default: 0 },
    adm_date: { type: Date, default: Date.now },
+   visibility: { type: String, default: "Not Set" },
    ad_chield: [
     {
      version: { type: String },
      ad_token: { type: String, trim: true },
      ad_keyword: { type: String, trim: true },
      version_Id: { type: mongoose.Schema.Types.ObjectId },
-     enable: { type: Number, default: 0 }, // enable - 1, disable-0 , blocked-2 
+     enable: { type: Number, default: 0 }, // enable - 1, disable-0 , blocked-2
      position: { type: Number, default: 0 },
      adc_date: {
       type: Date,

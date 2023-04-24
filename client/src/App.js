@@ -10,7 +10,7 @@ import { ToastContainer } from "react-toastify";
 function App() {
  return (
   <>
-   <ToastContainer autoClose={1000} theme="dark" position="top-center" />
+   <ToastContainer autoClose={300} theme="light" position="top-right" />
    <RoutesMain />
   </>
  );

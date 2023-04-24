@@ -87,7 +87,7 @@ exports.editVersion = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllAdTitle = asyncHandler(async (req, res, next) => {
- const { table_prefix, version_Id, filter, sort, order } = req.body;
+ const { table_prefix } = req.body;
  const { titleFilter, verFilter } = req.session;
 
  let adTitle = [];
@@ -105,7 +105,7 @@ exports.getAllAdTitle = asyncHandler(async (req, res, next) => {
    item?.ad_master?.length > 0 &&
     item?.ad_master?.map((item) => {
      if (!isEmptyObj(item)) {
-      adTitle.push({ count: item?.count, adm_name: item?.adm_name, version_Id: item?.version_Id, enable: item?.enable, version: item?.version, _id: item?._id, adm_date: item?.adm_date });
+      adTitle.push({ count: item?.count, adm_name: item?.adm_name, version_Id: item?.version_Id, enable: item?.enable, version: item?.version, _id: item?._id, adm_date: item?.adm_date, visibility: item?.visibility });
      }
     });
   });
@@ -206,8 +206,8 @@ exports.addMode = asyncHandler(async (req, res, next) => {
 });
 
 exports.editMode = asyncHandler(async (req, res, next) => {
- const { table_prefix, version_Id, ad_token, enable, _id, version, status, newItems, positionChange } = req.body;
- await editModeFun(res, _id, status, table_prefix, version_Id, ad_token, enable, version, newItems, positionChange);
+ const { table_prefix, version_Id, ad_token, enable, _id, version, status, newItems, visibility, positionChange } = req.body;
+ await editModeFun(res, _id, status, table_prefix, version_Id, ad_token, enable, version, newItems, visibility, positionChange);
  return give_response(res, 200, true, "Ad mode updated!");
 });
 

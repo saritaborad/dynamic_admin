@@ -23,6 +23,7 @@ const addTitleFun = async (res, adm_name, version_Id, count, enable, table_prefi
      adm_date: Date.now(),
      version,
      _id: new ObjectId(),
+     visibility: "Not Set",
      ad_chield: [
       { _id: new ObjectId(), ad_token: "CUSTOM", ad_keyword: "CUSTOM", version_Id: new ObjectId(version_Id), version, adc_date: Date.now(), position: position, enable: 0 },
       { _id: new ObjectId(), ad_token: "ALTERNATIVE", ad_keyword: "ALTERNATIVE", version_Id: new ObjectId(version_Id), version, adc_date: Date.now(), position: position + 1, enable: 0 },
@@ -59,12 +60,13 @@ const addModeFun = async (res, ad_token, ad_keyword, version_Id, enable, table_p
  );
 };
 
-const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_token, enable, version, newItems, positionChange = false) => {
+const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_token, enable, version, newItems, visibility, positionChange = false) => {
  const Version = getCollection(`${table_prefix}_version_tables`);
  let obj;
  status || status === 0
   ? (obj = {
      "ad_master.$[item].ad_chield.$[item2].enable": status,
+     "ad_master.$[item].visibility": visibility,
     })
   : (obj = {
      "ad_master.$[item].ad_chield.$[item2].ad_token": ad_token,
