@@ -77,14 +77,15 @@ const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_t
  });
 };
 
-const editTitleFun = async (res, adm_name, version_Id, count, enable, table_prefix, _id) => {
+const editTitleFun = async (res, adm_name, version_Id, count, enable, table_prefix, _id, status) => {
  const Version = getCollection(`${table_prefix}_version_tables`);
-
- let obj = {
-  "ad_master.$[item].count": count,
-  "ad_master.$[item].enable": enable,
-  "ad_master.$[item].adm_name": adm_name,
- };
+ let obj;
+ status
+  ? (obj = { "ad_master.$[item].enable": enable })
+  : (obj = {
+     "ad_master.$[item].count": count,
+     "ad_master.$[item].adm_name": adm_name,
+    });
 
  const version1 = await Version.updateOne(
   { _id: new ObjectId(version_Id) },

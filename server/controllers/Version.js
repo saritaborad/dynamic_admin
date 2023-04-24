@@ -112,12 +112,12 @@ exports.getAllAdTitle = asyncHandler(async (req, res, next) => {
  }
 
  if (adTitle?.length > 0) {
-  verFilData = verFilter?.length > 0 ? adTitle?.filter((item) => verFilter?.includes(item?.version_Id?.toString())) : adTitle;
-  adTitleList = verFilData?.length > 0 && verFilData?.filter((item) => titleFilter?.includes(item?.adm_name));
+  verFilData = verFilter?.length > 0 ? adTitle?.filter((item) => verFilter?.includes(item?.version_Id?.toString())) || [] : adTitle;
+  adTitleList = (verFilData?.length > 0 && verFilData?.filter((item) => titleFilter?.includes(item?.adm_name))) || [];
  }
 
  let adTitleData = titleFilter?.length > 0 ? adTitleList : verFilter?.length > 0 ? verFilData : adTitle;
- let uniqueList = adTitle?.length > 0 && adTitle?.filter((obj, index, self) => index === self?.findIndex((t) => t?.adm_name === obj?.adm_name));
+ let uniqueList = (adTitle?.length > 0 && adTitle?.filter((obj, index, self) => index === self?.findIndex((t) => t?.adm_name === obj?.adm_name))) || [];
  adTitle?.length > 0 && adTitle?.sort((a, b) => b?.adm_date - a?.adm_date);
  return give_response(res, 200, true, "all ad title get successfull!", { adTitle: adTitleData, adTitleList: uniqueList, titleFilter: titleFilter });
 });
@@ -129,17 +129,15 @@ exports.addTitle = asyncHandler(async (req, res, next) => {
 });
 
 exports.editTitle = asyncHandler(async (req, res, next) => {
- const { adm_name, version_Id, count, enable, table_prefix, _id } = req.body;
- await editTitleFun(res, adm_name, version_Id, count, enable, table_prefix, _id);
+ const { adm_name, version_Id, count, enable, table_prefix, _id, status } = req.body;
+ await editTitleFun(res, adm_name, version_Id, count, enable, table_prefix, _id, status);
  return give_response(res, 200, true, "AdTitle update!");
 });
 
 exports.delTitle = asyncHandler(async (req, res, next) => {
  const { _id, version_Id, table_prefix, adm_name, isFilter } = req.body;
  const Version = getCollection(`${table_prefix}_version_tables`);
- if (!isFilter) {
-  req.session.titleFilter = req.session.titleFilter?.filter((item) => item !== adm_name);
- }
+ if (!isFilter) req.session.titleFilter = req.session.titleFilter?.filter((item) => item !== adm_name);
 
  const version1 = Version.updateOne(
   { _id: new ObjectId(version_Id) },
@@ -184,14 +182,14 @@ exports.getAllAdMode = asyncHandler(async (req, res, next) => {
  }
 
  if (adMode?.length > 0) {
-  verFilData = verFilter?.length > 0 ? adMode?.filter((item) => verFilter?.includes(item?.version_Id?.toString())) : adMode;
-  titleFilData = verFilData?.length > 0 ? verFilData?.filter((item) => titleFilter?.includes(item?.adm_name)) : adMode;
-  adModeList = titleFilData?.length > 0 ? titleFilData?.filter((item) => modeFilter?.includes(item?.ad_keyword)) : adMode?.filter((item) => modeFilter?.includes(item?.ad_keyword));
+  verFilData = verFilter?.length > 0 ? adMode?.filter((item) => verFilter?.includes(item?.version_Id?.toString())) || [] : adMode;
+  titleFilData = verFilData?.length > 0 ? verFilData?.filter((item) => titleFilter?.includes(item?.adm_name)) || [] : adMode;
+  adModeList = titleFilData?.length > 0 ? titleFilData?.filter((item) => modeFilter?.includes(item?.ad_keyword)) || [] : adMode?.filter((item) => modeFilter?.includes(item?.ad_keyword)) || [];
  }
 
  //  adMode = adMode?.length > 0 && adMode.sort((a, b) => b?.adc_date - a?.adc_date);
  let adModeData = modeFilter?.length > 0 ? adModeList : titleFilter?.length > 0 ? titleFilData : verFilter?.length > 0 ? verFilData : adMode;
- let uniqueAdList = adMode?.length > 0 && adMode?.filter((obj, index, self) => index === self?.findIndex((t) => t?.ad_keyword === obj?.ad_keyword));
+ let uniqueAdList = (adMode?.length > 0 && adMode?.filter((obj, index, self) => index === self?.findIndex((t) => t?.ad_keyword === obj?.ad_keyword))) || [];
 
  return give_response(res, 200, true, "all adMode get successfull!", { adMode: adModeData, adModeList: uniqueAdList, modeFilter: modeFilter });
 });
@@ -214,9 +212,10 @@ exports.editMode = asyncHandler(async (req, res, next) => {
 });
 
 exports.delMode = asyncHandler(async (req, res, next) => {
- const { version_Id, table_prefix, _id } = req.body;
+ const { version_Id, table_prefix, _id, ad_keyword, isModeFilter } = req.body;
  const Version = getCollection(`${table_prefix}_version_tables`);
-
+ if (!isModeFilter) req.session.modeFilter = req.session.modeFilter?.filter((item) => item !== ad_keyword);
+ console.log(isModeFilter, req.session.modeFilter);
  const version = await Version.updateOne(
   { _id: new ObjectId(version_Id) },
   { $pull: { "ad_master.$[item].ad_chield": { _id: new ObjectId(_id) } } },

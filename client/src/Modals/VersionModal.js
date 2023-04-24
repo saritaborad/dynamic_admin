@@ -180,8 +180,8 @@ export const ModeModal = ({ isUpdate, adMode, latestVersion, allversion, table_p
       ad_token: adMode ? adMode?.ad_token : "",
       ad_keyword: adMode ? adMode?.ad_keyword : "",
       enable: adMode ? adMode?.enable : 0,
-      version_Id: latestVersion?._id,
-      version: latestVersion?.title,
+      version_Id: adMode ? adMode?.version_Id : latestVersion?._id,
+      version: adMode ? adMode?.version : latestVersion?.title,
       table_prefix,
      }}
      validationSchema={Yup.object({
@@ -239,11 +239,11 @@ export const AdTitleModal = ({ isUpdate, adTitle, latestVersion, table_prefix, s
      enableReinitialize
      initialValues={{
       _id: isUpdate && adTitle?._id,
-      version_Id: latestVersion?._id,
+      version_Id: adTitle ? adTitle?.version_Id : latestVersion?._id,
       adm_name: adTitle ? adTitle?.adm_name : "",
       count: adTitle ? adTitle?.count : 0,
       enable: adTitle ? adTitle?.enable : 0,
-      version: latestVersion?.title,
+      version: adTitle ? adTitle?.title : latestVersion?.title,
       table_prefix,
      }}
      validationSchema={Yup.object({

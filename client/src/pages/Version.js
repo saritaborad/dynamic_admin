@@ -7,7 +7,6 @@ import RtdDatatable from "./Common/DataTable/DataTable";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AdTitleModal, AdTypeModal, DeleteConfirmModal, ModeModal, NoteModal, VersionModal } from "../Modals/VersionModal";
-import { type } from "@testing-library/user-event/dist/type";
 
 const Version = () => {
  const [versionData, setVersionData] = useState([]);
@@ -17,7 +16,7 @@ const Version = () => {
  const [uniqueTitle, setUniqueTitle] = useState([]);
 
  const [tableData, setTableData] = useState([]);
- const [tableColumn, setTableColumn] = useState([]);
+ //  const [tableColumn, setTableColumn] = useState([]);
 
  const [verFilter, setVerFilter] = useState([]);
  const [titleFilter, setTitleFilter] = useState([]);
@@ -38,6 +37,7 @@ const Version = () => {
  const [modeShow, setModeShow] = useState(false);
  const [noteShow, setNoteShow] = useState(false);
  const [deleteConfirm, setDeleteConfirm] = useState(false);
+ const [refresh, setRefresh] = useState(false);
 
  const [active, setActive] = useState(1);
 
@@ -205,7 +205,7 @@ const Version = () => {
          id="offer-status"
          defaultChecked={data[i]?.enable == 1 ? true : false}
          onChange={(e) => {
-          updateStatus(false, { _id: data._id, status: e.target.checked ? 1 : 0, version_Id: data?.version_Id, table_prefix: table_prefix });
+          updateStatus(false, { _id: data[i]?._id, status: true, enable: e.target.checked ? 1 : 0, version_Id: data[i]?.version_Id, table_prefix: table_prefix }, 2);
          }}
         />
        </div>
@@ -278,7 +278,7 @@ const Version = () => {
     sort: false,
     customBodyRender: (data, i) => {
      return (
-      <div className="action-icons">
+      <div className="action-icons" key={data[i]?._id}>
        <div>
         {i !== 0 ? (
          <span style={{ color: "#93a2dd", cursor: "pointer", fontSize: "18px" }} onClick={() => moveItemUp(data[i]._id, i)}>
@@ -326,7 +326,7 @@ const Version = () => {
         )}
        </div>
 
-       <div className="form-check form-switch" key={i}>
+       <div className="form-check form-switch">
         <input
          className="form-check-input"
          type="checkbox"
@@ -338,7 +338,7 @@ const Version = () => {
         />
        </div>
 
-       <div className="custom-switch-toggle-menu mt-1" key={data[i]?._id}>
+       <div className="custom-switch-toggle-menu mt-1">
         <label className="switch" htmlFor={`block${i}`}>
          <input
           type="checkbox"
@@ -374,9 +374,10 @@ const Version = () => {
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
     setVersionData(res.data.data?.allVersion);
     setVerFilter(res.data.data?.verFilter);
+    setRefresh(true);
 
     setTableData(res.data.data?.version);
-    setTableColumn(columns1);
+    // setTableColumn(columns1);
     setActive(1);
    }
   });
@@ -390,9 +391,10 @@ const Version = () => {
     setAdTitleData(res.data.data?.adTitle);
     setUniqueTitle(res.data.data?.adTitleList);
     setTitleFilter(res.data.data?.titleFilter);
+    setRefresh(true);
 
     setTableData(res.data.data?.adTitle);
-    setTableColumn(columns2);
+    // setTableColumn(columns2);
     setActive(2);
    }
   });
@@ -406,25 +408,28 @@ const Version = () => {
     setAdModeData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
     setUniqueAdMode(res.data.data?.adModeList);
     setModeFilter(res.data.data?.modeFilter);
+    setRefresh(true);
 
     setTableData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
-    setTableColumn(columns3);
+    // setTableColumn(columns3);
     setActive(3);
    }
   });
  };
 
- const updateStatus = (positionChange, data, newItems = [], block, id) => {
+ const updateStatus = (positionChange, data, activeType, newItems = [], block, id) => {
   if (block && block === 1) {
    setTimeout(() => {
     document.getElementById(id).checked = false;
    }, 100);
    return;
   }
-  new Promise((resolve) => resolve(PostApi(API_PATH.editMode, { ...data, newItems: newItems, positionChange }))).then((res) => {
+
+  let path = activeType === 2 ? API_PATH.editTitle : activeType === 3 && API_PATH.editMode;
+  new Promise((resolve) => resolve(PostApi(path, { ...data, newItems: newItems, positionChange }))).then((res) => {
    if (res.status === 200) {
     // toast.success(res.data.message);
-    (data?.status === 1 || data?.status === 2) && positionChange ? window.location.reload() : changeTable(3);
+    (data?.status === 1 || data?.status === 2) && positionChange ? changeTable(activeType, true) : changeTable(activeType, false);
    }
   });
  };
@@ -436,10 +441,10 @@ const Version = () => {
    if (index === 0) {
     updatedItems.forEach((item) => {
      if (item.version === data?.version && item.adm_name === data?.adm_name && item._id !== data?._id) {
-      item.enable = 0;
+      item.enable === 2 ? (item.enable = 2) : (item.enable = 0);
      }
     });
-    updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, updatedItems);
+    updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, 3, updatedItems);
     return;
    }
    const moveIndex = updatedItems.findIndex((item) => item.version === currentItem?.version && item.adm_name === currentItem?.adm_name && item._id !== data?._id);
@@ -452,19 +457,23 @@ const Version = () => {
    }
    updatedItems.forEach((item) => {
     if (item.version === data?.version && item.adm_name === data?.adm_name && item._id !== data?._id) {
-     item.enable = 0;
+     item.enable === 2 ? (item.enable = 2) : (item.enable = 0);
     }
    });
   }
 
-  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, updatedItems);
+  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, 3, updatedItems);
  };
 
  const blockPosition = (data, index, status, block, id) => {
   const updatedItems = status === 2 ? adModeData?.map((obj) => JSON.parse(JSON.stringify(obj))) : [];
+
   const currentItem = updatedItems[index];
   if (status === 2 && currentItem) {
-   if (index === adModeData?.length - 1) return;
+   if (index === adModeData?.length - 1) {
+    updateStatus(false, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, 3, updatedItems);
+    return;
+   }
 
    const filtered = updatedItems.filter((item, i) => item.version === data?.version && item.adm_name === data?.adm_name);
    const lastIdx = updatedItems.length - 1 - filtered.reverse().findIndex((item) => item.version === data?.version && item.adm_name === data?.adm_name);
@@ -481,7 +490,8 @@ const Version = () => {
     updatedItems[i].position = updatedItems[i].position - 1;
    }
   }
-  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, updatedItems, block, id);
+
+  updateStatus(true, { _id: data._id, status: status, version_Id: data?.version_Id, table_prefix: table_prefix }, 3, updatedItems, block, id);
  };
 
  const moveItemUp = (itemId, index) => {
@@ -519,7 +529,9 @@ const Version = () => {
  };
 
  const delTitle = () => {
-  let isFilter = adTitleData.some((obj) => obj?.adm_name === adTitle?.adm_name);
+  let isFilter;
+  let filteredArr = adTitleData.filter((obj) => obj?.adm_name === adTitle?.adm_name);
+  filteredArr.length > 1 ? (isFilter = true) : (isFilter = false);
   let data = { table_prefix: table_prefix, _id: adTitle?._id, version_Id: adTitle?.version_Id, adm_name: adTitle?.adm_name, isFilter };
 
   new Promise((resolve, reject) => resolve(PostApi(API_PATH.delTitle, data))).then((res) => {
@@ -533,7 +545,10 @@ const Version = () => {
  };
 
  const delMode = () => {
-  let data = { table_prefix: table_prefix, _id: adMode?._id, version_Id: adMode?.version_Id };
+  let isModeFilter;
+  let modefilterArr = adModeData.filter((obj) => obj?.ad_keyword === adMode?.ad_keyword);
+  modefilterArr.length > 1 ? (isModeFilter = true) : (isModeFilter = false);
+  let data = { table_prefix: table_prefix, _id: adMode?._id, version_Id: adMode?.version_Id, ad_keyword: adMode?.ad_keyword, isModeFilter };
   new Promise((resolve, reject) => resolve(PostApi(API_PATH.delMode, data))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
@@ -545,11 +560,11 @@ const Version = () => {
  };
 
  const updatePosition = (newItems) => {
+  setRefresh(false);
   new Promise((resolve) => resolve(PostApi(API_PATH.modePosition, { newItems, table_prefix }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
-    // getAllAdMode();
-    window.location.reload();
+    getAllAdMode();
    }
   });
  };
@@ -607,7 +622,8 @@ const Version = () => {
   getAllVersion(option.search);
  };
 
- const changeTable = (type) => {
+ const changeTable = (type, isRefresh = false) => {
+  isRefresh && setRefresh(false);
   setActive(type);
   type === 1 ? getAllVersion() : type === 2 ? getAllAdTitle() : type === 3 && getAllAdMode();
  };
@@ -884,10 +900,26 @@ const Version = () => {
        </div>
       </div>
 
-      {tableData && (
+      {refresh && active === 1 && (
        <div className="col-12 mt-3">
         <div className="table-custom-info">
-         <RtdDatatable data={tableData} columns={tableColumn} option={option} needPagination={true} tableCallBack={tableCallBack} />
+         <RtdDatatable data={tableData} columns={columns1} option={option} needPagination={true} tableCallBack={tableCallBack} />
+        </div>
+       </div>
+      )}
+
+      {refresh && active === 2 && (
+       <div className="col-12 mt-3">
+        <div className="table-custom-info">
+         <RtdDatatable data={tableData} columns={columns2} option={option} needPagination={true} tableCallBack={tableCallBack} />
+        </div>
+       </div>
+      )}
+
+      {refresh && active === 3 && (
+       <div className="col-12 mt-3">
+        <div className="table-custom-info">
+         <RtdDatatable data={tableData} columns={columns3} option={option} needPagination={true} tableCallBack={tableCallBack} />
         </div>
        </div>
       )}
