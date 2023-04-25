@@ -1,28 +1,25 @@
 ================= un done ====================
+=> make UI responsive
+=> make sidebar collapsable
 
-
-=> when ad title is added and title get API call
 
 ================= done ====================
 
 => mode table when same version's same adm_name's mode is enable, same version's same adm_name's other mode should be automatically disabled 
-=> if block mode turns to online, block should turn to disable 
 => delete confirmation popup
 => if version is selected then show that version related ad title and ad mode
 => if two titles are selected and ad mode is added then mode will be added to all two titles
 => when adding mode if no add title is selected => don't allow to ad mode
-=> when click on online then item shoould go to that version's same Advertisement title's top position 
-=> when click on block button that item should go to that versions same Advertisement Title's botton position
+=> when click on online then item should go to that version's same Advertisement title's top position 
+=> when click on block button that iten should go to that versions same Advertisement Title's botton position
 => filter by selected on submit 
 => on refresh get selected checkbox => and filter as per selection
 => selected value should be selected even on refresh and only by resetting it should be removed
 => add filter for version, ad title, ad mode => use session 
 => if we edit version, all the ad title and ad modes of that version should be updated
-
 => if we delete that version, all the ad title and ad mode should be deleted 
 => if ad type exists and ad mode exists and we create version then that version's all existing ad title should be creted and that version's all existing admode shold be created from frontend and API side changes
 => don't allow to delete ad mode with keyword custom and alternate
-
 => visibilty mode set as per online ad mode of specific version
 => for block move item, online issue of refreshing resolved
 => title data was not coming because session is not getting cleared issue resolved
@@ -30,6 +27,18 @@
 => when any mode is enabled all other mode should be disabled
 => when block one item all item get's block issue resolved
 => at least one mode sholud be enabled feature added
+
+
+=> version vise user functionality
+=> dynamic app add or remove as per online in sidebar 
+=> when ad title is added and title get API call
+=> if block mode turns to online, block should turn to disable 
+=> CustomAd UI in progress
+
+=> increase user count API
+=> GetAll CustomAd API
+=> Add Image API
+=> add CustomAd API 
 
 
 

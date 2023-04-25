@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 // import Logo from "../../Images/logo.svg";
 import Accordion from "react-bootstrap/Accordion";
-import { useActiveApp } from "../../CustomHook/Hook";
+import { AppContext } from "../../Context/AppContext";
 
-function Sidebar(props) {
+function Sidebar() {
  const [path, setPath] = useState("");
  const location = useLocation();
- const activeApp = useActiveApp();
+ const { activeApp } = useContext(AppContext);
 
  useEffect(() => {
   setPath(location.pathname.replace(/\//g, ""));
@@ -39,7 +39,7 @@ function Sidebar(props) {
       <span className="sidebar-header">GENERAL MODULE</span>
 
       <li>
-       <Link to="#" className={path === "customadd" ? "active" : ""}>
+       <Link to="/custom-ad" className={path === "custom-ad" ? "active" : ""}>
         <svg width="14" height="17" viewBox="0 0 14 17" fill="none" xmlns="http://www.w3.org/2000/svg">
          <path d="M2.83334 4.66667C2.83334 3.5616 3.27233 2.50179 4.05373 1.72039C4.83513 0.938987 5.89494 0.5 7.00001 0.5C8.10508 0.5 9.16489 0.938987 9.94629 1.72039C10.7277 2.50179 11.1667 3.5616 11.1667 4.66667C11.1667 5.77174 10.7277 6.83154 9.94629 7.61294C9.16489 8.39435 8.10508 8.83333 7.00001 8.83333C5.89494 8.83333 4.83513 8.39435 4.05373 7.61294C3.27233 6.83154 2.83334 5.77174 2.83334 4.66667ZM7.00001 7.16667C7.66305 7.16667 8.29894 6.90327 8.76778 6.43443C9.23662 5.96559 9.50001 5.32971 9.50001 4.66667C9.50001 4.00363 9.23662 3.36774 8.76778 2.8989C8.29894 2.43006 7.66305 2.16667 7.00001 2.16667C6.33697 2.16667 5.70108 2.43006 5.23224 2.8989C4.7634 3.36774 4.50001 4.00363 4.50001 4.66667C4.50001 5.32971 4.7634 5.96559 5.23224 6.43443C5.70108 6.90327 6.33697 7.16667 7.00001 7.16667ZM2.28584 11.6192C1.66679 12.2382 1.17574 12.9732 0.840734 13.7821C0.505723 14.5909 0.333312 15.4578 0.333344 16.3333H2.00001C2.00001 15.0073 2.52679 13.7355 3.46448 12.7978C4.40216 11.8601 5.67393 11.3333 7.00001 11.3333C8.32609 11.3333 9.59786 11.8601 10.5355 12.7978C11.4732 13.7355 12 15.0073 12 16.3333H13.6667C13.6667 15.0148 13.2758 13.7258 12.5432 12.6294C11.8107 11.533 10.7695 10.6785 9.55127 10.1739C8.33306 9.6693 6.99258 9.53728 5.69934 9.79453C4.4061 10.0518 3.21819 10.6868 2.28584 11.6192Z" fill="#333333" />
         </svg>

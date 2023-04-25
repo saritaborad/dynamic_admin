@@ -72,13 +72,13 @@ export const ImageApi = async (path, body) => {
  return PostApiData;
 };
 
-export function SessionPostAPI(path, body, type) {
- let Ctype = type === "image" ? "multipart/form-data" : "application/json";
+export function ImagePostApi(path, body) {
+ let Ctype = "multipart/form-data";
  let token = "";
  if (localStorage.getItem("startgeekuser")) {
   token = "Bearer " + localStorage.getItem("startgeekuser");
  }
- let headers = { Authorization: token, "Content-Type": Ctype, Accept: "application/pdf", withCredentials: true };
+ let headers = { Authorization: token, "Content-Type": Ctype, Accept: "application/pdf" };
  const PostApiData = axios
   .post(path, body, { headers: headers })
   .then((response) => {

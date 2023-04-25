@@ -4,7 +4,7 @@ const versionSchema = mongoose.Schema({
  title: { type: String, trim: true },
  code: { type: Number },
  features: { type: String, trim: true },
- users: { type: Number },
+ users: { type: Number, default: 0 },
  enabled: { type: Number },
  is_force: { type: Number },
  version_note: { type: String },

@@ -245,6 +245,25 @@ button:focus {
     line-height: 26px;
 }
 
+.btn-block{
+    display: block;
+    width: 100%;
+    
+}
+
+.btn-green {
+    color: #fff;
+    background-color: #0abb87;
+    border-color: #0abb87;
+    color: #ffffff;
+    border-radius: 0.25rem;
+    // display: flex;
+    // text-align: center;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
+}
+
 .form-link-style {
     font-weight: 700;
     font-size: 14px;
@@ -2290,6 +2309,8 @@ color: #7b838a;
     height: 92%;
     font-size: 3.75em;
 }
+
+
 //------------------------------------------------- media query -------------------------------------------------
 @media (max-width: 1599px) {
     .cust-col-team {

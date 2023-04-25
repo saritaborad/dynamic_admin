@@ -29,9 +29,9 @@ exports.updateApp = asyncHandler(async (req, res, next) => {
  let obj = enable || enable === 0 ? { enable, _id } : { title, _id, table_prefix };
  const old = await Application.findById({ _id: _id });
  const newApp = await Application.findByIdAndUpdate({ _id: _id }, { $set: { ...obj } }, { new: true });
- renameCollection(res, DB, `${old.table_prefix}_privacypolicies`, `${newApp.table_prefix}_privacypolicies`);
- renameCollection(res, DB, `${old.table_prefix}_version_tables`, `${newApp.table_prefix}_version_tables`);
- give_response(res, 200, true, "Details updated", newApp);
+ title && renameCollection(res, DB, `${old.table_prefix}_privacypolicies`, `${newApp.table_prefix}_privacypolicies`);
+ title && renameCollection(res, DB, `${old.table_prefix}_version_tables`, `${newApp.table_prefix}_version_tables`);
+ return give_response(res, 200, true, "Details updated", newApp);
 });
 
 exports.updatePosition = asyncHandler(async (req, res, next) => {
@@ -39,7 +39,7 @@ exports.updatePosition = asyncHandler(async (req, res, next) => {
  for (let item of newItems) {
   await Application.updateMany({ _id: item._id }, { $set: { position: item.position } });
  }
- give_response(res, 200, true, "Details updated");
+ return give_response(res, 200, true, "Details updated");
 });
 
 exports.deleteApp = asyncHandler(async (req, res, next) => {
@@ -71,17 +71,15 @@ exports.getAllApp = asyncHandler(async (req, res, next) => {
  const startIndex = (page - 1) * limit;
 
  const allApp = await Application.find(find).skip(startIndex).limit(limit).sort(sortObject);
- const activeApp = await Application.find({ enable: 1 });
 
  const totalRecord = await Application.find(find).countDocuments();
  const tpage = totalRecord / limit;
  const totalPage = Math.ceil(tpage);
 
- give_response(res, 200, true, "Application get successfully!", {
+ return give_response(res, 200, true, "Application get successfully!", {
   page,
   totalPage,
   totalRecord,
   allApp,
-  activeApp,
  });
 });

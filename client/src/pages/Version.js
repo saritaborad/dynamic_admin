@@ -54,6 +54,17 @@ const Version = () => {
 
  const columns1 = [
   {
+   value: "No",
+   label: "No",
+   options: {
+    filter: false,
+    sort: false,
+    customBodyRender: (data, i) => {
+     return <span>{i + 1}</span>;
+    },
+   },
+  },
+  {
    value: "title",
    label: "Version Title",
    options: {
@@ -69,7 +80,14 @@ const Version = () => {
     sort: false,
    },
   },
-
+  {
+   value: "users",
+   label: "Version vise user",
+   options: {
+    filter: false,
+    sort: false,
+   },
+  },
   {
    value: "enable",
    label: "Status",
@@ -873,7 +891,7 @@ const Version = () => {
                );
               })}
             </ul>
-            {/* <Dropdown.Divider /> */}
+
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-4  ms-2">
@@ -915,7 +933,7 @@ const Version = () => {
       {refresh && active === 1 && (
        <div className="col-12 mt-3">
         <div className="table-custom-info">
-         <RtdDatatable data={tableData} columns={columns1} option={option} needPagination={true} tableCallBack={tableCallBack} />
+         <RtdDatatable data={tableData} columns={columns1} option={option} tableCallBack={tableCallBack} />
         </div>
        </div>
       )}
@@ -923,7 +941,7 @@ const Version = () => {
       {refresh && active === 2 && (
        <div className="col-12 mt-3">
         <div className="table-custom-info">
-         <RtdDatatable data={tableData} columns={columns2} option={option} needPagination={true} tableCallBack={tableCallBack} />
+         <RtdDatatable data={tableData} columns={columns2} option={option} tableCallBack={tableCallBack} />
         </div>
        </div>
       )}
@@ -931,7 +949,7 @@ const Version = () => {
       {refresh && active === 3 && (
        <div className="col-12 mt-3">
         <div className="table-custom-info">
-         <RtdDatatable data={tableData} columns={columns3} option={option} needPagination={true} tableCallBack={tableCallBack} />
+         <RtdDatatable data={tableData} columns={columns3} option={option} tableCallBack={tableCallBack} />
         </div>
        </div>
       )}

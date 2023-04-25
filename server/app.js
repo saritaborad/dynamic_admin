@@ -9,6 +9,7 @@ const { connectDB } = require("./db/db");
 const application = require("./routes/Application");
 const privacy = require("./routes/PrivacyPolicy");
 const version = require("./routes/Version");
+const imgUpload = require("./routes/ImageUpload");
 const errorHandler = require("./middleware/error");
 
 connectDB();
@@ -21,6 +22,8 @@ const store = new MongoDBStore({
  collection: "mySessions",
 });
 
+// to serve static files at /uploads route from uploads folder when req from frontend at /uploads
+app.use("/uploads", express.static("uploads"));
 app.use(
  cors({
   origin: "http://localhost:3000",
@@ -40,6 +43,7 @@ app.use(
  })
 );
 app.use(express.json());
+app.use("/img", imgUpload);
 app.use("/app", application);
 app.use("/app", privacy);
 app.use("/app", version);

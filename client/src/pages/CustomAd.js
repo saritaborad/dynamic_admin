@@ -1,15 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import RtdDatatable from "./Common/DataTable/DataTable";
+import Cloud from "../Images/clould.svg";
 import { Dropdown, Modal } from "react-bootstrap";
 import Arrow from "../Images/arrow-top.svg";
 import { PostApi } from "../Api/apiServices";
 import { API_PATH } from "../const";
 import { toast } from "react-toastify";
-import AppModal from "../Modals/AppModal";
 import { AppContext } from "../Context/AppContext";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { errorContainer, formAttr } from "../CommonFun/CommonFun";
 
-const ManageAdmin = () => {
+const CustomAd = () => {
  const [title, setTitle] = useState("");
  const [show, setShow] = useState(false);
  const [update, setUpdate] = useState(false);
@@ -17,6 +20,8 @@ const ManageAdmin = () => {
  const [data, setData] = useState([]);
  const [selectedItem, setSelectedItem] = useState("All");
  const { setActiveApp } = useContext(AppContext);
+ const [color, setColor] = useState("#000000");
+ const [code, setCode] = useState("#000000");
 
  const [option, set_option] = useState({
   sizePerPage: 10,
@@ -74,10 +79,10 @@ const ManageAdmin = () => {
     customBodyRender: (data, i) => {
      return (
       <div className="action-icons">
-       <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemUp(data[i]._id, i)}>
+       <span style={{ color: "#93a2dd", cursor: "pointer" }}>
         <i className="fa fa-arrow-up"></i>
        </span>
-       <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemDown(data[i]._id)}>
+       <span style={{ color: "#93a2dd", cursor: "pointer" }}>
         <i className="fa fa-arrow-down"></i>
        </span>
 
@@ -104,13 +109,13 @@ const ManageAdmin = () => {
             </Dropdown.Item>
            </li>
            <li>
-            <Dropdown.Item onClick={() => moveFirst(data[i]._id)}>
+            <Dropdown.Item>
              <i className="fa fa-angle-double-up pe-2"></i>
              Move First
             </Dropdown.Item>
            </li>
            <li>
-            <Dropdown.Item onClick={() => moveLast(data[i]._id)}>
+            <Dropdown.Item>
              <i className="fa fa-angle-double-down pe-2"></i>
              Move Last
             </Dropdown.Item>
@@ -138,6 +143,14 @@ const ManageAdmin = () => {
   getAllApp();
  }, []);
 
+ const handleColorChange = (event) => {
+  setColor(event.target.value);
+ };
+
+ const handleCodeChange = (event) => {
+  setCode(event.target.value);
+ };
+
  const getAllApp = (status, search) => {
   let data = status || status == 0 ? { enable: status, ...option } : { ...option, search: search };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp, data))).then((res) => {
@@ -150,17 +163,8 @@ const ManageAdmin = () => {
   });
  };
 
- const updatePosition = (newItems) => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.updatePosition, { newItems }))).then((res) => {
-   if (res.status === 200) {
-    setShow(false);
-    toast.success(res.data.message);
-    getAllApp();
-   }
-  });
- };
-
  const submitFormData = (formData, resetForm) => {
+  console.log(formData);
   new Promise((resolve) => resolve(PostApi(API_PATH.addApp, formData))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
@@ -189,67 +193,6 @@ const ManageAdmin = () => {
     toast.success(res.data.message);
    }
   });
- };
-
- const moveFirst = (itemId) => {
-  const index = data.findIndex((item) => item._id === itemId);
-  if (index > 0) {
-   const newItem = [...data];
-   newItem[index].position = newItem[0].position;
-   const item = newItem.splice(index, 1)[0];
-   newItem.unshift(item);
-   newItem.forEach((item, i) => {
-    if (item._id !== itemId && i <= index) {
-     item.position = item.position + 1;
-    }
-   });
-   newItem.sort((a, b) => a.position - b.position);
-   setData(newItem);
-   updatePosition(newItem);
-  }
- };
-
- const moveLast = (itemId) => {
-  const index = data.findIndex((item) => item._id === itemId);
-  if (index < data?.length - 1) {
-   const newItem = [...data];
-   newItem[index].position = newItem[newItem?.length - 1]?.position;
-   const item = newItem.splice(index, 1)[0];
-   let updatedItems = [...newItem, item];
-   setData([...newItem, item]);
-   updatedItems.forEach((item, i) => {
-    if (item._id !== itemId && i >= index) {
-     item.position = item.position - 1;
-    }
-   });
-   updatedItems.sort((a, b) => a.position - b.position);
-   setData(updatedItems);
-   updatePosition(updatedItems);
-  }
- };
-
- const moveItemUp = (itemId) => {
-  const itemIndex = data.findIndex((item) => item._id === itemId);
-  if (itemIndex > 0) {
-   const updatedItems = [...data];
-   updatedItems[itemIndex].position--;
-   updatedItems[itemIndex - 1].position++;
-   updatedItems.splice(itemIndex - 1, 0, updatedItems.splice(itemIndex, 1)[0]);
-   setData(updatedItems);
-   updatePosition(updatedItems);
-  }
- };
-
- const moveItemDown = (itemId) => {
-  const itemIndex = data.findIndex((item) => item._id === itemId);
-  if (itemIndex < data.length - 1) {
-   const updatedItems = [...data];
-   updatedItems[itemIndex].position++;
-   updatedItems[itemIndex + 1].position--;
-   updatedItems.splice(itemIndex + 1, 0, updatedItems.splice(itemIndex, 1)[0]);
-   setData(updatedItems);
-   updatePosition(updatedItems);
-  }
  };
 
  const handleSelect = (status) => {
@@ -326,11 +269,172 @@ const ManageAdmin = () => {
      </div>
     </div>
     <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
-     <AppModal update={update} title={title} id={id} updateApp={updateApp} submitFormData={submitFormData} appModalClose={appModalClose} />
+     <Modal.Header closeButton className="">
+      <div className="cust-comn-modal-hdr">
+       <p>{update ? "Add Custom-AD" : "Add Custom-AD"}</p>
+      </div>
+     </Modal.Header>
+     <Modal.Body>
+      <Formik
+       enableReinitialize
+       initialValues={{
+        _id: update && id,
+        add_title: "",
+        add_desc: "",
+        icon: "",
+        banner: "",
+        install: "",
+        color: "",
+        rating: "",
+        download: "",
+        review: "",
+        enable: "",
+       }}
+       validationSchema={Yup.object({
+        add_title: Yup.string().required("required."),
+        add_desc: Yup.string().required("required."),
+        icon: Yup.string().required("required."),
+        banner: Yup.string().required("Banner & icon is required."),
+        install: Yup.string().required("required."),
+        color: Yup.string().required("required."),
+        rating: Yup.string().required("required."),
+        download: Yup.string().required("required."),
+        review: Yup.string().required("required."),
+        enable: Yup.string().required("required."),
+       })}
+       onSubmit={(formData, { resetForm }) => {
+        update ? updateApp(formData, resetForm) : submitFormData(formData, resetForm);
+       }}
+      >
+       {(runform) => (
+        <form onSubmit={runform.handleSubmit}>
+         <div className="form-group row pt-3 align-items-center">
+          <div className="col-xl-7 text-center">
+           <center>
+            <label htmlFor="banner">
+             <img id="Aoutput" src={Cloud} style={{ maxWidth: "150px", maxHeight: "150px", height: "150px" }} alt="" />
+            </label>
+           </center>
+          </div>
+          <div className="col-xl-5">
+           <center>
+            <label htmlFor="icon">
+             <img id="Aoutput1" src={Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
+            </label>
+           </center>
+          </div>
+          <div className="col-xl-12">
+           <center>{errorContainer(runform, "banner")}</center>
+          </div>
+         </div>
+
+         <div className="form-group row pt-3">
+          <div className="col-xl-7">
+           <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="banner">
+            Browse Banner
+            <input type="file" multiple="" name="banner" className="d-none" id="banner" accept="image/*" {...formAttr(runform, "banner")} />
+           </label>
+           {/* {errorContainer(runform, "banner")} */}
+          </div>
+
+          <div className="col-xl-5">
+           <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="icon">
+            Browse Icon
+            <input type="file" multiple="" name="icon" className="d-none" id="icon" accept="image/*" {...formAttr(runform, "icon")} />
+           </label>
+           {/* {errorContainer(runform, "icon")} */}
+          </div>
+         </div>
+
+         <div className="form-group pt-3">
+          <label htmlFor="title" className="form-control-label pb-1">
+           Title:
+          </label>
+          <input type="text" name="add_title" className="form-control" id="title" placeholder="Enter title" {...formAttr(runform, "add_title")} />
+          {errorContainer(runform, "add_title")}
+         </div>
+
+         <div className="form-group pt-3">
+          <label htmlFor="description" className="form-control-label pb-1">
+           Description:
+          </label>
+          <textarea name="add_desc" className="form-control" rows="3" id="description" placeholder="Enter description" {...formAttr(runform, "add_desc")}></textarea>
+          {errorContainer(runform, "add_desc")}
+         </div>
+
+         <div className="form-group pt-3">
+          <label htmlFor="playstorelink" className="form-control-label pb-1">
+           Playstore Link:
+          </label>
+          <input type="text" name="install" className="form-control" id="playstorelink" placeholder="Enter playstore link" {...formAttr(runform, "install")} />
+          {errorContainer(runform, "install")}
+         </div>
+
+         <div className="form-group row pt-3">
+          <div className="col-xl-4">
+           <label htmlFor="rating" className="form-control-label pb-1">
+            Rating:
+           </label>
+           <input type="text" name="rating" className="form-control" id="rating" placeholder="Enter rating" {...formAttr(runform, "rating")} />
+           {errorContainer(runform, "rating")}
+          </div>
+          <div className="col-xl-4">
+           <label htmlFor="review" className="form-control-label pb-1">
+            Reviews:
+           </label>
+           <input type="text" name="review" className="form-control" id="review" placeholder="Enter review" {...formAttr(runform, "review")} />
+           {errorContainer(runform, "review")}
+          </div>
+          <div className="col-xl-4">
+           <label htmlFor="downloads" className="form-control-label pb-1">
+            Downloads:
+           </label>
+           <input type="text" name="download" className="form-control" id="downloads" placeholder="Enter downloads" {...formAttr(runform, "download")} />
+           {errorContainer(runform, "download")}
+          </div>
+         </div>
+
+         <div className="form-group row pt-3">
+          <div className="col-xl-8">
+           <label htmlFor="clrBTCA" className="form-control-label">
+            Button Color:
+           </label>
+           <input
+            type="color"
+            className="form-control mt-2 mb-3 p-1"
+            id="clrBTCA"
+            {...formAttr(runform, "color")}
+            onChangeCapture={(e) => runform.setFieldValue("color", e.target.value)}
+            onBlurCapture={(e) => {
+             e.target.value && runform.setFieldValue("code", e.target.value);
+            }}
+           />
+           {errorContainer(runform, "color")}
+          </div>
+          <div className="col-xl-4">
+           <label htmlFor="code" className="form-control-label pb-1">
+            Color Code:
+           </label>
+           <input type="text" className="form-control" name="code" id="code" {...formAttr(runform, "code")} onBlurCapture={(e) => e.target.value && runform.setFieldValue("color", e.target.value)} />
+          </div>
+         </div>
+
+         <div className="text-end mt-4 mb-2 me-1">
+          <button type="button" className="btn-smart-comn2 me-2" onClick={() => setShow(false)}>
+           Close
+          </button>
+          <button type="submit" className="btn-smart-comn" id="">
+           Add
+          </button>
+         </div>
+        </form>
+       )}
+      </Formik>
+     </Modal.Body>
     </Modal>
    </MainLayout>
   </>
  );
 };
 
-export default ManageAdmin;
+export default CustomAd;

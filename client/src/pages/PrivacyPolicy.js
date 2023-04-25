@@ -20,13 +20,11 @@ const PrivacyPolicy = () => {
 
  const getPolicy = () => {
   let data = { table_prefix: appName };
-  new Promise((resolve) => resolve(PostApi(API_PATH.getPolicy, data))).then(
-   (res) => {
-    if (res.status === 200) {
-     setPolicy(res.data.data?.content);
-    }
+  new Promise((resolve) => resolve(PostApi(API_PATH.getPolicy, data))).then((res) => {
+   if (res.status === 200) {
+    setPolicy(res.data.data?.content);
    }
-  );
+  });
  };
 
  const handleReset = () => {
@@ -34,9 +32,7 @@ const PrivacyPolicy = () => {
  };
 
  const submitFormData = (formData, resetForm) => {
-  new Promise((resolve) =>
-   resolve(PostApi(API_PATH.changePolicy, formData))
-  ).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.changePolicy, formData))).then((res) => {
    if (res.status === 200) {
     getPolicy();
     toast.success(res.data.message);
@@ -80,14 +76,7 @@ const PrivacyPolicy = () => {
               {/* <label className="mb-2" for="exampleTextarea">
                Add privacy policy
               </label> */}
-              <textarea
-               class="form-control"
-               id="exampleTextarea"
-               placeholder="Enter privacy policy content..."
-               name="content"
-               rows="20"
-               {...formAttr(runform, "content")}
-              ></textarea>
+              <textarea class="form-control" id="exampleTextarea" placeholder="Enter privacy policy content..." name="content" rows="20" {...formAttr(runform, "content")}></textarea>
               {errorContainer(runform, "content")}
              </div>
             </div>
@@ -96,11 +85,7 @@ const PrivacyPolicy = () => {
               <button type="submit" class="btn-smart-comn me-2">
                Submit
               </button>
-              <button
-               type="button"
-               class="btn-smart-comn2"
-               onClick={() => handleReset()}
-              >
+              <button type="button" class="btn-smart-comn2" onClick={() => handleReset()}>
                Reset
               </button>
              </div>

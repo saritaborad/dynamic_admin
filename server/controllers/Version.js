@@ -251,3 +251,10 @@ exports.modePosition = asyncHandler(async (req, res, next) => {
  await changeModePosition(newItems, table_prefix);
  return give_response(res, 200, true, "Details updated");
 });
+
+exports.increaseUser = asyncHandler(async (req, res, next) => {
+ const { _id, table_prefix } = req.body;
+ const Version = getCollection(`${table_prefix}_version_tables`);
+ const user = await Version.updateOne({ _id: new ObjectId(_id) }, { $inc: { users: 1 } });
+ return give_response(res, 200, true, "user updated!");
+});

@@ -1,11 +1,12 @@
 const express = require("express");
-const { addVersion, getAllVersion, delVersion, editVersion, addTitle, addMode, getAllAdTitle, getAllAdMode, editMode, delTitle, editTitle, delMode, addFilter, modePosition } = require("../controllers/Version");
+const { addVersion, getAllVersion, delVersion, editVersion, addTitle, addMode, getAllAdTitle, getAllAdMode, editMode, delTitle, editTitle, delMode, addFilter, modePosition, increaseUser } = require("../controllers/Version");
 const router = express.Router();
 
 router.post("/getAllVersion", getAllVersion);
 router.post("/addVersion", addVersion);
 router.post("/editVersion", editVersion);
 router.post("/delVersion", delVersion);
+router.post("/increaseUser", increaseUser);
 
 router.post("/getAllAdTitle", getAllAdTitle);
 router.post("/addTitle", addTitle);
