@@ -5,15 +5,15 @@ import { Dropdown, Modal } from "react-bootstrap";
 import Arrow from "../Images/arrow-top.svg";
 import { API_PATH } from "../const";
 import { toast } from "react-toastify";
-import { CustomAdModal, BannerModal } from "../Modals/CustomAdModal";
+import { BannerModal } from "../Modals/CustomAdModal";
 import { PostApi } from "../Api/apiServices";
 import moment from "moment/moment";
 import { DeleteConfirmModal } from "../Modals/VersionModal";
 
-const CustomAd = () => {
+const Banner = () => {
  const [show, setShow] = useState(false);
  const [update, setUpdate] = useState(false);
- const [customAd, setCustomAd] = useState("");
+ const [bannerAd, setBannerAd] = useState("");
  const [id, setId] = useState("");
  const [data, setData] = useState([]);
  const [selectedItem, setSelectedItem] = useState("All");
@@ -62,8 +62,8 @@ const CustomAd = () => {
    },
   },
   {
-   value: "add_title",
-   label: "Title",
+   value: "design_page",
+   label: "Design Page",
    options: {
     filter: false,
     sort: false,
@@ -71,21 +71,21 @@ const CustomAd = () => {
   },
 
   {
-   value: "createdAt",
-   label: "Uploaded",
-   options: {
-    filter: false,
-    sort: true,
-    customBodyRender: (data, i) => <div>{moment(data[i]?.createdAt).format("DD/MM/YYYY")}</div>,
-   },
-  },
-  {
    value: "enable",
    label: "Status",
    options: {
     filter: false,
     sort: false,
     customBodyRender: (data, i) => <div>{data[i]?.enable == 1 ? "Online" : "Offline"}</div>,
+   },
+  },
+  {
+   value: "createdAt",
+   label: "Uploaded",
+   options: {
+    filter: false,
+    sort: true,
+    customBodyRender: (data, i) => <div>{moment(data[i]?.createdAt).format("DD/MM/YYYY")}</div>,
    },
   },
   {
@@ -97,38 +97,17 @@ const CustomAd = () => {
     customBodyRender: (data, i) => {
      return (
       <div className="action-icons" key={data[i]?._id}>
-       <div className="cust-drop-down-menu">
-        <Dropdown drop="left">
-         <Dropdown.Toggle className="cust-drop-btn" id="dropdown">
-          <span style={{ color: "#93a2dd" }}>
-           <i className="fa fa-cog"></i>
-          </span>
-         </Dropdown.Toggle>
-         <Dropdown.Menu>
-          <ul>
-           <li>
-            <Dropdown.Item
-             onClick={() => {
-              setId(data[i]?._id);
-              setCustomAd(data[i]);
-              setShow(true);
-              setUpdate(true);
-             }}
-            >
-             <i className="fa fa-edit pe-2"></i>
-             Edit Details
-            </Dropdown.Item>
-           </li>
-           <li>
-            <Dropdown.Item>
-             <i className="fa fa-image pe-2"></i>
-             Manage Banners
-            </Dropdown.Item>
-           </li>
-          </ul>
-         </Dropdown.Menu>
-        </Dropdown>
-       </div>
+       <span
+        style={{ color: "#93a2dd", cursor: "pointer", fontSize: "20px" }}
+        className="pe-2"
+        onClick={() => {
+         //  setIsUpdate(true);
+         //  setVersion(data[i]);
+         //  setVersShow(true);
+        }}
+       >
+        <i className="fa fa-edit "></i>
+       </span>
 
        <div className="form-check form-switch" key={i}>
         <input className="form-check-input" type="checkbox" id="cad-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
@@ -137,7 +116,7 @@ const CustomAd = () => {
        <span
         style={{ color: "red", cursor: "pointer" }}
         onClick={() => {
-         setCustomAd(data[i]);
+         setBannerAd(data[i]);
          setDeleteConfirm(true);
         }}
        >
@@ -156,7 +135,7 @@ const CustomAd = () => {
 
  const getAllCusAd = (status, search) => {
   let data = status || status == 0 ? { enable: status, ...option } : { ...option, search: search };
-  new Promise((resolve) => resolve(PostApi(API_PATH.getAllCustomAd, data))).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.getAllBanner, data))).then((res) => {
    if (res.status === 200) {
     setData(res.data.data.allAd);
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
@@ -165,7 +144,7 @@ const CustomAd = () => {
  };
 
  const submitFormData = (formData, resetForm) => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.addCustomAd, formData))).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.addBanner, formData))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
     resetForm(formData);
@@ -186,7 +165,7 @@ const CustomAd = () => {
  };
 
  const updateApp = (formData, resetForm) => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.editCustomAd, formData))).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.updateBanner, formData))).then((res) => {
    if (res.status === 200) {
     setShow(false);
     getAllCusAd();
@@ -220,7 +199,7 @@ const CustomAd = () => {
       <div className="row">
        <div className="col-12">
         <div className="comn-inr-title d-flex align-items-center">
-         <h1>Manage Custom-AD</h1>
+         <h1>Manage Banner</h1>
         </div>
        </div>
       </div>
@@ -270,10 +249,6 @@ const CustomAd = () => {
     </div>
 
     <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
-     <CustomAdModal update={update} id={id} customAd={customAd} updateApp={updateApp} submitFormData={submitFormData} setShow={setShow} />
-    </Modal>
-
-    <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
      <BannerModal update={update} id={id} bannerData={customAd} updateApp={updateApp} submitFormData={submitFormData} setShow={setShow} />
     </Modal>
 
@@ -285,4 +260,4 @@ const CustomAd = () => {
  );
 };
 
-export default CustomAd;
+export default Banner;

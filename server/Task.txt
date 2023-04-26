@@ -28,17 +28,17 @@
 => when block one item all item get's block issue resolved
 => at least one mode sholud be enabled feature added
 
+Frontend
+=> pagination, search customAd 
+=> edit, delete custom ad 
+=> Ad banner UI 
+Backend
+=> get banner data API
+=> add Banner data API
+=> update banner update API
+=> pagination, search get CustomAd API 
+=> status management getCustomAd API
 
-=> version vise user functionality
-=> dynamic app add or remove as per online in sidebar 
-=> when ad title is added and title get API call
-=> if block mode turns to online, block should turn to disable 
-=> CustomAd UI in progress
-
-=> increase user count API
-=> GetAll CustomAd API
-=> Add Image API
-=> add CustomAd API 
 
 
 

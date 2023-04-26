@@ -1,16 +1,23 @@
 const multer = require("multer");
+const fs = require("fs");
+const { getTimeStamp } = require("../utils");
 
 const storage = multer.diskStorage({
  destination: function (req, file, cb) {
-  cb(null, "uploads/");
+  const folderName = req.body?.folderName || "/";
+  const folderPath = `dynamic_admin/images/${folderName}`;
+  if (!fs.existsSync(folderPath)) {
+   fs.mkdirSync(folderPath, { recursive: true });
+  }
+  cb(null, folderPath);
  },
  filename: function (req, file, cb) {
-  cb(null, Date.now() + "-" + file.originalname);
+  const prefix = req.body?.imgPrefix || "";
+  const ext = file.originalname?.split(".")?.pop();
+  cb(null, `${prefix}${getTimeStamp()}.${ext}`);
  },
 });
 
 const upload = multer({ storage: storage });
 
-// use app.post('/upload', upload.single('image')) => to upload single field
-// upload.fields([{ name: 'image' }, { name: 'name' }]) => to upload multiple field
 module.exports = upload;

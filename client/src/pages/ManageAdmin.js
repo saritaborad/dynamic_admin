@@ -81,7 +81,7 @@ const ManageAdmin = () => {
         <i className="fa fa-arrow-down"></i>
        </span>
 
-       <div className="cust-drop-down">
+       <div className="cust-drop-down-menu">
         <Dropdown drop="left">
          <Dropdown.Toggle className="cust-drop-btn" id="dropdown">
           <span style={{ color: "#93a2dd" }}>

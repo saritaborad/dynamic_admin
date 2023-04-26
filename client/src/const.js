@@ -1,6 +1,8 @@
 const ApiBaseUrl = process.env.REACT_APP_LOCAL_URL;
 
 export const API_PATH = {
+ imgUpload: ApiBaseUrl + "/img/upload",
+
  addApp: ApiBaseUrl + "/app/addApp",
  getAllApp: ApiBaseUrl + "/app/getAllApp",
  updateApp: ApiBaseUrl + "/app/updateApp",
@@ -28,4 +30,13 @@ export const API_PATH = {
 
  addFilter: ApiBaseUrl + "/app/addFilter",
  getAllFilter: ApiBaseUrl + "/app/getAllFilter",
+
+ getAllCustomAd: ApiBaseUrl + "/app/getAllCustomAd",
+ addCustomAd: ApiBaseUrl + "/app/addCustomAd",
+ editCustomAd: ApiBaseUrl + "/app/editCustomAd",
+ delCustomAd: ApiBaseUrl + "/app/delCustomAd",
+
+ getAllBanner: ApiBaseUrl + "/app/getAllBanner",
+ addBanner: ApiBaseUrl + "/app/addBanner",
+ updateBanner: ApiBaseUrl + "/app/updateBanner",
 };

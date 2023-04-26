@@ -4,6 +4,7 @@ import ManageAdmin from "./pages/ManageAdmin";
 import Version from "./pages/Version";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CustomAd from "./pages/CustomAd";
+import Banner from "./pages/Banner";
 
 const RouteMain = () => {
  return (
@@ -15,6 +16,7 @@ const RouteMain = () => {
      <Route path="/version" element={<Version />} />
      <Route path="/pp" element={<PrivacyPolicy />} />
      <Route path="/custom-ad" element={<CustomAd />} />
+     <Route path="/banner" element={<Banner />} />
     </Routes>
    </BrowserRouter>
   </>
