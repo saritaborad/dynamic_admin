@@ -52,40 +52,57 @@ exports.getAllCustomAd = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllBanner = asyncHandler(async (req, res, next) => {
- const { _id } = req.body;
- const banner = await CustomAd.find({ _id: _id }).select("advertisement_custom_multi");
- return give_response(res, 200, true, "get all banner");
+ const { order, cusAdId } = req.body;
+ var sdir = order?.toLowerCase() === "asc" ? 1 : -1;
+
+ const page = req.body.page && req.body.page != 0 ? req.body.page : 1;
+ const limit = req.body.sizePerPage && req.body.sizePerPage != 0 ? req.body.sizePerPage : 10;
+ const startIndex = (page - 1) * limit;
+
+ const data = await CustomAd.findOne({ _id: new ObjectId(cusAdId) }, { advertisement_custom_multi: { $slice: [startIndex, limit] } });
+
+ let bannerAll = sdir === 1 ? data?.advertisement_custom_multi?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) : data?.advertisement_custom_multi?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+ const totalRecord = bannerAll?.length;
+ const tpage = totalRecord / limit;
+ const totalPage = Math.ceil(tpage);
+
+ return give_response(res, 200, true, "get all banner", { bannerAll, totalPage, totalRecord, page });
 });
 
 exports.addBanner = asyncHandler(async (req, res, next) => {
- const { icon, banner, color, design_page, _id } = req.body;
- const bannerAd = await CustomAd.findOneAndUpdate({ _id: _id }, { $push: { advertisement_custom_multi: { acid: new ObjectId(_id), icon, banner, color, design_page, _id: new ObjectId(), date: Date.now(), enable: 0 } } });
+ const { icon, banner, color, design_page, cusAdId } = req.body;
+ const bannerAd = await CustomAd.findOneAndUpdate({ _id: cusAdId }, { $push: { advertisement_custom_multi: { acid: new ObjectId(cusAdId), icon, banner, color, design_page, _id: new ObjectId(), date: Date.now(), enable: 0 } } });
  return give_response(res, 200, true, "banner added");
 });
 
 exports.updateBanner = asyncHandler(async (req, res, next) => {
- const { icon, banner, color, design_page, _id, bannerId, status, enable } = req.body;
- let obj;
- status
-  ? (obj = { "advertisement_custom_multi.$[item].enable": enable })
-  : (obj = {
-     "advertisement_custom_multi.$[item].icon": icon,
-     "advertisement_custom_multi.$[item].banner": banner,
-     "advertisement_custom_multi.$[item].color": color,
-     "advertisement_custom_multi.$[item].design_page": design_page,
-    });
+ const { icon, banner, color, design_page, cusAdId, _id, enable } = req.body;
+ let obj = {
+  "advertisement_custom_multi.$[item].enable": enable,
+  "advertisement_custom_multi.$[item].icon": icon,
+  "advertisement_custom_multi.$[item].banner": banner,
+  "advertisement_custom_multi.$[item].color": color,
+  "advertisement_custom_multi.$[item].design_page": design_page,
+ };
 
  const newBanner = await CustomAd.findOneAndUpdate(
-  { _id: new ObjectId(_id) },
+  { _id: new ObjectId(cusAdId) },
   { $set: { ...obj } },
   {
    arrayFilters: [
     {
-     "item._id": { $eq: new ObjectId(bannerId) },
+     "item._id": { $eq: new ObjectId(_id) },
     },
    ],
   }
  );
 
  return give_response(res, 200, true, "banner updated!");
+});
+
+exports.delBanner = asyncHandler(async (req, res, next) => {
+ const { _id, cusAdId } = req.body;
+ const deleted = await CustomAd.findOneAndUpdate({ _id: new ObjectId(cusAdId) }, { $pull: { advertisement_custom_multi: { _id: new ObjectId(_id) } } });
+ return give_response(res, 200, true, "Banner deleted!");
 });

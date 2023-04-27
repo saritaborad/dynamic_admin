@@ -26,6 +26,7 @@ const ManageAdmin = () => {
   sort: "position",
   order: "ASC",
   entries: true,
+  showSearch: true,
  });
 
  const columns = [

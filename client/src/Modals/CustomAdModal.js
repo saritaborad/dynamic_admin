@@ -7,7 +7,7 @@ import { errorContainer, formAttr } from "../CommonFun/CommonFun";
 import { ImagePostApi } from "../Api/apiServices";
 import { API_PATH } from "../const";
 
-const CustomAdModal = ({ update, id, customAd, updateApp, submitFormData, setShow }) => {
+const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow }) => {
  const [banner, setBanner] = useState("");
  const [icon, setIcon] = useState("");
  const [bannerUrl, setBannerUrl] = useState("");
@@ -43,16 +43,16 @@ const CustomAdModal = ({ update, id, customAd, updateApp, submitFormData, setSho
      enableReinitialize
      initialValues={{
       _id: update && customAd?._id,
-      add_title: customAd ? customAd?.add_title : "",
-      add_desc: customAd ? customAd?.add_desc : "",
-      banner: update ? (bannerUrl ? bannerUrl : customAd?.banner) : bannerUrl,
-      icon: update ? (iconUrl ? iconUrl : customAd?.icon) : iconUrl,
-      install: customAd ? customAd?.install : "",
-      color: customAd ? customAd?.color : "#000000",
-      code: customAd ? customAd?.color : "#000000",
-      rating: customAd ? customAd?.rating : "",
-      review: customAd ? customAd?.review : "",
-      download: customAd ? customAd?.download : "",
+      add_title: update ? customAd?.add_title : "",
+      add_desc: update ? customAd?.add_desc : "",
+      banner: "",
+      icon: "",
+      install: update ? customAd?.install : "",
+      color: update ? customAd?.color : "#000000",
+      code: update ? customAd?.color : "#000000",
+      rating: update ? customAd?.rating : "",
+      review: update ? customAd?.review : "",
+      download: update ? customAd?.download : "",
      }}
      validationSchema={Yup.object({
       add_title: Yup.string().required("required."),
@@ -64,6 +64,8 @@ const CustomAdModal = ({ update, id, customAd, updateApp, submitFormData, setSho
       review: Yup.string().required("required."),
      })}
      onSubmit={(formData, { resetForm }) => {
+      formData.banner = update ? (bannerUrl ? bannerUrl : customAd?.banner) : bannerUrl;
+      formData.icon = update ? (iconUrl ? iconUrl : customAd?.icon) : iconUrl;
       if (!formData.banner || !formData.icon) {
        setError(true);
       } else {
@@ -78,14 +80,14 @@ const CustomAdModal = ({ update, id, customAd, updateApp, submitFormData, setSho
         <div className="col-xl-7 text-center">
          <center>
           <label htmlFor="banner">
-           <img id="Aoutput" src={banner ? URL.createObjectURL(banner) : customAd ? customAd?.banner : Cloud} style={{ maxWidth: "150px", maxHeight: "150px", height: "150px" }} alt="" />
+           <img id="Aoutput" src={update ? (banner ? URL.createObjectURL(banner) : customAd ? customAd?.banner : Cloud) : banner ? URL.createObjectURL(banner) : Cloud} style={{ maxWidth: "150px", maxHeight: "150px", height: "150px" }} alt="" />
           </label>
          </center>
         </div>
         <div className="col-xl-5">
          <center>
           <label htmlFor="icon">
-           <img id="Aoutput1" src={icon ? URL.createObjectURL(icon) : customAd ? customAd?.icon : Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
+           <img id="Aoutput1" src={update ? (icon ? URL.createObjectURL(icon) : customAd ? customAd?.icon : Cloud) : icon ? URL.createObjectURL(icon) : Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
           </label>
          </center>
         </div>
@@ -98,7 +100,7 @@ const CustomAdModal = ({ update, id, customAd, updateApp, submitFormData, setSho
         <div className="col-xl-7">
          <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="banner">
           Browse Banner
-          <input type="file" name="banner" className="d-none" id="banner" accept="image/*" onChange={(e) => uploadImage(e, "banner")} />
+          <input type="file" name="banner" className="d-none" id="banner" accept="image/*" onChangeCapture={(e) => uploadImage(e, "banner")} />
          </label>
          {/* {errorContainer(runform, "banner")} */}
         </div>
@@ -106,7 +108,7 @@ const CustomAdModal = ({ update, id, customAd, updateApp, submitFormData, setSho
         <div className="col-xl-5">
          <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="icon">
           Browse Icon
-          <input type="file" name="icon" className="d-none" id="icon" accept="image/*" onChange={(e) => uploadImage(e, "icon")} />
+          <input type="file" name="icon" className="d-none" id="icon" accept="image/*" onChangeCapture={(e) => uploadImage(e, "icon")} />
          </label>
          {/* {errorContainer(runform, "icon")} */}
         </div>
@@ -192,23 +194,25 @@ const CustomAdModal = ({ update, id, customAd, updateApp, submitFormData, setSho
  );
 };
 
-const BannerModal = ({ update, id, bannerData, updateApp, submitFormData, setShow }) => {
+const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, appModalClose, setShow, setIconShow, iconUrl, bmodal, setbModal }) => {
  const [banner, setBanner] = useState("");
- const [icon, setIcon] = useState("");
  const [bannerUrl, setBannerUrl] = useState("");
- const [iconUrl, setIconUrl] = useState("");
  const [error, setError] = useState(false);
+ const bannerRef = useRef();
 
- const uploadImage = (e, type) => {
+ const uploadImage = (e) => {
   (iconUrl || bannerUrl) && setError(false);
+
   const formData = new FormData();
-  formData.append("imgPrefix", type === "icon" ? "ICON" : "BANNER");
+  formData.append("imgPrefix", "multi_banner");
   formData.append("folderName", "AD");
   formData.append("image", e.target.files[0]);
-  type === "banner" ? setBanner(e.target.files[0]) : type === "icon" && setIcon(e.target.files[0]);
+  setBanner(e.target.files[0]);
+
   new Promise((resolve) => resolve(ImagePostApi(API_PATH.imgUpload, formData))).then((res) => {
    if (res.status === 200) {
-    type === "banner" ? setBannerUrl(res.data.data?.imgUrl) : type === "icon" && setIconUrl(res.data.data?.imgUrl);
+    setBannerUrl(res.data.data?.imgUrl);
+    setbModal({ ...bmodal, banner: res.data.data?.imgUrl });
    }
   });
  };
@@ -217,30 +221,34 @@ const BannerModal = ({ update, id, bannerData, updateApp, submitFormData, setSho
   <>
    <Modal.Header closeButton className="">
     <div className="cust-comn-modal-hdr">
-     <p>{update ? "Add New Banner" : "Edit New Banner"}</p>
+     <p>{update ? "Edit New Banner" : "Add New Banner"}</p>
     </div>
    </Modal.Header>
    <Modal.Body>
     <Formik
+     innerRef={bannerRef}
      enableReinitialize
      initialValues={{
-      _id: update && bannerData?._id,
-      icon: update ? (iconUrl ? iconUrl : bannerData?.icon) : iconUrl,
-      banner: update ? (bannerUrl ? bannerUrl : bannerData?.banner) : bannerUrl,
-      color: bannerData ? bannerData?.color : "#000000",
-      code: bannerData ? bannerData?.color : "#000000",
-      design_page: bannerData ? bannerData?.design_page : "",
+      _id: update && bannerAd?._id,
+      icon: "",
+      banner: "",
+      color: update ? (bmodal?.color ? bmodal?.color : bannerAd?.color) : bmodal ? bmodal?.color : "#000000",
+      code: update ? (bmodal?.color ? bmodal?.color : bannerAd?.color) : "#000000",
+      design_page: update ? (bmodal?.design_page ? bmodal?.design_page : bannerAd?.design_page) : bmodal ? bmodal?.design_page : "",
+      cusAdId: cusAdId?._id,
      }}
      validationSchema={Yup.object({
       design_page: Yup.string().required("required."),
       color: Yup.string().required("required."),
      })}
      onSubmit={(formData, { resetForm }) => {
+      formData.icon = update ? (iconUrl ? iconUrl : bannerAd?.icon) : iconUrl;
+      formData.banner = update ? (bannerUrl ? bannerUrl : bannerAd?.banner) : bannerUrl;
       if (!formData.banner || !formData.icon) {
        setError(true);
       } else {
        setError(false);
-       update ? updateApp(formData, resetForm) : submitFormData(formData, resetForm);
+       update ? editBanner(formData, resetForm) : submitFormData(formData, resetForm);
       }
      }}
     >
@@ -250,14 +258,15 @@ const BannerModal = ({ update, id, bannerData, updateApp, submitFormData, setSho
         <div className="col-xl-7 text-center">
          <center>
           <label htmlFor="banner">
-           <img id="Aoutput" src={banner ? URL.createObjectURL(banner) : bannerData ? bannerData?.banner : Cloud} style={{ maxWidth: "150px", maxHeight: "150px", height: "150px" }} alt="" />
+           <img id="Aoutput" src={update ? (banner ? URL.createObjectURL(banner) : bmodal?.banner ? bmodal?.banner : bannerAd?.banner ? bannerAd?.banner : Cloud) : banner ? URL.createObjectURL(banner) : bmodal?.banner ? bmodal?.banner : Cloud} style={{ maxWidth: "150px", maxHeight: "150px", height: "150px" }} alt="" />
           </label>
          </center>
         </div>
+
         <div className="col-xl-5">
          <center>
-          <label htmlFor="icon">
-           <img id="Aoutput1" src={icon ? URL.createObjectURL(icon) : bannerData ? bannerData?.icon : Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
+          <label htmlFor="">
+           <img id="Aoutput1" src={update ? (iconUrl ? iconUrl : bannerAd?.color ? bannerAd?.icon : Cloud) : iconUrl ? iconUrl : Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
           </label>
          </center>
         </div>
@@ -270,26 +279,30 @@ const BannerModal = ({ update, id, bannerData, updateApp, submitFormData, setSho
         <div className="col-xl-7">
          <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="banner">
           Browse Banner
-          <input type="file" name="banner" className="d-none" id="banner" accept="image/*" onChange={(e) => uploadImage(e, "banner")} />
+          <input type="file" name="banner" className="d-none" id="banner" accept="image/*" onChangeCapture={(e) => uploadImage(e)} />
          </label>
-         {/* {errorContainer(runform, "banner")} */}
         </div>
 
-        <div className="col-xl-5">
-         <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="icon">
+        <div
+         className="col-xl-5"
+         onClick={() => {
+          setbModal({ ...bannerRef?.current?.values, banner: bannerUrl ? bannerUrl : bmodal?.banner });
+          setIconShow(true);
+          setShow(false);
+         }}
+        >
+         <span className="btn-green btn-block text-center" style={{ padding: "10px" }}>
           Browse Icon
-          <input type="file" name="icon" className="d-none" id="icon" accept="image/*" onChange={(e) => uploadImage(e, "icon")} />
-         </label>
-         {/* {errorContainer(runform, "icon")} */}
+         </span>
         </div>
        </div>
 
        <div className="form-group pt-3">
-        <label htmlFor="title" className="form-control-label pb-1">
+        <label htmlFor="design_page" className="form-control-label pb-1">
          Design Page:
         </label>
-        <input type="text" name="add_title" className="form-control cad" id="title" placeholder="Enter design page link" {...formAttr(runform, "add_title")} />
-        {errorContainer(runform, "add_title")}
+        <input type="text" name="design_page" className="form-control cad" id="design_page" placeholder="Enter design page link" {...formAttr(runform, "design_page")} />
+        {errorContainer(runform, "design_page")}
        </div>
 
        <div className="form-group row pt-3">
@@ -309,7 +322,7 @@ const BannerModal = ({ update, id, bannerData, updateApp, submitFormData, setSho
        </div>
 
        <div className="text-end mt-4 mb-2 me-1">
-        <button type="button" className="btn-smart-comn2 me-2" onClick={() => setShow(false)}>
+        <button type="button" className="btn-smart-comn2 me-2" onClick={() => appModalClose()}>
          Close
         </button>
         <button type="submit" className="btn-smart-comn" id="">
@@ -324,4 +337,96 @@ const BannerModal = ({ update, id, bannerData, updateApp, submitFormData, setSho
  );
 };
 
-export default { CustomAdModal, BannerModal };
+const IconModal = ({ update, bannerAd, setShow, cusAdId, setIconShow, setIconUrl }) => {
+ const uploadImage = (e, type) => {
+  const formData = new FormData();
+  formData.append("imgPrefix", "multi_icon");
+  formData.append("folderName", "AD");
+  formData.append("image", e.target.files[0]);
+
+  new Promise((resolve) => resolve(ImagePostApi(API_PATH.imgUpload, formData))).then((res) => {
+   if (res.status === 200) {
+    setIconUrl(res.data.data?.imgUrl);
+    setIconShow(false);
+    setShow(true);
+   }
+  });
+ };
+
+ return (
+  <>
+   <Modal.Header closeButton className="">
+    <div className="cust-comn-modal-hdr">
+     <p>{update ? "Edit New Banner" : "Add New Banner"}</p>
+    </div>
+   </Modal.Header>
+   <Modal.Body>
+    <div className="form-group row pt-3 align-items-center">
+     <div className="col-xl-12 d-flex flex-wrap" style={{ gap: "24px" }}>
+      <center>
+       <label htmlFor="icon">
+        <img id="Aoutput1" src={Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
+       </label>
+      </center>
+      <img
+       id="Aoutput2"
+       src={cusAdId?.icon}
+       style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }}
+       alt=""
+       onClick={() => {
+        setIconUrl(cusAdId?.icon);
+        setIconShow(false);
+        setShow(true);
+       }}
+      />
+      <img
+       id="Aoutput2"
+       src={bannerAd?.icon}
+       style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }}
+       alt=""
+       onClick={() => {
+        setIconUrl(bannerAd?.icon);
+        setIconShow(false);
+        setShow(true);
+       }}
+      />
+     </div>
+    </div>
+
+    <div className="form-group row pt-3">
+     <div className="col-xl-5">
+      <label className=" text-center" style={{ padding: "10px" }} htmlFor="icon">
+       <input type="file" name="icon" className="d-none" id="icon" accept="image/*" onChange={(e) => uploadImage(e, "icon")} />
+      </label>
+     </div>
+    </div>
+
+    <div className="text-end mt-4 mb-2 me-1">
+     <button
+      type="button"
+      className="btn-smart-comn2 me-2"
+      onClick={() => {
+       setIconShow(false);
+       setShow(true);
+      }}
+     >
+      Close
+     </button>
+     <button
+      type="button"
+      className="btn-smart-comn"
+      id=""
+      onClick={() => {
+       setIconShow(false);
+       setShow(true);
+      }}
+     >
+      {update ? "Edit" : "Add"}
+     </button>
+    </div>
+   </Modal.Body>
+  </>
+ );
+};
+
+export { CustomAdModal, BannerModal, IconModal };

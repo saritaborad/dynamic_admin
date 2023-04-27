@@ -39,4 +39,5 @@ export const API_PATH = {
  getAllBanner: ApiBaseUrl + "/app/getAllBanner",
  addBanner: ApiBaseUrl + "/app/addBanner",
  updateBanner: ApiBaseUrl + "/app/updateBanner",
+ delBanner: ApiBaseUrl + "/app/delBanner",
 };

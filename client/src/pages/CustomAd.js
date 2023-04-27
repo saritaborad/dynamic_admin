@@ -9,8 +9,10 @@ import { CustomAdModal, BannerModal } from "../Modals/CustomAdModal";
 import { PostApi } from "../Api/apiServices";
 import moment from "moment/moment";
 import { DeleteConfirmModal } from "../Modals/VersionModal";
+import { useNavigate } from "react-router-dom";
 
 const CustomAd = () => {
+ const navigate = useNavigate();
  const [show, setShow] = useState(false);
  const [update, setUpdate] = useState(false);
  const [customAd, setCustomAd] = useState("");
@@ -27,6 +29,7 @@ const CustomAd = () => {
   sort: "createdAt",
   order: "ASC",
   entries: true,
+  showSearch: true,
  });
 
  const columns = [
@@ -120,7 +123,11 @@ const CustomAd = () => {
             </Dropdown.Item>
            </li>
            <li>
-            <Dropdown.Item>
+            <Dropdown.Item
+             onClick={() => {
+              navigate("/banner", { state: { customAdData: data[i] } });
+             }}
+            >
              <i className="fa fa-image pe-2"></i>
              Manage Banners
             </Dropdown.Item>
@@ -270,11 +277,7 @@ const CustomAd = () => {
     </div>
 
     <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
-     <CustomAdModal update={update} id={id} customAd={customAd} updateApp={updateApp} submitFormData={submitFormData} setShow={setShow} />
-    </Modal>
-
-    <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
-     <BannerModal update={update} id={id} bannerData={customAd} updateApp={updateApp} submitFormData={submitFormData} setShow={setShow} />
+     <CustomAdModal update={update} customAd={customAd} updateApp={updateApp} submitFormData={submitFormData} setShow={setShow} />
     </Modal>
 
     <Modal show={deleteConfirm} onHide={() => setDeleteConfirm(false)} size="sm" className="cust-comn-modal p-5" centered>
