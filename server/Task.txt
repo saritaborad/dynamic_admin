@@ -28,18 +28,18 @@
 => at least one mode sholud be enabled feature added
 
 Frontend
-=> pagination, search banner UI  
-=> Edit banner,get all banner UI 
-=> add,edit icon UI
-=> add,edit,get,delete API calling
-=> modal data disappear issue resolved
-
+=> banner and icon module done
+=> Install version today, yesterday, last seven,last 30 day
+=> dashboard UI 
+=> date wise install version chart
 Backend
-=> pagination,search banner API
-=> add Banner data API
-=> delete banner data API 
-=> multi_icon Add, update 
-=> sort from nested array banner API
+=> datewise install track chart data get 
+=> today's total install track data get
+=> yesterday's total install track data get
+=> last 7 days total install track data get
+=> last 30 days total install track data get
+=> get all install track API
+
 
 
 

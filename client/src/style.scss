@@ -771,7 +771,7 @@ button:focus {
     display: none;
 }
 
-.custom-design-dropdwon button svg {
+.custom-design-dropdwon  button svg {
     width: 20px;
     height: 20px;
 }
@@ -828,6 +828,8 @@ button:focus {
     left: unset;
     margin: 3px;
 }
+
+
 
 // .cust-drop-down ul li:last-child{
 //     margin:0 10px;
@@ -959,6 +961,11 @@ button:focus {
     text-transform: capitalize;
 }
 
+.dash-part-hdr-top {
+    background-color:rgba(237, 242, 253, 0.5);
+    border-bottom: 1px solid #dbdbe0;
+}
+
 .dash-part-hdr-top span {
     font-size: 16px;
     color: #333333;
@@ -973,12 +980,56 @@ button:focus {
 
 .dash-cal {
     position: absolute;
-    top: 12px;
+    top: 9px;
     left: 13px;
 }
 
 .dash-table table tr td {
     padding: 13px 0;
+}
+
+.chart-info {
+    background-color: #ffffff;
+    border: 1px solid #ededf2;
+    box-shadow: 0px 2px 24px rgb(0 0 0 / 6%);
+    border-radius: 10px;
+    padding: 0 16px;
+    word-break: break-word;
+}
+
+.chart-box {
+    margin-top: 20px;
+    border: 1px solid #dbdbe0;
+    border-radius: 5px;
+}
+
+.chart-main-part {
+    padding: 30px;
+    
+}
+
+.dash-month {
+    display: flex;
+    justify-content: center;
+}
+
+.dash-month .picker {
+    display: flex;
+    align-items: center;
+}
+
+.dash-month select {
+    width: 50%;
+}
+
+.datepicker {
+    border: 1px solid #ced4da;
+    border-radius: .375rem;
+    height: 40px;
+    font-size: 14px;
+    color: #333333;
+    letter-spacing: 0.02em;
+    width: 107%;
 }
 
 .comn-tab-sec .nav-pills .nav-item:first-child .nav-link {
@@ -2358,6 +2409,7 @@ color: #7b838a;
     height: 92%;
     font-size: 3.75em;
 }
+
 
 
 //------------------------------------------------- media query -------------------------------------------------

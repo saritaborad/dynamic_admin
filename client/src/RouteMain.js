@@ -5,18 +5,21 @@ import Version from "./pages/Version";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CustomAd from "./pages/CustomAd";
 import Banner from "./pages/Banner";
+import FakeVideo from "./pages/FakeVideo";
+import Dashboard from "./pages/Dashboard";
 
 const RouteMain = () => {
  return (
   <>
    <BrowserRouter>
     <Routes>
-     <Route path="/" strict element={<ManageAdmin />} />
+     <Route path="/dashboard" strict element={<Dashboard />} />
      <Route path="/manage-admin" strict element={<ManageAdmin />} />
      <Route path="/version" element={<Version />} />
      <Route path="/pp" element={<PrivacyPolicy />} />
      <Route path="/custom-ad" element={<CustomAd />} />
      <Route path="/banner" element={<Banner />} />
+     <Route path="/fake-video" element={<FakeVideo />} />
     </Routes>
    </BrowserRouter>
   </>

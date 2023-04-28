@@ -3,6 +3,7 @@ import MainLayout from "../components/layout/MainLayout";
 import RtdDatatable from "./Common/DataTable/DataTable";
 import { Dropdown, Modal } from "react-bootstrap";
 import Arrow from "../Images/arrow-top.svg";
+
 import { API_PATH } from "../const";
 import { toast } from "react-toastify";
 import { CustomAdModal, BannerModal } from "../Modals/CustomAdModal";
@@ -138,7 +139,7 @@ const CustomAd = () => {
        </div>
 
        <div className="form-check form-switch" key={i}>
-        <input className="form-check-input" type="checkbox" id="cad-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
+        <input className="form-check-input" type="checkbox" id="cad-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateCusAd({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
        </div>
 
        <span
@@ -192,7 +193,7 @@ const CustomAd = () => {
   });
  };
 
- const updateApp = (formData, resetForm) => {
+ const updateCusAd = (formData, resetForm) => {
   new Promise((resolve) => resolve(PostApi(API_PATH.editCustomAd, formData))).then((res) => {
    if (res.status === 200) {
     setShow(false);
@@ -250,14 +251,7 @@ const CustomAd = () => {
           </Dropdown.Menu>
          </Dropdown>
         </div>
-        {/* <div className="main-title-dash-search  position-relative">
-         <input
-          type="search"
-          className="form-control"
-          placeholder="Search here..."
-         />
-         <img src={SearchIcon} alt="profile" />
-        </div> */}
+
         <div className="ms-auto">
          <button className="add-button me-2" onClick={() => setShow(true)}>
           <i className="fa fa-plus pe-1"></i>Add New
@@ -277,7 +271,7 @@ const CustomAd = () => {
     </div>
 
     <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
-     <CustomAdModal update={update} customAd={customAd} updateApp={updateApp} submitFormData={submitFormData} setShow={setShow} />
+     <CustomAdModal update={update} customAd={customAd} updateApp={updateCusAd} submitFormData={submitFormData} setShow={setShow} />
     </Modal>
 
     <Modal show={deleteConfirm} onHide={() => setDeleteConfirm(false)} size="sm" className="cust-comn-modal p-5" centered>

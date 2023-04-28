@@ -12,6 +12,7 @@ const privacy = require("./routes/PrivacyPolicy");
 const version = require("./routes/Version");
 const imgUpload = require("./routes/ImageUpload");
 const customAd = require("./routes/CustomAd");
+const dashboard = require("./routes/Dashboard");
 
 connectDB();
 
@@ -30,6 +31,7 @@ app.use("/app", application);
 app.use("/app", privacy);
 app.use("/app", version);
 app.use("/app", customAd);
+app.use("/app", dashboard);
 app.use(errorHandler);
 
 app.listen(port, () => console.log(`server is listening on localhost:${port}`));
