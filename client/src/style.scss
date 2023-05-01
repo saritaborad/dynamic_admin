@@ -419,10 +419,16 @@ button:focus {
     background-color: #3b3b4b;
 }
 
-.sidebar-menu-boxes li a.active svg path {
-    fill: #1e1e2d;
-}
+// .sidebar-menu-boxes li:hover {
+//         background-color: #3b3b4b;
 
+// }
+
+.sidebar-menu-boxes .sidebar-link:hover svg path,
+.sidebar-menu-boxes .sidebar-link:hover svg polygon {   
+    fill: #2739c1;
+  }
+  
 .sidebar-menu-boxes {
     height: calc(100vh - 135px);
     overflow-x: hidden;
@@ -463,6 +469,7 @@ button:focus {
     width: 20px;
     margin-right: 10px;
 }
+
 
 .brand-title {
     height: 75px;

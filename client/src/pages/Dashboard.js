@@ -102,9 +102,7 @@ const Dashboard = () => {
 
  const getDashboard = (start, end, app_version) => {
   let date = { startDate: start ? start : moment(Date.now()).format("YYYY-MM-DD"), endDate: end ? end : moment(Date.now()).format("YYYY-MM-DD"), app_version: app_version };
-  const getDashboardCountPromise = new Promise((resolve, reject) => {
-   resolve(PostApi(API_PATH.getDashboard, date));
-  });
+  const getDashboardCountPromise = new Promise((resolve, reject) => resolve(PostApi(API_PATH.getDashboard, date)));
 
   getDashboardCountPromise.then((response) => {
    if (response.status == 200) {
@@ -121,7 +119,7 @@ const Dashboard = () => {
   });
  };
 
- const onApply = (e, picker) => {
+ const handleApply = (e, picker) => {
   setStartDate(moment(picker.startDate).format("YYYY-MM-DD"));
   setEndDate(moment(picker.endDate).format("YYYY-MM-DD"));
   let start_date = moment(picker.startDate).format("YYYY-MM-DD");
@@ -201,7 +199,7 @@ const Dashboard = () => {
          <div className="col-lg-5 col-md-6 picker ">
           <span className="pe-2"> Date:</span>
           <div className="position-relative">
-           <DateRangePicker initialSettings={"today"} onApply={(e, picker) => onApply(e, picker)}>
+           <DateRangePicker initialSettings={"today"} onApply={(e, picker) => handleApply(e, picker)}>
             <input className="form-control datepicker ps-5 pe-4" />
            </DateRangePicker>
            <div className="dash-cal">

@@ -27,18 +27,17 @@
 => when block one item all item get's block issue resolved
 => at least one mode sholud be enabled feature added
 
-Frontend
-=> banner and icon module done
-=> Install version today, yesterday, last seven,last 30 day
-=> dashboard UI 
-=> date wise install version chart
-Backend
-=> datewise install track chart data get 
-=> today's total install track data get
-=> yesterday's total install track data get
-=> last 7 days total install track data get
-=> last 30 days total install track data get
-=> get all install track API
+    Frontend
+    => dashboard UI changes
+    => Install version today, yesterday, last seven,last 30 day
+    => date wise install version chart changes
+    => sidebar changes
+    Backend
+    => dashboard API changes
+    => total download get
+
+
+
 
 
 
