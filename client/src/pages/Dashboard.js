@@ -13,19 +13,26 @@ import { API_PATH } from "../const";
 import { PostApi } from "../Api/apiServices";
 
 const Dashboard = () => {
- const [userData, setUserData] = useState([]);
+ const [installData, setInstallData] = useState([]);
+ const [allVersion, setAllVersion] = useState([]);
+ const [version, setVersion] = useState("");
  const [category, setCategories] = useState("");
  const [Loader, setLoader] = useState(false);
+
+ const [startDate, setStartDate] = useState("");
+ const [endDate, setEndDate] = useState("");
+
  const [todayData, setTodayData] = useState(false);
  const [lastThirty, setLastThirty] = useState(false);
  const [yesterday, setYesterday] = useState(false);
  const [lastSeven, setLastSeven] = useState(false);
+ const [totalDownload, setTotalDownload] = useState(0);
 
  const chart = {
   series: [
    {
     name: "downloads",
-    data: userData,
+    data: installData,
    },
   ],
   fill: {
@@ -42,15 +49,31 @@ const Dashboard = () => {
     show: true,
    },
   },
-  yaxis: {
-   tickAmount: 2,
-  },
+
+  yaxis: [
+   {
+    labels: {
+     formatter: function (val) {
+      return val.toFixed(0);
+     },
+    },
+   },
+  ],
   xaxis: {
-   type: "category",
+   type: "datetime",
    categories: category,
+   labels: {
+    format: "dd MMM",
+   },
   },
   dataLabels: {
    enabled: false,
+  },
+  legend: {
+   show: false,
+  },
+  sparkline: {
+   enabled: true,
   },
   colors: ["#0066B9"],
   stroke: {
@@ -59,35 +82,56 @@ const Dashboard = () => {
    width: 2,
    dashArray: 0,
   },
+  noData: {
+   text: "No data available!",
+   align: "center",
+   verticalAlign: "middle",
+   offsetX: 0,
+   offsetY: 0,
+   style: {
+    color: "#646c9a",
+    fontSize: "19px",
+    fontFamily: "Rubik",
+   },
+  },
  };
 
  useEffect(() => {
-  getDashboard("2022-08-11", "2022-09-12");
+  getDashboard();
  }, []);
 
- const getDashboard = (start, end) => {
-  let date = { startDate: start, endDate: end };
+ const getDashboard = (start, end, app_version) => {
+  let date = { startDate: start ? start : moment(Date.now()).format("YYYY-MM-DD"), endDate: end ? end : moment(Date.now()).format("YYYY-MM-DD"), app_version: app_version };
   const getDashboardCountPromise = new Promise((resolve, reject) => {
    resolve(PostApi(API_PATH.getDashboard, date));
   });
 
   getDashboardCountPromise.then((response) => {
    if (response.status == 200) {
-    setUserData(response.data.data.y);
-    setCategories(response.data.data.x);
+    setAllVersion(response.data.data?.allVersion);
+    setInstallData(response.data.data?.y);
+    setCategories(response.data.data?.x);
     setTodayData(response.data.data?.todayData || 0);
     setYesterday(response.data.data?.yesterdayData || 0);
     setLastSeven(response.data.data?.lastSevenData || 0);
     setLastThirty(response.data.data?.monthlyData || 0);
+    setTotalDownload(response.data.data?.totalDownload || 0);
     setLoader(false);
    }
   });
  };
 
  const onApply = (e, picker) => {
+  setStartDate(moment(picker.startDate).format("YYYY-MM-DD"));
+  setEndDate(moment(picker.endDate).format("YYYY-MM-DD"));
   let start_date = moment(picker.startDate).format("YYYY-MM-DD");
   let end_date = moment(picker.endDate).format("YYYY-MM-DD");
-  getDashboard(start_date, end_date);
+  getDashboard(start_date, end_date, version);
+ };
+
+ const changeVersion = (version) => {
+  setVersion(version);
+  getDashboard(startDate, endDate, version);
  };
 
  return (
@@ -106,7 +150,7 @@ const Dashboard = () => {
        <div className="row me-0 justify-content-center">
         <div className="col-xxl col-xl-3 col-md-4 col-6 pe-0 mb-3">
          <div className="dash-top-box fix-span">
-          <p>{todayData}</p>
+          <p style={{ color: "#646c9a" }}>{todayData}</p>
           <div className="dash-top-box-info d-flex align-items-center">
            <bdi>Today</bdi>
           </div>
@@ -114,7 +158,7 @@ const Dashboard = () => {
         </div>
         <div className="col-xxl col-xl-3 col-md-4 col-6 pe-0 mb-3">
          <div className="dash-top-box fix-span">
-          <p>{yesterday}</p>
+          <p style={{ color: "#646c9a" }}>{yesterday}</p>
           <div className="dash-top-box-info d-flex align-items-center">
            <bdi>Yesterday</bdi>
           </div>
@@ -122,7 +166,7 @@ const Dashboard = () => {
         </div>
         <div className="col-xxl col-xl-3 col-md-4 col-6 pe-0 mb-3">
          <div className="dash-top-box fix-span">
-          <p>{lastSeven}</p>
+          <p style={{ color: "#646c9a" }}>{lastSeven}</p>
           <div className="dash-top-box-info d-flex align-items-center">
            <bdi>Last 7 Days</bdi>
           </div>
@@ -130,7 +174,7 @@ const Dashboard = () => {
         </div>
         <div className="col-xxl col-xl-3 col-md-4 col-6 pe-0 mb-3">
          <div className="dash-top-box fix-span">
-          <p>{lastThirty}</p>
+          <p style={{ color: "#646c9a" }}>{lastThirty}</p>
           <div className="dash-top-box-info d-flex align-items-center">
            <bdi>Last 30 Days</bdi>
           </div>
@@ -144,11 +188,14 @@ const Dashboard = () => {
         <div className="dash-month pt-5 pb-4">
          <div className="col-lg-3 col-md-6  picker ">
           <span className="pe-2"> Version:</span>
-          <select name="AdminRole" className="form-select bg-white">
-           <option value="Admin">All Version</option>
-           <option value="Sub Admin">Sub Admin</option>
-           <option value="Contributor">Contributor</option>
-           <option value="Staff">Staff</option>
+          <select className="form-select bg-white" onChange={(e) => changeVersion(e.target.value)}>
+           <option value="">All Version</option>
+           {allVersion?.length > 0 &&
+            allVersion?.map((item, i) => (
+             <option key={i} value={item}>
+              {item}
+             </option>
+            ))}
           </select>
          </div>
          <div className="col-lg-5 col-md-6 picker ">
@@ -168,7 +215,7 @@ const Dashboard = () => {
         <div className="col-lg-9 col-md-7 pe-0 mb-3 ">
          <div className="chart-box">
           <div className="dash-part-hdr-top p-4">
-           <span>Total Downloads:</span>
+           <span style={{ color: "#646c9a", fontSize: "21px", fontWeight: "500" }}>Total Downloads: {totalDownload}</span>
           </div>
           <div className="chart-main-part">
            <Chart options={chart} series={chart.series} height={300} type="line" />
