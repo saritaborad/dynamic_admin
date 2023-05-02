@@ -6,28 +6,23 @@ import { AppContext } from "../../Context/AppContext";
 
 function Sidebar() {
  const [path, setPath] = useState("");
- const [activeKey, setActiveKey] = useState("1");
  const [activeItem, setActiveItem] = useState(null);
 
  const location = useLocation();
  const { activeApp } = useContext(AppContext);
 
- useEffect(() => {
-  setPath(location.pathname.replace(/\//g, ""));
- }, []);
+ useEffect(() => setPath(location.pathname.replace(/\//g, "")), []);
 
- const handleItemClick = (eventKey) => {
-  setActiveItem(eventKey === activeItem ? null : eventKey);
- };
+ const handleItemClick = (eventKey) => setActiveItem(eventKey === activeItem ? null : eventKey);
 
  return (
   <React.Fragment>
    <div className="sidebar-main-section">
     <div className="brand-title d-flex align-items-center">
-     <a href="/" className="d-flex align-items-center cursor-pointer">
+     <Link href="/dashboard" className="d-flex align-items-center cursor-pointer">
       {/* <img src={Logo} alt="logo" /> */}
       <span>PIKSO GALLARY</span>
-     </a>
+     </Link>
     </div>
 
     <div className="sidebar-main-section-inner">

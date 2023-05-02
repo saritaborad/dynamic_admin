@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { BannerModal, IconModal } from "../Modals/CustomAdModal";
 import { PostApi } from "../Api/apiServices";
 import moment from "moment/moment";
-import { DeleteConfirmModal } from "../Modals/VersionModal";
+import { DeleteConfirmModal } from "../Modals/DeleteConfirmModal";
 import { useLocation } from "react-router-dom";
 
 const Banner = () => {
@@ -136,9 +136,7 @@ const Banner = () => {
   },
  ];
 
- useEffect(() => {
-  getAllBanner();
- }, []);
+ useEffect(() => getAllBanner(), []);
 
  const getAllBanner = () => {
   let data = { cusAdId: cusAdId?._id, ...option };

@@ -6,12 +6,13 @@ import Arrow from "../Images/arrow-top.svg";
 
 import { API_PATH } from "../const";
 import { toast } from "react-toastify";
-import { CustomAdModal, BannerModal } from "../Modals/CustomAdModal";
+import { CustomAdModal } from "../Modals/CustomAdModal";
 import { PostApi } from "../Api/apiServices";
 import moment from "moment/moment";
-import { DeleteConfirmModal } from "../Modals/VersionModal";
+import { DeleteConfirmModal } from "../Modals/DeleteConfirmModal";
 import { useNavigate } from "react-router-dom";
 
+let arr = [];
 const CustomAd = () => {
  const navigate = useNavigate();
  const [show, setShow] = useState(false);
@@ -20,6 +21,7 @@ const CustomAd = () => {
  const [id, setId] = useState("");
  const [data, setData] = useState([]);
  const [selectedItem, setSelectedItem] = useState("All");
+ const [delArr, setDelArr] = useState([]);
  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
  const [option, set_option] = useState({
@@ -31,6 +33,7 @@ const CustomAd = () => {
   order: "ASC",
   entries: true,
   showSearch: true,
+  checkbox: true,
  });
 
  const columns = [
@@ -158,9 +161,7 @@ const CustomAd = () => {
   },
  ];
 
- useEffect(() => {
-  getAllCusAd();
- }, []);
+ useEffect(() => getAllCusAd(), []);
 
  const getAllCusAd = (status, search) => {
   let data = status || status == 0 ? { enable: status, ...option } : { ...option, search: search };
@@ -184,7 +185,7 @@ const CustomAd = () => {
  };
 
  const deleteItem = () => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.delCustomAd, { _id: customAd?._id }))).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.delCustomAd, { _id: customAd?._id, delArr: arr }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
     setDeleteConfirm(false);
@@ -218,6 +219,10 @@ const CustomAd = () => {
  const appModalClose = () => {
   setShow(false);
   setUpdate(false);
+ };
+
+ const checkboxCallback = (data) => {
+  arr = data?.filter((item) => item?.checked)?.map((item) => item?._id);
  };
 
  return (
@@ -256,7 +261,13 @@ const CustomAd = () => {
          <button className="add-button me-2" onClick={() => setShow(true)}>
           <i className="fa fa-plus pe-1"></i>Add New
          </button>
-         <button className="del-button">
+         <button
+          className="del-button"
+          onClick={() => {
+           arr.length > 0 && setDeleteConfirm(true);
+           setData(data?.map((item) => (arr.includes(item._id) ? { ...item, checked: true } : { ...item, checked: false })));
+          }}
+         >
           <i className="fa fa-trash pe-1"></i>Delete Items
          </button>
         </div>
@@ -264,7 +275,7 @@ const CustomAd = () => {
       </div>
       <div className="col-12">
        <div className="table-custom-info">
-        <RtdDatatable data={data} columns={columns} option={option} tableCallBack={tableCallBack} />
+        <RtdDatatable data={data} columns={columns} option={option} tableCallBack={tableCallBack} checkboxCallback={checkboxCallback} />
        </div>
       </div>
      </div>
@@ -275,7 +286,7 @@ const CustomAd = () => {
     </Modal>
 
     <Modal show={deleteConfirm} onHide={() => setDeleteConfirm(false)} size="sm" className="cust-comn-modal p-5" centered>
-     <DeleteConfirmModal setDelete={setDeleteConfirm} setConfirmDel={deleteItem} />
+     <DeleteConfirmModal setDelete={setDeleteConfirm} setConfirmDel={deleteItem} delChecked={arr} />
     </Modal>
    </MainLayout>
   </>

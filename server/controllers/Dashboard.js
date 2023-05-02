@@ -20,13 +20,13 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
  const dashboardData = await InstallTrack.aggregate([
   {
    $facet: {
-    totalDownload: [{ $group: { _id: null, total: { $sum: "$count" } } }],
     todayData: [{ $match: { date: { $eq: today } } }, { $group: { _id: null, totalCount: { $sum: "$count" } } }],
     yesterdayData: [{ $match: { date: { $eq: yesterday } } }, { $group: { _id: null, totalCount: { $sum: "$count" } } }],
     lastSevenData: [{ $match: { date: { $gte: lastSevenday } } }, { $group: { _id: null, totalCount: { $sum: "$count" } } }],
     monthlyData: [{ $match: { date: { $gte: lastThirty } } }, { $group: { _id: null, totalCount: { $sum: "$count" } } }],
     allVersion: [{ $group: { _id: "$app_version" } }, { $sort: { _id: -1 } }, { $group: { _id: null, versions: { $push: "$_id" } } }, { $project: { _id: 0, versions: 1 } }],
     x: [{ $match: query }, { $group: { _id: { date: "$date" }, count: { $sum: "$count" } } }, { $project: { _id: 0, date: "$_id.date", count: "$count" } }, { $sort: { date: 1 } }],
+    totalDownload: [{ $match: query }, { $group: { _id: null, total: { $sum: "$count" } } }],
    },
   },
  ]);

@@ -8,6 +8,10 @@ import { API_PATH } from "../const";
 import { toast } from "react-toastify";
 import AppModal from "../Modals/AppModal";
 import { AppContext } from "../Context/AppContext";
+import { DeleteConfirmModal } from "../Modals/DeleteConfirmModal";
+import moment from "moment";
+
+let arr = [];
 
 const ManageAdmin = () => {
  const [title, setTitle] = useState("");
@@ -17,6 +21,7 @@ const ManageAdmin = () => {
  const [data, setData] = useState([]);
  const [selectedItem, setSelectedItem] = useState("All");
  const { setActiveApp } = useContext(AppContext);
+ const [deleteConfirm, setDeleteConfirm] = useState(false);
 
  const [option, set_option] = useState({
   sizePerPage: 10,
@@ -27,6 +32,7 @@ const ManageAdmin = () => {
   order: "ASC",
   entries: true,
   showSearch: true,
+  checkbox: true,
  });
 
  const columns = [
@@ -46,7 +52,6 @@ const ManageAdmin = () => {
     sort: false,
    },
   },
-
   {
    value: "enable",
    label: "Status",
@@ -64,6 +69,9 @@ const ManageAdmin = () => {
    options: {
     filter: false,
     sort: false,
+    customBodyRender: (data, i) => {
+     return <div>{moment(data[i]?.createdAt).format("DD-MM-YYYY  hh:mm A")}</div>;
+    },
    },
   },
   {
@@ -74,13 +82,21 @@ const ManageAdmin = () => {
     sort: false,
     customBodyRender: (data, i) => {
      return (
-      <div className="action-icons">
-       <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemUp(data[i]._id, i)}>
-        <i className="fa fa-arrow-up"></i>
-       </span>
-       <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemDown(data[i]._id)}>
-        <i className="fa fa-arrow-down"></i>
-       </span>
+      <div className="action-icons" key={i}>
+       {i !== 0 ? (
+        <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemUp(data[i]._id, i)}>
+         <i className="fa fa-arrow-up"></i>
+        </span>
+       ) : (
+        <span className="ms-3"></span>
+       )}
+       {i !== data.length - 1 ? (
+        <span style={{ color: "#93a2dd", cursor: "pointer" }} onClick={() => moveItemDown(data[i]._id)}>
+         <i className="fa fa-arrow-down"></i>
+        </span>
+       ) : (
+        <span className="p-2"></span>
+       )}
 
        <div className="cust-drop-down-menu">
         <Dropdown drop="left">
@@ -121,11 +137,17 @@ const ManageAdmin = () => {
         </Dropdown>
        </div>
 
-       <div className="form-check form-switch" key={i}>
+       <div className="form-check form-switch" key={data[i]?._id}>
         <input className="form-check-input" type="checkbox" id="offer-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
        </div>
 
-       <span style={{ color: "red", cursor: "pointer" }} onClick={() => deleteItem(data[i]?._id)}>
+       <span
+        style={{ color: "red", cursor: "pointer" }}
+        onClick={() => {
+         setId(data[i]?._id);
+         setDeleteConfirm(true);
+        }}
+       >
         <i className="fa fa-trash"></i>
        </span>
       </div>
@@ -135,17 +157,14 @@ const ManageAdmin = () => {
   },
  ];
 
- useEffect(() => {
-  getAllApp();
- }, []);
+ useEffect(() => getAllApp(), []);
 
  const getAllApp = (status, search) => {
   let data = status || status == 0 ? { enable: status, ...option } : { ...option, search: search };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp, data))).then((res) => {
    if (res.status === 200) {
-    let filterArr = res.data.data.allApp?.filter((item) => item.enable === 1);
     setData(res.data.data.allApp?.sort((a, b) => a?.position - b?.position));
-    setActiveApp(filterArr?.sort((a, b) => a?.position - b?.position));
+    setActiveApp(res.data.data?.activeApp?.sort((a, b) => a?.position - b?.position));
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
    }
   });
@@ -172,11 +191,12 @@ const ManageAdmin = () => {
   });
  };
 
- const deleteItem = (id) => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.deleteApp, { _id: id }))).then((res) => {
+ const deleteItem = () => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.deleteApp, { _id: id, delArr: arr }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
     getAllApp();
+    setDeleteConfirm(false);
    }
   });
  };
@@ -270,6 +290,10 @@ const ManageAdmin = () => {
   setUpdate(false);
  };
 
+ const checkboxCallback = (data) => {
+  arr = data?.filter((item) => item?.checked)?.map((item) => item?._id);
+ };
+
  return (
   <>
    <MainLayout>
@@ -313,7 +337,13 @@ const ManageAdmin = () => {
          <button className="add-button me-2" onClick={() => setShow(true)}>
           <i className="fa fa-plus pe-1"></i>Add New
          </button>
-         <button className="del-button">
+         <button
+          className="del-button"
+          onClick={() => {
+           arr.length > 0 && setDeleteConfirm(true);
+           setData(data?.map((item) => (arr.includes(item._id) ? { ...item, checked: true } : { ...item, checked: false })));
+          }}
+         >
           <i className="fa fa-trash pe-1"></i>Delete Items
          </button>
         </div>
@@ -321,13 +351,17 @@ const ManageAdmin = () => {
       </div>
       <div className="col-12">
        <div className="table-custom-info">
-        <RtdDatatable data={data} columns={columns} option={option} tableCallBack={tableCallBack} />
+        <RtdDatatable data={data} columns={columns} option={option} tableCallBack={tableCallBack} checkboxCallback={checkboxCallback} />
        </div>
       </div>
      </div>
     </div>
     <Modal show={show} onHide={() => appModalClose()} size="md" className="cust-comn-modal" aria-labelledby="contained-modal-title-vcenter" centered>
      <AppModal update={update} title={title} id={id} updateApp={updateApp} submitFormData={submitFormData} appModalClose={appModalClose} />
+    </Modal>
+
+    <Modal show={deleteConfirm} onHide={() => setDeleteConfirm(false)} size="sm" className="cust-comn-modal p-5" centered>
+     <DeleteConfirmModal setDelete={setDeleteConfirm} setConfirmDel={deleteItem} delChecked={arr} />
     </Modal>
    </MainLayout>
   </>

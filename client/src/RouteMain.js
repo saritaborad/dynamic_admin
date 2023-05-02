@@ -5,7 +5,6 @@ import Version from "./pages/Version";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CustomAd from "./pages/CustomAd";
 import Banner from "./pages/Banner";
-import FakeVideo from "./pages/FakeVideo";
 import Dashboard from "./pages/Dashboard";
 
 const RouteMain = () => {
@@ -19,7 +18,6 @@ const RouteMain = () => {
      <Route path="/pp" element={<PrivacyPolicy />} />
      <Route path="/custom-ad" element={<CustomAd />} />
      <Route path="/banner" element={<Banner />} />
-     <Route path="/fake-video" element={<FakeVideo />} />
     </Routes>
    </BrowserRouter>
   </>

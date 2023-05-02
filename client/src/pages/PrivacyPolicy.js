@@ -14,9 +14,7 @@ const PrivacyPolicy = () => {
  const [policy, setPolicy] = useState();
  const policyRef = useRef();
 
- useEffect(() => {
-  getPolicy();
- }, []);
+ useEffect(() => getPolicy(), []);
 
  const getPolicy = () => {
   let data = { table_prefix: appName };

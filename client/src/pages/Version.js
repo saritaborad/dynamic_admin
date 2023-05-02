@@ -6,7 +6,8 @@ import { API_PATH } from "../const";
 import RtdDatatable from "./Common/DataTable/DataTable";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AdTitleModal, AdTypeModal, DeleteConfirmModal, ModeModal, NoteModal, VersionModal } from "../Modals/VersionModal";
+import { AdTitleModal, AdTypeModal, ModeModal, NoteModal, VersionModal } from "../Modals/VersionModal";
+import { DeleteConfirmModal } from "../Modals/DeleteConfirmModal";
 
 const Version = () => {
  const [versionData, setVersionData] = useState([]);
@@ -14,14 +15,10 @@ const Version = () => {
  const [adModeData, setAdModeData] = useState([]);
  const [uniqueAdMode, setUniqueAdMode] = useState([]);
  const [uniqueTitle, setUniqueTitle] = useState([]);
-
  const [tableData, setTableData] = useState([]);
- //  const [tableColumn, setTableColumn] = useState([]);
-
  const [verFilter, setVerFilter] = useState([]);
  const [titleFilter, setTitleFilter] = useState([]);
  const [modeFilter, setModeFilter] = useState([]);
-
  const [version, setVersion] = useState("");
  const [adTitle, setAdTitle] = useState("");
  const [adMode, setAdMode] = useState("");
@@ -29,7 +26,6 @@ const Version = () => {
  const [verToggle, setVerToggle] = useState(false);
  const [titleToggle, setTitleToggle] = useState(false);
  const [modeToggle, setModeToggle] = useState(false);
-
  const [isUpdate, setIsUpdate] = useState(false);
  const [versShow, setVersShow] = useState(false);
  const [adShow, setAdShow] = useState(false);
@@ -38,7 +34,6 @@ const Version = () => {
  const [noteShow, setNoteShow] = useState(false);
  const [deleteConfirm, setDeleteConfirm] = useState(false);
  const [refresh, setRefresh] = useState(false);
-
  const [active, setActive] = useState(1);
 
  const table_prefix = useLocation()?.search?.substring(1);
@@ -736,7 +731,6 @@ const Version = () => {
                );
               })}
             </ul>
-            {/* <Dropdown.Divider /> */}
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-4  ms-2">

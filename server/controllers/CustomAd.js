@@ -17,8 +17,8 @@ exports.editCustomAd = asyncHandler(async (req, res, next) => {
 });
 
 exports.delCustomAd = asyncHandler(async (req, res, next) => {
- const { _id } = req.body;
- await CustomAd.findOneAndDelete({ _id });
+ const { _id, delArr } = req.body;
+ delArr && delArr?.length > 0 ? await CustomAd.deleteMany({ _id: { $in: delArr } }) : await CustomAd.findOneAndDelete({ _id });
  return give_response(res, 200, true, "CustomAd deleted!");
 });
 

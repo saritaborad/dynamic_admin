@@ -43,11 +43,15 @@ exports.updatePosition = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteApp = asyncHandler(async (req, res, next) => {
- const { _id } = req.body;
- const app = await Application.findByIdAndDelete({ _id });
+ const { _id, delArr } = req.body;
 
- delCollection(res, DB, `${app?.table_prefix}_version_tables`);
- delCollection(res, DB, `${app?.table_prefix}_privacypolicies`);
+ const deleteAppById = async (appId) => {
+  const app = await Application.findByIdAndDelete({ _id: appId });
+  delCollection(res, DB, `${app?.table_prefix}_version_tables`);
+  delCollection(res, DB, `${app?.table_prefix}_privacypolicies`);
+ };
+
+ delArr && delArr?.length > 0 ? await delArr.forEach(async (id) => await deleteAppById(id)) : await deleteAppById(_id);
  return give_response(res, 200, true, "Application deleted");
 });
 
@@ -71,6 +75,7 @@ exports.getAllApp = asyncHandler(async (req, res, next) => {
  const startIndex = (page - 1) * limit;
 
  const allApp = await Application.find(find).skip(startIndex).limit(limit).sort(sortObject);
+ const activeApp = await Application.find({ enable: 1 });
 
  const totalRecord = await Application.find(find).countDocuments();
  const tpage = totalRecord / limit;
@@ -81,5 +86,6 @@ exports.getAllApp = asyncHandler(async (req, res, next) => {
   totalPage,
   totalRecord,
   allApp,
+  activeApp,
  });
 });

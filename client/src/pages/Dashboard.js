@@ -96,9 +96,7 @@ const Dashboard = () => {
   },
  };
 
- useEffect(() => {
-  getDashboard();
- }, []);
+ useEffect(() => getDashboard(), []);
 
  const getDashboard = (start, end, app_version) => {
   let date = { startDate: start ? start : moment(Date.now()).format("YYYY-MM-DD"), endDate: end ? end : moment(Date.now()).format("YYYY-MM-DD"), app_version: app_version };

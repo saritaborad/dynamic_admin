@@ -221,7 +221,7 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
   <>
    <Modal.Header closeButton className="">
     <div className="cust-comn-modal-hdr">
-     <p>{update ? "Edit New Banner" : "Add New Banner"}</p>
+     <p>{update ? "Edit Banner" : "Add New Banner"}</p>
     </div>
    </Modal.Header>
    <Modal.Body>
@@ -357,7 +357,7 @@ const IconModal = ({ update, bannerAd, setShow, cusAdId, setIconShow, setIconUrl
   <>
    <Modal.Header closeButton className="">
     <div className="cust-comn-modal-hdr">
-     <p>{update ? "Edit New Banner" : "Add New Banner"}</p>
+     <p>{update ? "Edit Banner" : "Add New Banner"}</p>
     </div>
    </Modal.Header>
    <Modal.Body>

@@ -27,14 +27,15 @@
 => when block one item all item get's block issue resolved
 => at least one mode sholud be enabled feature added
 
-    Frontend
-    => dashboard UI changes
-    => Install version today, yesterday, last seven,last 30 day
-    => date wise install version chart changes
-    => sidebar changes
-    Backend
-    => dashboard API changes
-    => total download get
+Frontend
+=> custom Ad multiple delete functionality 
+=> Manage admin multiple delete functionality 
+=> Manage admin move up down UI changes
+=> sidebar changes
+Backend
+=> delCustomAd API multiple item delete functionality added
+=> deleteApp API multiple item delete 
+=> changes in total download dashboard API 
 
 
 

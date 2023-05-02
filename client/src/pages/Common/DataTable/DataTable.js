@@ -8,10 +8,13 @@ export default function RtdDatatable(props) {
  const [columns, set_columns] = useState(props.columns);
  const [size_per_page, set_size_per_page] = useState([10, 25, 50, 100]);
  const [currentPage, setCurrentPage] = useState(1);
+ const [allChecked, setAllChecked] = useState(false);
+ const [items, setItems] = useState([]);
 
  useEffect(() => {
   set_option(props.option);
   set_Data(props.data);
+  setItems(props.data);
   set_columns(props.columns);
   set_size_per_page([10, 25, 50, 100]);
  }, [props.option, props.data, props.columns]);
@@ -58,6 +61,21 @@ export default function RtdDatatable(props) {
   props.tableCallBack(tmp_option);
  };
 
+ const handleAllCheck = (isChecked) => {
+  setAllChecked(isChecked);
+  const newItems = items.map((item) => ({ ...item, checked: isChecked }));
+  setItems(newItems);
+  props.checkboxCallback(newItems);
+ };
+
+ const handleItemCheck = (isChecked, currentItem) => {
+  const newItems = items.map((item) => (item._id === currentItem._id ? { ...item, checked: isChecked } : item));
+  setItems(newItems);
+  const allChecked = newItems.every((item) => item.checked);
+  setAllChecked(allChecked);
+  props.checkboxCallback(newItems);
+ };
+
  return (
   option && (
    <div className="">
@@ -96,12 +114,13 @@ export default function RtdDatatable(props) {
          <th>
           <div className="custom-checkbox">
            <label className="custom-lbl-part">
-            <input type="checkbox" id="" />
+            <input type="checkbox" id="" onChange={(e) => handleAllCheck(e.target.checked)} checked={allChecked} />
             <span className="custom-checkbox-class"></span>
            </label>
           </div>
          </th>
         )}
+
         {columns?.map((column, i) => {
          return column.options["sort"] ? (
           <th key={i} onClick={() => sortHandler(column.value)}>
@@ -141,15 +160,15 @@ export default function RtdDatatable(props) {
        </tr>
       </thead>
       <tbody>
-       {data?.length > 0 ? (
-        data.map((val, i) => {
+       {items?.length > 0 ? (
+        items.map((val, i) => {
          return (
           <tr key={i}>
            {option.checkbox && (
             <td>
              <div className="custom-checkbox">
               <label className="custom-lbl-part">
-               <input type="checkbox" id="" />
+               <input type="checkbox" id={`checkbox-${i}`} onChange={(e) => handleItemCheck(e.target.checked, val)} checked={val.checked} />
                <span className="custom-checkbox-class"></span>
               </label>
              </div>

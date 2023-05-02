@@ -14,8 +14,7 @@ export const AppContextProvider = (props) => {
  const getAllApp = () => {
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp))).then((res) => {
    if (res.status === 200) {
-    let filterArr = res.data.data.allApp?.filter((item) => item.enable === 1);
-    setActiveApp(filterArr?.sort((a, b) => a?.position - b?.position));
+    setActiveApp(res.data.data?.activeApp?.sort((a, b) => a?.position - b?.position));
    }
   });
  };
