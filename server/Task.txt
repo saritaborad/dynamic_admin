@@ -1,6 +1,8 @@
 ================= un done ====================
 => make UI responsive
 => make sidebar collapsable
+=> edit-multi button =>  ad title => count change 
+=> edit-multi button =>  ad mode => New advertisement-id changes
 
 ================= done ====================
 
@@ -27,14 +29,17 @@
 => when block one item all item get's block issue resolved
 => at least one mode sholud be enabled feature added
 
+
 Frontend
 => custom Ad multiple delete functionality 
 => Manage admin multiple delete functionality 
+=> Banner multiple delete 
 => Manage admin move up down UI changes
-=> sidebar changes
+=> Loader setting in banner, customAd, mange admin
 Backend
 => delCustomAd API multiple item delete functionality added
 => deleteApp API multiple item delete 
+=> deleteBanner API multiple item del
 => changes in total download dashboard API 
 
 

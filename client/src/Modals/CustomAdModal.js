@@ -243,7 +243,7 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
      })}
      onSubmit={(formData, { resetForm }) => {
       formData.icon = update ? (iconUrl ? iconUrl : bannerAd?.icon) : iconUrl;
-      formData.banner = update ? (bannerUrl ? bannerUrl : bannerAd?.banner) : bannerUrl;
+      formData.banner = update ? (bmodal?.banner ? bmodal?.banner : bannerUrl ? bannerUrl : bannerAd?.banner) : bmodal?.banner ? bmodal?.banner : bannerUrl;
       if (!formData.banner || !formData.icon) {
        setError(true);
       } else {
@@ -266,7 +266,7 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
         <div className="col-xl-5">
          <center>
           <label htmlFor="">
-           <img id="Aoutput1" src={update ? (iconUrl ? iconUrl : bannerAd?.color ? bannerAd?.icon : Cloud) : iconUrl ? iconUrl : Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
+           <img id="Aoutput1" src={update ? (iconUrl ? iconUrl : bannerAd?.icon ? bannerAd?.icon : Cloud) : iconUrl ? iconUrl : Cloud} style={{ maxWidth: "100px", maxHeight: "100px", height: "100px" }} alt="" />
           </label>
          </center>
         </div>

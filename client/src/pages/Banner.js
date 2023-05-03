@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import RtdDatatable from "./Common/DataTable/DataTable";
-import { Dropdown, Modal } from "react-bootstrap";
-import Arrow from "../Images/arrow-top.svg";
+import { Modal } from "react-bootstrap";
+import { ReactComponent as Loader } from "../Images/loader.svg";
 import { API_PATH } from "../const";
 import { toast } from "react-toastify";
 import { BannerModal, IconModal } from "../Modals/CustomAdModal";
@@ -11,6 +11,7 @@ import moment from "moment/moment";
 import { DeleteConfirmModal } from "../Modals/DeleteConfirmModal";
 import { useLocation } from "react-router-dom";
 
+let arr = [];
 const Banner = () => {
  let cusAdId = useLocation()?.state?.customAdData;
 
@@ -18,6 +19,7 @@ const Banner = () => {
  const [update, setUpdate] = useState(false);
  const [bannerAd, setBannerAd] = useState("");
  const [iconUrl, setIconUrl] = useState("");
+ const [loader, setLoader] = useState(false);
  const [bannerModalData, setBannerModalData] = useState("");
 
  const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -33,6 +35,7 @@ const Banner = () => {
   order: "ASC",
   entries: true,
   showSearch: false,
+  checkbox: true,
  });
 
  const columns = [
@@ -125,6 +128,7 @@ const Banner = () => {
         onClick={() => {
          setBannerAd(data[i]);
          setDeleteConfirm(true);
+         arr = [];
         }}
        >
         <i className="fa fa-trash"></i>
@@ -139,9 +143,11 @@ const Banner = () => {
  useEffect(() => getAllBanner(), []);
 
  const getAllBanner = () => {
+  setLoader(true);
   let data = { cusAdId: cusAdId?._id, ...option };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllBanner, data))).then((res) => {
    if (res.status === 200) {
+    setLoader(false);
     setData(res.data.data?.bannerAll);
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
    }
@@ -155,16 +161,19 @@ const Banner = () => {
     resetForm(formData);
     getAllBanner();
     setShow(false);
+    setBannerModalData("");
+    setIconUrl("");
    }
   });
  };
 
  const deleteBanner = () => {
-  new Promise((resolve) => resolve(PostApi(API_PATH.delBanner, { _id: bannerAd?._id, cusAdId: cusAdId?._id }))).then((res) => {
+  new Promise((resolve) => resolve(PostApi(API_PATH.delBanner, { _id: bannerAd?._id, cusAdId: cusAdId?._id, delArr: arr }))).then((res) => {
    if (res.status === 200) {
     toast.success(res.data.message);
     setDeleteConfirm(false);
     getAllBanner();
+    arr = [];
    }
   });
  };
@@ -192,6 +201,14 @@ const Banner = () => {
   setBannerModalData("");
  };
 
+ const checkboxCallback = (data) => {
+  arr = data?.filter((item) => item?.checked)?.map((item) => item?._id);
+ };
+
+ const deleteMultiItem = () => {
+  arr.length > 0 && setDeleteConfirm(true);
+  setData(data?.map((item) => (arr.includes(item._id) ? { ...item, checked: true } : { ...item, checked: false })));
+ };
  return (
   <>
    <MainLayout>
@@ -210,17 +227,25 @@ const Banner = () => {
          <button className="add-button me-2" onClick={() => setShow(true)}>
           <i className="fa fa-plus pe-1"></i>Add New
          </button>
-         <button className="del-button">
+         <button className="del-button" onClick={() => deleteMultiItem()}>
           <i className="fa fa-trash pe-1"></i>Delete Items
          </button>
         </div>
        </div>
       </div>
-      <div className="col-12">
-       <div className="table-custom-info">
-        <RtdDatatable data={data} columns={columns} option={option} tableCallBack={tableCallBack} />
+      {loader ? (
+       <div class="preloader">
+        <div class="status">
+         <Loader />
+        </div>
        </div>
-      </div>
+      ) : (
+       <div className="col-12">
+        <div className="table-custom-info">
+         <RtdDatatable data={data} columns={columns} option={option} tableCallBack={tableCallBack} checkboxCallback={checkboxCallback} />
+        </div>
+       </div>
+      )}
      </div>
     </div>
 
@@ -243,7 +268,7 @@ const Banner = () => {
     </Modal>
 
     <Modal show={deleteConfirm} onHide={() => setDeleteConfirm(false)} size="sm" className="cust-comn-modal p-5" centered>
-     <DeleteConfirmModal setDelete={setDeleteConfirm} setConfirmDel={deleteBanner} />
+     <DeleteConfirmModal setDelete={setDeleteConfirm} setConfirmDel={deleteBanner} delChecked={arr} />
     </Modal>
    </MainLayout>
   </>

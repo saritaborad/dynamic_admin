@@ -18,7 +18,9 @@ exports.editCustomAd = asyncHandler(async (req, res, next) => {
 
 exports.delCustomAd = asyncHandler(async (req, res, next) => {
  const { _id, delArr } = req.body;
- delArr && delArr?.length > 0 ? await CustomAd.deleteMany({ _id: { $in: delArr } }) : await CustomAd.findOneAndDelete({ _id });
+ let query = {};
+ delArr && delArr?.length > 0 ? (query._id = { $in: delArr }) : (query._id = _id);
+ await CustomAd.deleteMany(query);
  return give_response(res, 200, true, "CustomAd deleted!");
 });
 
@@ -102,7 +104,10 @@ exports.updateBanner = asyncHandler(async (req, res, next) => {
 });
 
 exports.delBanner = asyncHandler(async (req, res, next) => {
- const { _id, cusAdId } = req.body;
- const deleted = await CustomAd.findOneAndUpdate({ _id: new ObjectId(cusAdId) }, { $pull: { advertisement_custom_multi: { _id: new ObjectId(_id) } } });
+ const { _id, cusAdId, delArr } = req.body;
+ let query = {};
+ delArr && delArr?.length > 0 ? (query.$pull = { advertisement_custom_multi: { _id: { $in: delArr.map((id) => new ObjectId(id)) } } }) : (query.$pull = { advertisement_custom_multi: { _id: new ObjectId(_id) } });
+
+ await CustomAd.findOneAndUpdate({ _id: new ObjectId(cusAdId) }, query);
  return give_response(res, 200, true, "Banner deleted!");
 });

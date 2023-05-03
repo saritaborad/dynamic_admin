@@ -4,6 +4,7 @@ import { Dropdown, Modal } from "react-bootstrap";
 import { PostApi } from "../Api/apiServices";
 import { API_PATH } from "../const";
 import RtdDatatable from "./Common/DataTable/DataTable";
+import { ReactComponent as Loader } from "../Images/loader.svg";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AdTitleModal, AdTypeModal, ModeModal, NoteModal, VersionModal } from "../Modals/VersionModal";
@@ -35,6 +36,7 @@ const Version = () => {
  const [deleteConfirm, setDeleteConfirm] = useState(false);
  const [refresh, setRefresh] = useState(false);
  const [active, setActive] = useState(1);
+ const [loader, setLoader] = useState(false);
 
  const table_prefix = useLocation()?.search?.substring(1);
  const stopPropagation = (e) => e.stopPropagation();
@@ -382,6 +384,7 @@ const Version = () => {
  }, []);
 
  const getAllVersion = (search) => {
+  setLoader(true);
   let data = { table_prefix: table_prefix, ...option, search: search, verFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllVersion, data))).then((res) => {
    if (res.status === 200) {
@@ -391,15 +394,15 @@ const Version = () => {
     setVersionData(res.data.data?.allVersion);
     setVerFilter(res.data.data?.verFilter);
     setRefresh(true);
-
+    setLoader(false);
     setTableData(res.data.data?.version);
-    // setTableColumn(columns1);
     setActive(1);
    }
   });
  };
 
  const getAllAdTitle = () => {
+  setLoader(true);
   let data = { table_prefix: table_prefix, titleFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdTitle, data))).then((res) => {
    if (res.status === 200) {
@@ -408,15 +411,15 @@ const Version = () => {
     setUniqueTitle(res.data.data?.adTitleList);
     setTitleFilter(res.data.data?.titleFilter);
     setRefresh(true);
-
+    setLoader(false);
     setTableData(res.data.data?.adTitle);
-    // setTableColumn(columns2);
     setActive(2);
    }
   });
  };
 
  const getAllAdMode = () => {
+  setLoader(true);
   let data = { table_prefix: table_prefix, titleFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data))).then((res) => {
    if (res.status === 200) {
@@ -425,9 +428,8 @@ const Version = () => {
     setUniqueAdMode(res.data.data?.adModeList);
     setModeFilter(res.data.data?.modeFilter);
     setRefresh(true);
-
+    setLoader(false);
     setTableData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
-    // setTableColumn(columns3);
     setActive(3);
    }
   });
@@ -925,27 +927,57 @@ const Version = () => {
       </div>
 
       {refresh && active === 1 && (
-       <div className="col-12 mt-3">
-        <div className="table-custom-info">
-         <RtdDatatable data={tableData} columns={columns1} option={option} tableCallBack={tableCallBack} />
-        </div>
-       </div>
+       <>
+        {loader ? (
+         <div class="preloader">
+          <div class="status">
+           <Loader />
+          </div>
+         </div>
+        ) : (
+         <div className="col-12 mt-3">
+          <div className="table-custom-info">
+           <RtdDatatable data={tableData} columns={columns1} option={option} tableCallBack={tableCallBack} />
+          </div>
+         </div>
+        )}
+       </>
       )}
 
       {refresh && active === 2 && (
-       <div className="col-12 mt-3">
-        <div className="table-custom-info">
-         <RtdDatatable data={tableData} columns={columns2} option={option} tableCallBack={tableCallBack} />
-        </div>
-       </div>
+       <>
+        {loader ? (
+         <div class="preloader">
+          <div class="status">
+           <Loader />
+          </div>
+         </div>
+        ) : (
+         <div className="col-12 mt-3">
+          <div className="table-custom-info">
+           <RtdDatatable data={tableData} columns={columns2} option={option} tableCallBack={tableCallBack} />
+          </div>
+         </div>
+        )}
+       </>
       )}
 
       {refresh && active === 3 && (
-       <div className="col-12 mt-3">
-        <div className="table-custom-info">
-         <RtdDatatable data={tableData} columns={columns3} option={option} tableCallBack={tableCallBack} />
-        </div>
-       </div>
+       <>
+        {loader ? (
+         <div class="preloader">
+          <div class="status">
+           <Loader />
+          </div>
+         </div>
+        ) : (
+         <div className="col-12 mt-3">
+          <div className="table-custom-info">
+           <RtdDatatable data={tableData} columns={columns3} option={option} tableCallBack={tableCallBack} />
+          </div>
+         </div>
+        )}
+       </>
       )}
      </div>
     </div>

@@ -1,19 +1,29 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 // import Logo from "../../Images/logo.svg";
-import Accordion from "react-bootstrap/Accordion";
 import { AppContext } from "../../Context/AppContext";
 
 function Sidebar() {
+ let actId = localStorage.getItem("activeItemId");
+ let togg = localStorage.getItem("toggle");
  const [path, setPath] = useState("");
- const [activeItem, setActiveItem] = useState(null);
 
+ const [activeItemId, setActiveItemId] = useState(null);
+ const [toggle, setToggle] = useState(togg);
+
+ const handleAccordionClick = (e, itemId) => {
+  e.preventDefault();
+  setActiveItemId(itemId === activeItemId ? null : itemId);
+  localStorage.setItem("activeItemId", itemId);
+  localStorage.setItem("toggle", toggle);
+ };
  const location = useLocation();
  const { activeApp } = useContext(AppContext);
 
- useEffect(() => setPath(location.pathname.replace(/\//g, "")), []);
-
- const handleItemClick = (eventKey) => setActiveItem(eventKey === activeItem ? null : eventKey);
+ useEffect(() => {
+  setPath(location.pathname.replace(/\//g, ""));
+  console.log("iiiuyh");
+ }, []);
 
  return (
   <React.Fragment>
@@ -69,45 +79,60 @@ function Sidebar() {
       <span className="sidebar-header">APPLICATION LIST</span>
 
       <li className="sidebar-accodion">
-       <Accordion>
-        {activeApp?.length > 0 &&
-         activeApp.map((item, i) => {
-          return (
-           <div key={"sidebarItem" + i}>
-            <Accordion.Item eventKey={i}>
-             <Accordion.Header>
-              <li className="sidebar-link">
-               <Link to="#" className={path === item?.table_prefix ? "active" : ""}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                  <rect x="0" y="0" width="24" height="24"></rect>
-                  <path d="M7.5,4 L7.5,19 L16.5,19 L16.5,4 L7.5,4 Z M7.71428571,2 L16.2857143,2 C17.2324881,2 18,2.8954305 18,4 L18,20 C18,21.1045695 17.2324881,22 16.2857143,22 L7.71428571,22 C6.76751186,22 6,21.1045695 6,20 L6,4 C6,2.8954305 6.76751186,2 7.71428571,2 Z" fill="#000000" fill-rule="nonzero"></path>
-                  <polygon fill="#000000" opacity="0.3" points="7.5 4 7.5 19 16.5 19 16.5 4"></polygon>
-                 </g>
-                </svg>
-                <span>{item.title}</span>
-               </Link>
-              </li>
-             </Accordion.Header>
-             <Accordion.Body>
-              <ol style={{ listStyleType: "disc" }}>
-               <li>
-                <Link to={`/version?${item.table_prefix}`} className={`/${path + location.search}` === `/version?${item.table_prefix}` ? "active" : ""}>
-                 <span>Version</span>
+       {activeApp?.length > 0 &&
+        activeApp.map((item, i) => {
+         const itemId = item?._id;
+         return (
+          <div key={itemId}>
+           <div className="accordion">
+            <div className="accordion-item">
+             <h2 className="accordion-header">
+              <button
+               type="button"
+               aria-expanded={toggle && itemId === (activeItemId || actId)}
+               className="accordion-button"
+               onClick={(e) => {
+                handleAccordionClick(e, itemId);
+                setToggle(itemId === (activeItemId || actId) ? !toggle : true);
+               }}
+              >
+               <li className="sidebar-link">
+                <Link className="" to="#">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                   <rect x="0" y="0" width="24" height="24"></rect>
+                   <path d="M7.5,4 L7.5,19 L16.5,19 L16.5,4 L7.5,4 Z M7.71428571,2 L16.2857143,2 C17.2324881,2 18,2.8954305 18,4 L18,20 C18,21.1045695 17.2324881,22 16.2857143,22 L7.71428571,22 C6.76751186,22 6,21.1045695 6,20 L6,4 C6,2.8954305 6.76751186,2 7.71428571,2 Z" fill="#000000" fill-rule="nonzero"></path>
+                   <polygon fill="#000000" opacity="0.3" points="7.5 4 7.5 19 16.5 19 16.5 4"></polygon>
+                  </g>
+                 </svg>
+                 <span>{item.title}</span>
                 </Link>
                </li>
-               <li>
-                <Link to={`/pp?${item.table_prefix}`} className={`/${path + location.search}` === `/pp?${item.table_prefix}` ? "active" : ""}>
-                 <span>Privacy Policy</span>
-                </Link>
-               </li>
-              </ol>
-             </Accordion.Body>
-            </Accordion.Item>
+              </button>
+             </h2>
+             {console.log(itemId, activeItemId)}
+             {console.log(actId, "jsficg")}
+             <div className={`accordion-collapse collapse ${toggle && itemId === (activeItemId || actId) ? "show" : ""}`}>
+              <div className="accordion-body">
+               <ol style={{ listStyleType: "disc" }}>
+                <li onClick={(e) => e.preventDefault()}>
+                 <Link className={`/${path + location.search}` === `/version?${item.table_prefix}` ? "active" : ""} to={`/version?${item.table_prefix}`}>
+                  <span>Version</span>
+                 </Link>
+                </li>
+                <li onClick={(e) => e.preventDefault()}>
+                 <Link className={`/${path + location.search}` === `/pp?${item.table_prefix}` ? "active" : ""} to={`/pp?${item.table_prefix}`}>
+                  <span>Privacy Policy</span>
+                 </Link>
+                </li>
+               </ol>
+              </div>
+             </div>
+            </div>
            </div>
-          );
-         })}
-       </Accordion>
+          </div>
+         );
+        })}
       </li>
      </ul>
      <div className="sidebar-log-fix">
