@@ -1,0 +1,1 @@
+=> when using dynamic accordian which render item which redirects to different page then state gets cleared when clicking on item so accordian collapse => save active key in local storage and then use

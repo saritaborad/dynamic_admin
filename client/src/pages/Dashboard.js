@@ -203,10 +203,12 @@ const Dashboard = () => {
            <span className="pe-2"> Date:</span>
            <div className="position-relative">
             <DateRangePicker initialSettings={"today"} onApply={(e, picker) => handleApply(e, picker)}>
-             <input className="form-control datepicker ps-5 pe-4" />
+             <input className="form-control datepicker ps-5 pe-4" id="cal" />
             </DateRangePicker>
             <div className="dash-cal">
-             <img src={calender} alt="cal" />
+             <label htmlFor="cal">
+              <img src={calender} alt="cal" />
+             </label>
             </div>
            </div>
           </div>
