@@ -17,7 +17,7 @@ const connectDB = () => {
 const connClientDB = () => {
  const client = new MongoClient(process.env.MONGO_URI);
  client.connect();
- const db = client.db("demo1");
+ const db = client.db("dynamic_admin_new");
  return db;
 };
 

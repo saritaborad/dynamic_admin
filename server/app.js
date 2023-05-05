@@ -22,7 +22,7 @@ const app = express();
 app.use("/dynamic_admin/images", express.static(path.join(__dirname, "dynamic_admin/images")));
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: "http://piks.in:5000", credentials: true }));
 app.use(cookieParser());
 app.use(session({ key: "sid", secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
 

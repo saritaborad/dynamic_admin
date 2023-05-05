@@ -1,30 +1,29 @@
 import React, { useContext, useEffect, useState } from "react";
+import moment from "moment";
+import { toast } from "react-toastify";
 import MainLayout from "../components/layout/MainLayout";
 import RtdDatatable from "./Common/DataTable/DataTable";
 import { Dropdown, Modal } from "react-bootstrap";
 import { ReactComponent as Loader } from "../Images/loader.svg";
 import { PostApi } from "../Api/apiServices";
 import { API_PATH } from "../const";
-import { toast } from "react-toastify";
 import AppModal from "../Modals/AppModal";
 import { AppContext } from "../Context/AppContext";
 import { DeleteConfirmModal } from "../Modals/DeleteConfirmModal";
-import moment from "moment";
 import { StatusFilter } from "../components/Common/Common";
 
 let arr = [];
 
 const ManageAdmin = () => {
+ const { setActiveApp } = useContext(AppContext);
  const [title, setTitle] = useState("");
  const [show, setShow] = useState(false);
  const [update, setUpdate] = useState(false);
  const [id, setId] = useState("");
  const [data, setData] = useState([]);
  const [selectedItem, setSelectedItem] = useState("All");
- const { setActiveApp } = useContext(AppContext);
  const [deleteConfirm, setDeleteConfirm] = useState(false);
  const [loader, setLoader] = useState(false);
-
  const [option, set_option] = useState({
   sizePerPage: 10,
   search: "",
@@ -61,7 +60,7 @@ const ManageAdmin = () => {
     filter: false,
     sort: false,
     customBodyRender: (data, i) => {
-     return <div>{data[i]?.enable == 1 ? "Online" : "Offline"}</div>;
+     return <div>{data[i]?.enable === 1 ? "Online" : "Offline"}</div>;
     },
    },
   },
@@ -99,7 +98,6 @@ const ManageAdmin = () => {
        ) : (
         <span className="p-2"></span>
        )}
-
        <div className="cust-drop-down-menu">
         <Dropdown drop="left">
          <Dropdown.Toggle className="cust-drop-btn" id="dropdown">
@@ -138,11 +136,9 @@ const ManageAdmin = () => {
          </Dropdown.Menu>
         </Dropdown>
        </div>
-
        <div className="form-check form-switch" key={data[i]?._id}>
-        <input className="form-check-input" type="checkbox" id="offer-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
+        <input className="form-check-input" type="checkbox" id="offer-status" defaultChecked={data[i]?.enable === 1 ? true : false} onChange={(e) => updateApp({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
        </div>
-
        <span
         style={{ color: "red", cursor: "pointer" }}
         onClick={() => {
@@ -164,7 +160,7 @@ const ManageAdmin = () => {
 
  const getAllApp = (status, search) => {
   setLoader(true);
-  let data = status || status == 0 ? { enable: status, ...option } : { ...option, search: search };
+  let data = status || status === 0 ? { enable: status, ...option } : { ...option, search: search };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp, data)))
    .then((res) => {
     if (res.status === 200) {
@@ -333,8 +329,8 @@ const ManageAdmin = () => {
        </div>
       </div>
       {loader ? (
-       <div class="preloader">
-        <div class="status">
+       <div className="preloader">
+        <div className="status">
          <Loader />
         </div>
        </div>

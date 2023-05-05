@@ -8,13 +8,12 @@ import { ImagePostApi } from "../Api/apiServices";
 import { API_PATH } from "../const";
 
 const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow }) => {
+ const customAdRef = useRef();
  const [banner, setBanner] = useState("");
  const [icon, setIcon] = useState("");
  const [bannerUrl, setBannerUrl] = useState("");
  const [iconUrl, setIconUrl] = useState("");
  const [error, setError] = useState(false);
-
- const customAdRef = useRef();
 
  const uploadImage = (e, type) => {
   (iconUrl || bannerUrl) && setError(false);
@@ -42,11 +41,11 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
      innerRef={customAdRef}
      enableReinitialize
      initialValues={{
+      banner: "",
+      icon: "",
       _id: update && customAd?._id,
       add_title: update ? customAd?.add_title : "",
       add_desc: update ? customAd?.add_desc : "",
-      banner: "",
-      icon: "",
       install: update ? customAd?.install : "",
       color: update ? customAd?.color : "#000000",
       code: update ? customAd?.color : "#000000",
@@ -95,14 +94,12 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
          <center>{error && <span className="text-danger">Banner & icon is required.</span>}</center>
         </div>
        </div>
-
        <div className="form-group row pt-3">
         <div className="col-xl-7">
          <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="banner">
           Browse Banner
           <input type="file" name="banner" className="d-none" id="banner" accept="image/*" onChangeCapture={(e) => uploadImage(e, "banner")} />
          </label>
-         {/* {errorContainer(runform, "banner")} */}
         </div>
 
         <div className="col-xl-5">
@@ -110,10 +107,8 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
           Browse Icon
           <input type="file" name="icon" className="d-none" id="icon" accept="image/*" onChangeCapture={(e) => uploadImage(e, "icon")} />
          </label>
-         {/* {errorContainer(runform, "icon")} */}
         </div>
        </div>
-
        <div className="form-group pt-3">
         <label htmlFor="title" className="form-control-label pb-1">
          Title:
@@ -129,7 +124,6 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
         <textarea name="add_desc" className="form-control cad" rows="3" id="description" placeholder="Enter description" {...formAttr(runform, "add_desc")}></textarea>
         {errorContainer(runform, "add_desc")}
        </div>
-
        <div className="form-group pt-3">
         <label htmlFor="playstorelink" className="form-control-label pb-1">
          Playstore Link:
@@ -137,7 +131,6 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
         <input type="text" name="install" className="form-control cad" id="playstorelink" placeholder="Enter playstore link" {...formAttr(runform, "install")} />
         {errorContainer(runform, "install")}
        </div>
-
        <div className="form-group row pt-3">
         <div className="col-xl-4">
          <label htmlFor="rating" className="form-control-label pb-1">
@@ -161,7 +154,6 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
          {errorContainer(runform, "download")}
         </div>
        </div>
-
        <div className="form-group row pt-3">
         <div className="col-xl-8">
          <label htmlFor="clrBTCA" className="form-control-label">
@@ -177,7 +169,6 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
          <input type="text" className="form-control cad" name="code" id="code" {...formAttr(runform, "code")} onBlurCapture={(e) => e.target.value && runform.setFieldValue("color", e.target.value)} />
         </div>
        </div>
-
        <div className="text-end mt-4 mb-2 me-1">
         <button type="button" className="btn-smart-comn2 me-2" onClick={() => setShow(false)}>
          Close
@@ -262,7 +253,6 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
           </label>
          </center>
         </div>
-
         <div className="col-xl-5">
          <center>
           <label htmlFor="">
@@ -274,7 +264,6 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
          <center>{error && <span className="text-danger">Banner & icon is required.</span>}</center>
         </div>
        </div>
-
        <div className="form-group row pt-3">
         <div className="col-xl-7">
          <label className="btn-green btn-block text-center" style={{ padding: "10px" }} htmlFor="banner">
@@ -282,7 +271,6 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
           <input type="file" name="banner" className="d-none" id="banner" accept="image/*" onChangeCapture={(e) => uploadImage(e)} />
          </label>
         </div>
-
         <div
          className="col-xl-5"
          onClick={() => {
@@ -296,7 +284,6 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
          </span>
         </div>
        </div>
-
        <div className="form-group pt-3">
         <label htmlFor="design_page" className="form-control-label pb-1">
          Design Page:
@@ -304,7 +291,6 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
         <input type="text" name="design_page" className="form-control cad" id="design_page" placeholder="Enter design page link" {...formAttr(runform, "design_page")} />
         {errorContainer(runform, "design_page")}
        </div>
-
        <div className="form-group row pt-3">
         <div className="col-xl-8">
          <label htmlFor="clrBTCA" className="form-control-label">
@@ -320,7 +306,6 @@ const BannerModal = ({ update, bannerAd, cusAdId, editBanner, submitFormData, ap
          <input type="text" className="form-control cad" name="code" id="code" {...formAttr(runform, "code")} onBlurCapture={(e) => e.target.value && runform.setFieldValue("color", e.target.value)} />
         </div>
        </div>
-
        <div className="text-end mt-4 mb-2 me-1">
         <button type="button" className="btn-smart-comn2 me-2" onClick={() => appModalClose()}>
          Close
@@ -392,7 +377,6 @@ const IconModal = ({ update, bannerAd, setShow, cusAdId, setIconShow, setIconUrl
       />
      </div>
     </div>
-
     <div className="form-group row pt-3">
      <div className="col-xl-5">
       <label className=" text-center" style={{ padding: "10px" }} htmlFor="icon">
@@ -400,7 +384,6 @@ const IconModal = ({ update, bannerAd, setShow, cusAdId, setIconShow, setIconUrl
       </label>
      </div>
     </div>
-
     <div className="text-end mt-4 mb-2 me-1">
      <button
       type="button"

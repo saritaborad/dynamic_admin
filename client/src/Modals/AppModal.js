@@ -22,9 +22,7 @@ const AppModal = ({ update, title, id, updateApp, submitFormData, appModalClose 
      validationSchema={Yup.object({
       title: Yup.string().required("Title is required."),
      })}
-     onSubmit={(formData, { resetForm }) => {
-      update ? updateApp(formData, resetForm) : submitFormData(formData, resetForm);
-     }}
+     onSubmit={(formData, { resetForm }) => (update ? updateApp(formData, resetForm) : submitFormData(formData, resetForm))}
     >
      {(runform) => (
       <form onSubmit={runform.handleSubmit}>

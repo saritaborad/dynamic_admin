@@ -1,4 +1,4 @@
-const ApiBaseUrl = process.env.REACT_APP_LOCAL_URL;
+const ApiBaseUrl = Number(process.env.REACT_APP_PRODUCTION) === 1 ? process.env.REACT_APP_LIVE_API_URL : process.env.REACT_APP_LOCAL_API_URL;
 
 export const API_PATH = {
  imgUpload: ApiBaseUrl + "/img/upload",

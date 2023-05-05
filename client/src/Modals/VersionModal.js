@@ -31,9 +31,7 @@ export const VersionModal = ({ isUpdate, version, adTitle, adMode, table_prefix,
       features: Yup.string().required("Feature is required."),
       code: Yup.string().required("Code is required."),
      })}
-     onSubmit={(formData, { resetForm }) => {
-      submitFormData(formData, resetForm);
-     }}
+     onSubmit={(formData, { resetForm }) => submitFormData(formData, resetForm)}
     >
      {(runform) => (
       <form onSubmit={runform.handleSubmit}>
@@ -60,7 +58,6 @@ export const VersionModal = ({ isUpdate, version, adTitle, adMode, table_prefix,
           <input type="number" name="code" placeholder="Enter version code" className="form-control style-input-className" {...formAttr(runform, "code")} />
           {errorContainer(runform, "code")}
          </div>
-
          <div className="row">
           <div className="col-12 d-flex  mt-3">
            <div className="col-4 d-flex align-items-center">
@@ -78,7 +75,6 @@ export const VersionModal = ({ isUpdate, version, adTitle, adMode, table_prefix,
              />
             </div>
            </div>
-
            <div className="col-8 d-flex align-items-center">
             <label className="col-4"> Is forcefully ?</label>
             <div className="form-check form-switch">
@@ -144,7 +140,7 @@ export const NoteModal = ({ version, setNoteShow, submitFormData }) => {
          <label htmlFor="version_note" className="form-control-label form-lbl-class  mb-1">
           Note:
          </label>
-         <textarea class="form-control" name="version_note" id="version_note" placeholder="Enter note" cols="85" rows="15" {...formAttr(runform, "version_note")}></textarea>
+         <textarea className="form-control" name="version_note" id="version_note" placeholder="Enter note" cols="85" rows="15" {...formAttr(runform, "version_note")}></textarea>
          {errorContainer(runform, "version_note")}
         </div>
        </div>
@@ -188,9 +184,7 @@ export const ModeModal = ({ isUpdate, adMode, latestVersion, allversion, table_p
       ad_token: Yup.string().required("Advertisement id required."),
       ad_keyword: Yup.string().required("Keyword required."),
      })}
-     onSubmit={(formData, { resetForm }) => {
-      submitAdMode(formData, resetForm);
-     }}
+     onSubmit={(formData, { resetForm }) => submitAdMode(formData, resetForm)}
     >
      {(runform) => (
       <form onSubmit={runform.handleSubmit}>
@@ -249,9 +243,7 @@ export const AdTitleModal = ({ isUpdate, adTitle, latestVersion, table_prefix, s
      validationSchema={Yup.object({
       adm_name: Yup.string().required("Title is required."),
      })}
-     onSubmit={(formData, { resetForm }) => {
-      submitAdTitle(formData, resetForm);
-     }}
+     onSubmit={(formData, { resetForm }) => submitAdTitle(formData, resetForm)}
     >
      {(runform) => (
       <form onSubmit={runform.handleSubmit}>
@@ -320,16 +312,14 @@ export const AdTypeModal = ({ setAdShow, submitAdType }) => {
      validationSchema={Yup.object({
       title: Yup.string().required("Title is required."),
      })}
-     onSubmit={(formData, { resetForm }) => {
-      submitAdType(formData, resetForm);
-     }}
+     onSubmit={(formData, { resetForm }) => submitAdType(formData, resetForm)}
     >
      {(runform) => (
       <form onSubmit={runform.handleSubmit}>
        <div className="row">
         <div className="col-md-12 mb-3" id="data_view">
          <div className="form-group ">
-          <label htmlFor="recipient- onClick={stopPropagation}name" className="form-control-label mt-3 mb-2">
+          <label htmlFor="title" className="form-control-label mt-3 mb-2">
            Ad-type
           </label>
           <input type="text" name="vnm" className="form-control" id="title" placeholder="Enter Ad-type" {...formAttr(runform, "title")} />
@@ -352,5 +342,3 @@ export const AdTypeModal = ({ setAdShow, submitAdType }) => {
   </>
  );
 };
-
-

@@ -1,12 +1,10 @@
+import "bootstrap-daterangepicker/daterangepicker.css";
+import React, { useEffect, useState } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import Chart from "react-apexcharts";
-import React, { useEffect, useState } from "react";
-import { ReactComponent as Loader } from "../Images/loader.svg";
-import calender from "../Images/calendar.svg";
 import moment from "moment";
+import calender from "../Images/calendar.svg";
 import DateRangePicker from "react-bootstrap-daterangepicker";
-import "bootstrap-daterangepicker/daterangepicker.css";
-
 import { API_PATH } from "../const";
 import { PostApi } from "../Api/apiServices";
 
@@ -15,11 +13,8 @@ const Dashboard = () => {
  const [allVersion, setAllVersion] = useState([]);
  const [version, setVersion] = useState("");
  const [category, setCategories] = useState("");
- const [loader, setLoader] = useState(false);
-
  const [startDate, setStartDate] = useState("");
  const [endDate, setEndDate] = useState("");
-
  const [todayData, setTodayData] = useState(false);
  const [lastThirty, setLastThirty] = useState(false);
  const [yesterday, setYesterday] = useState(false);
@@ -47,7 +42,6 @@ const Dashboard = () => {
     show: true,
    },
   },
-
   yaxis: [
    {
     labels: {
@@ -97,13 +91,11 @@ const Dashboard = () => {
  useEffect(() => getDashboard(), []);
 
  const getDashboard = (start, end, app_version) => {
-  setLoader(true);
   let date = { startDate: start ? start : moment(Date.now()).format("YYYY-MM-DD"), endDate: end ? end : moment(Date.now()).format("YYYY-MM-DD"), app_version: app_version };
   const getDashboardCountPromise = new Promise((resolve, reject) => resolve(PostApi(API_PATH.getDashboard, date)));
 
   getDashboardCountPromise.then((response) => {
-   if (response.status == 200) {
-    setLoader(false);
+   if (response.status === 200) {
     setAllVersion(response.data.data?.allVersion);
     setInstallData(response.data.data?.y);
     setCategories(response.data.data?.x);
@@ -177,57 +169,49 @@ const Dashboard = () => {
         </div>
        </div>
       </div>
-      {loader ? (
-       <div class="preloader">
-        <div class="status">
-         <Loader />
-        </div>
-       </div>
-      ) : (
-       <div className="chart-info">
-        <div className="row">
-         <div className="dash-month pt-5 pb-4">
-          <div className="col-lg-3 col-md-6  picker ">
-           <span className="pe-2"> Version:</span>
-           <select className="form-select bg-white" onChange={(e) => changeVersion(e.target.value)}>
-            <option value="">All Version</option>
-            {allVersion?.length > 0 &&
-             allVersion?.map((item, i) => (
-              <option key={i} value={item}>
-               {item}
-              </option>
-             ))}
-           </select>
-          </div>
-          <div className="col-lg-5 col-md-6 picker ">
-           <span className="pe-2"> Date:</span>
-           <div className="position-relative">
-            <DateRangePicker initialSettings={"today"} onApply={(e, picker) => handleApply(e, picker)}>
-             <input className="form-control datepicker ps-5 pe-4" id="cal" />
-            </DateRangePicker>
-            <div className="dash-cal">
-             <label htmlFor="cal">
-              <img src={calender} alt="cal" />
-             </label>
-            </div>
-           </div>
-          </div>
+      <div className="chart-info">
+       <div className="row">
+        <div className="dash-month pt-5 pb-4">
+         <div className="col-lg-3 col-md-6  picker ">
+          <span className="pe-2"> Version:</span>
+          <select className="form-select bg-white" onChange={(e) => changeVersion(e.target.value)}>
+           <option value="">All Version</option>
+           {allVersion?.length > 0 &&
+            allVersion?.map((item, i) => (
+             <option key={i} value={item}>
+              {item}
+             </option>
+            ))}
+          </select>
          </div>
-        </div>
-        <div className="row me-0" style={{ display: "flex", justifyContent: "center" }}>
-         <div className="col-lg-9 col-md-7 pe-0 mb-3 ">
-          <div className="chart-box">
-           <div className="dash-part-hdr-top p-4">
-            <span style={{ color: "#646c9a", fontSize: "21px", fontWeight: "500" }}>Total Downloads: {totalDownload}</span>
-           </div>
-           <div className="chart-main-part">
-            <Chart options={chart} series={chart.series} height={300} type="line" />
+         <div className="col-lg-5 col-md-6 picker ">
+          <span className="pe-2"> Date:</span>
+          <div className="position-relative">
+           <DateRangePicker onApply={(e, picker) => handleApply(e, picker)}>
+            <input className="form-control datepicker ps-5 pe-4" id="cal" />
+           </DateRangePicker>
+           <div className="dash-cal">
+            <label htmlFor="cal">
+             <img src={calender} alt="cal" />
+            </label>
            </div>
           </div>
          </div>
         </div>
        </div>
-      )}
+       <div className="row me-0" style={{ display: "flex", justifyContent: "center" }}>
+        <div className="col-lg-9 col-md-7 pe-0 mb-3 ">
+         <div className="chart-box">
+          <div className="dash-part-hdr-top p-4">
+           <span style={{ color: "#646c9a", fontSize: "21px", fontWeight: "500" }}>Total Downloads: {totalDownload}</span>
+          </div>
+          <div className="chart-main-part">
+           <Chart options={chart} series={chart.series} height={300} type="line" />
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
      </div>
     </div>
    </MainLayout>

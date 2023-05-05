@@ -21,9 +21,7 @@ const Banner = () => {
  const [iconUrl, setIconUrl] = useState("");
  const [loader, setLoader] = useState(false);
  const [bannerModalData, setBannerModalData] = useState("");
-
  const [deleteConfirm, setDeleteConfirm] = useState(false);
-
  const [show, setShow] = useState(false);
  const [iconShow, setIconShow] = useState(false);
 
@@ -85,7 +83,7 @@ const Banner = () => {
    options: {
     filter: false,
     sort: false,
-    customBodyRender: (data, i) => <div>{data[i]?.enable == 1 ? "Online" : "Offline"}</div>,
+    customBodyRender: (data, i) => <div>{data[i]?.enable === 1 ? "Online" : "Offline"}</div>,
    },
   },
   {
@@ -119,7 +117,7 @@ const Banner = () => {
        </span>
 
        <div className="form-check form-switch pb-1" key={i}>
-        <input className="form-check-input" type="checkbox" id="cad-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => editBanner({ _id: data[i]._id, enable: e.target.checked ? 1 : 0, cusAdId: cusAdId?._id })} />
+        <input className="form-check-input" type="checkbox" id="cad-status" defaultChecked={data[i]?.enable === 1 ? true : false} onChange={(e) => editBanner({ _id: data[i]._id, enable: e.target.checked ? 1 : 0, cusAdId: cusAdId?._id })} />
        </div>
 
        <span
@@ -209,6 +207,7 @@ const Banner = () => {
   arr.length > 0 && setDeleteConfirm(true);
   setData(data?.map((item) => (arr.includes(item._id) ? { ...item, checked: true } : { ...item, checked: false })));
  };
+
  return (
   <>
    <MainLayout>
@@ -217,7 +216,12 @@ const Banner = () => {
       <div className="row">
        <div className="col-12">
         <div className="comn-inr-title d-flex align-items-center">
-         <h1>Manage Banner</h1>
+         <h1 style={{ fontSize: "1.2rem" }}>
+          Manage Multiple Banner
+          <span className="ps-3" style={{ color: "#5578eb", fontSize: "1.2rem" }}>
+           {cusAdId?.add_title}
+          </span>
+         </h1>
         </div>
        </div>
       </div>
@@ -234,8 +238,8 @@ const Banner = () => {
        </div>
       </div>
       {loader ? (
-       <div class="preloader">
-        <div class="status">
+       <div className="preloader">
+        <div className="status">
          <Loader />
         </div>
        </div>

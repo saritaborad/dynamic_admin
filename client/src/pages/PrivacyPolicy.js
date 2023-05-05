@@ -9,27 +9,24 @@ import { API_PATH } from "../const";
 import { toast } from "react-toastify";
 
 const PrivacyPolicy = () => {
+ const policyRef = useRef();
  const location = useLocation();
  let appName = location.search?.substring(1);
+
  const [policy, setPolicy] = useState();
- const policyRef = useRef();
 
  useEffect(() => getPolicy(), []);
 
  const getPolicy = () => {
   let data = { table_prefix: appName };
   new Promise((resolve) => resolve(PostApi(API_PATH.getPolicy, data))).then((res) => {
-   if (res.status === 200) {
-    setPolicy(res.data.data?.content);
-   }
+   if (res.status === 200) setPolicy(res.data.data?.content);
   });
  };
 
- const handleReset = () => {
-  policyRef.current.setFieldValue("content", policy);
- };
+ const handleReset = () => policyRef.current.setFieldValue("content", policy);
 
- const submitFormData = (formData, resetForm) => {
+ const submitFormData = (formData) => {
   new Promise((resolve) => resolve(PostApi(API_PATH.changePolicy, formData))).then((res) => {
    if (res.status === 200) {
     getPolicy();
@@ -37,6 +34,7 @@ const PrivacyPolicy = () => {
    }
   });
  };
+
  return (
   <>
    <MainLayout>
@@ -45,14 +43,13 @@ const PrivacyPolicy = () => {
       <div className="row">
        <div className="col-12">
         <div className="comn-inr-title d-flex align-items-center">
-         <h1>Privacy Policy</h1>
+         <h1>Manage Privacy Policy</h1>
         </div>
        </div>
       </div>
-
-      <div class="">
-       <div class="">
-        <div class="row">
+      <div className="">
+       <div className="">
+        <div className="row">
          <Formik
           enableReinitialize
           innerRef={policyRef}
@@ -63,27 +60,26 @@ const PrivacyPolicy = () => {
           validationSchema={Yup.object({
            content: Yup.string().required("Content is required."),
           })}
-          onSubmit={(formData, { resetForm }) => {
-           submitFormData(formData, resetForm);
-          }}
+          onSubmit={(formData, { resetForm }) => submitFormData(formData, resetForm)}
          >
           {(runform) => (
            <form onSubmit={runform.handleSubmit}>
-            <div class="">
-             <div class="form-group ">
-              {/* <label className="mb-2" for="exampleTextarea">
-               Add privacy policy
-              </label> */}
-              <textarea class="form-control" id="exampleTextarea" placeholder="Enter privacy policy content..." name="content" rows="20" {...formAttr(runform, "content")}></textarea>
+            <div className="">
+             <div className="form-group ">
+              <span className="">
+               <i className="fa fa-info-circle pe-2" style={{ color: "#5D78FF" }}></i>
+               paste your html code here:
+              </span>
+              <textarea className="form-control mt-2" id="exampleTextarea" placeholder="Enter privacy policy content..." name="content" rows="20" {...formAttr(runform, "content")}></textarea>
               {errorContainer(runform, "content")}
              </div>
             </div>
-            <div class="">
-             <div class="mt-2">
-              <button type="submit" class="btn-smart-comn me-2">
+            <div className="">
+             <div className="mt-2">
+              <button type="submit" className="btn-smart-comn me-2">
                Submit
               </button>
-              <button type="button" class="btn-smart-comn2" onClick={() => handleReset()}>
+              <button type="button" className="btn-smart-comn2" onClick={() => handleReset()}>
                Reset
               </button>
              </div>

@@ -10,7 +10,7 @@ import Dashboard from "./pages/Dashboard";
 const RouteMain = () => {
  return (
   <>
-   <BrowserRouter>
+   <BrowserRouter basename="https://piks.in/dynamic">
     <Routes>
      <Route path="/dashboard" strict element={<Dashboard />} />
      <Route path="/manage-admin" strict element={<ManageAdmin />} />
@@ -18,6 +18,7 @@ const RouteMain = () => {
      <Route path="/pp" element={<PrivacyPolicy />} />
      <Route path="/custom-ad" element={<CustomAd />} />
      <Route path="/banner" element={<Banner />} />
+     <Route path="*" element={<Dashboard />} />
     </Routes>
    </BrowserRouter>
   </>

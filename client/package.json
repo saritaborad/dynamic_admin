@@ -1,6 +1,7 @@
 {
- "name": "admin_panel",
+ "name": "dynamic_admin",
  "version": "0.1.0",
+ "homepage": "https://piks.in/dynamic/",
  "private": true,
  "dependencies": {
   "@testing-library/jest-dom": "^5.16.5",
@@ -22,7 +23,11 @@
   "react-scripts": "5.0.1",
   "react-toastify": "^9.0.8",
   "web-vitals": "^2.1.4",
-  "yup": "^0.32.11"
+  "yup": "^0.32.11",
+  "@fortawesome/fontawesome-svg-core": "^6.4.0",
+  "@fortawesome/free-regular-svg-icons": "^6.4.0",
+  "@fortawesome/free-solid-svg-icons": "^6.4.0",
+  "@fortawesome/react-fontawesome": "^0.2.0"
  },
  "scripts": {
   "start": "react-scripts start",

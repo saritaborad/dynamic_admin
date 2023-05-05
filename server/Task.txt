@@ -31,16 +31,12 @@
 
 
     Frontend
-    => custom Ad multiple delete functionality 
-    => Manage admin multiple delete functionality 
-    => Banner multiple delete 
-    => Manage admin move up down UI changes
-    => Loader setting in banner, customAd, mange admin
-    Backend
-    => delCustomAd API multiple item delete functionality added
-    => deleteApp API multiple item delete 
-    => deleteBanner API multiple item del
-    => changes in total download dashboard API 
+    => session secret key issue resolved
+    => mongodb connect url over server issue resolved
+    => react project is not working on https
+    => change api url 
+    => how to make project work on subdirectory
+ 
 
 
 

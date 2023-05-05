@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import RtdDatatable from "./Common/DataTable/DataTable";
 import { Dropdown, Modal } from "react-bootstrap";
-import Arrow from "../Images/arrow-top.svg";
-import { ReactComponent as UpDownArr } from "../Images/up-down-arrow.svg";
 import { API_PATH } from "../const";
 import { toast } from "react-toastify";
 import { CustomAdModal } from "../Modals/CustomAdModal";
@@ -23,9 +21,7 @@ const CustomAd = () => {
  const [data, setData] = useState([]);
  const [loader, setLoader] = useState(false);
  const [selectedItem, setSelectedItem] = useState("All");
-
  const [deleteConfirm, setDeleteConfirm] = useState(false);
-
  const [option, set_option] = useState({
   sizePerPage: 10,
   search: "",
@@ -94,7 +90,7 @@ const CustomAd = () => {
    options: {
     filter: false,
     sort: false,
-    customBodyRender: (data, i) => <div>{data[i]?.enable == 1 ? "Online" : "Offline"}</div>,
+    customBodyRender: (data, i) => <div>{data[i]?.enable === 1 ? "Online" : "Offline"}</div>,
    },
   },
   {
@@ -141,11 +137,9 @@ const CustomAd = () => {
          </Dropdown.Menu>
         </Dropdown>
        </div>
-
        <div className="form-check form-switch" key={i}>
-        <input className="form-check-input" type="checkbox" id="cad-status" defaultChecked={data[i]?.enable == 1 ? true : false} onChange={(e) => updateCusAd({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
+        <input className="form-check-input" type="checkbox" id="cad-status" defaultChecked={data[i]?.enable === 1 ? true : false} onChange={(e) => updateCusAd({ _id: data[i]._id, enable: e.target.checked ? 1 : 0 })} />
        </div>
-
        <span
         style={{ color: "red", cursor: "pointer" }}
         onClick={() => {
@@ -261,8 +255,8 @@ const CustomAd = () => {
        </div>
       </div>
       {loader ? (
-       <div class="preloader">
-        <div class="status">
+       <div className="preloader">
+        <div className="status">
          <Loader />
         </div>
        </div>

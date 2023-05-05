@@ -2,8 +2,8 @@ import axios from "axios";
 
 export const GetApi = async (path) => {
  let token_Data = "";
- if (localStorage.getItem("strusertoken")) {
-  token_Data = localStorage.getItem("strusertoken");
+ if (localStorage.getItem("dynamic_admin")) {
+  token_Data = localStorage.getItem("dynamic_admin");
  }
  let headers = { Authorization: token_Data };
  const GetApiData = await fetch(path, { headers: headers })
@@ -31,31 +31,11 @@ export const PostApi = (path, data) => {
  });
 };
 
-export const ImageApi = async (path, body) => {
- let token_Data = "";
- if (localStorage.getItem("strusertoken")) {
-  token_Data = localStorage.getItem("strusertoken");
- }
- const options = {
-  method: "POST",
-  headers: { Authorization: token_Data },
-  body: body,
- };
- const PostApiData = await fetch(path, options)
-  .then((response) => {
-   return response;
-  })
-  .catch((err) => {
-   return err.response;
-  });
- return PostApiData;
-};
-
 export function ImagePostApi(path, body) {
  let Ctype = "multipart/form-data";
  let token = "";
- if (localStorage.getItem("startgeekuser")) {
-  token = "Bearer " + localStorage.getItem("startgeekuser");
+ if (localStorage.getItem("dynamic_admin")) {
+  token = "Bearer " + localStorage.getItem("dynamic_admin");
  }
  let headers = { Authorization: token, "Content-Type": Ctype, Accept: "application/pdf" };
  const PostApiData = axios
@@ -64,10 +44,7 @@ export function ImagePostApi(path, body) {
    return response;
   })
   .catch((err) => {
-   if (err.response.status === 401) {
-    window.location.href = "/login";
-   }
-   return err.response;
+   return err;
   });
  return PostApiData;
 }

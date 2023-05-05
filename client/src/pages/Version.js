@@ -96,7 +96,6 @@ const Version = () => {
     },
    },
   },
-
   {
    value: "action",
    label: "Action",
@@ -128,7 +127,6 @@ const Version = () => {
        >
         <i className="fa fa-edit "></i>
        </span>
-
        <span
         style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
         onClick={() => {
@@ -176,12 +174,8 @@ const Version = () => {
    options: {
     filter: false,
     sort: false,
-    // customBodyRender: (data, i) => {
-    //  return <span className={data[i]?.enabled === 1 ? "online" : "offline"}>{data[i]?.enabled === 1 ? "Online" : "Offline"}</span>;
-    // },
    },
   },
-
   {
    value: "enable",
    label: "Status",
@@ -221,7 +215,7 @@ const Version = () => {
          className="form-check-input"
          type="checkbox"
          id="offer-status"
-         defaultChecked={data[i]?.enable == 1 ? true : false}
+         defaultChecked={data[i]?.enable === 1 ? true : false}
          onChange={(e) => {
           updateStatus(false, { _id: data[i]?._id, status: true, enable: e.target.checked ? 1 : 0, version_Id: data[i]?.version_Id, table_prefix: table_prefix }, 2);
          }}
@@ -349,7 +343,7 @@ const Version = () => {
          className="form-check-input"
          type="checkbox"
          id={`mode${i}`}
-         defaultChecked={data[i]?.enable == 1 ? true : false}
+         defaultChecked={data[i]?.enable === 1 ? true : false}
          onChange={(e) => {
           onlinePosition(data[i], i, e.target.checked ? 1 : 0, data[i]?.ad_keyword, `mode${i}`);
          }}
@@ -717,7 +711,6 @@ const Version = () => {
                </label>
               </Dropdown.Item>
              </li>
-
              {versionData &&
               versionData?.length > 0 &&
               versionData?.map((item, i) => {
@@ -835,7 +828,6 @@ const Version = () => {
                );
               })}
             </ul>
-            {/* <Dropdown.Divider /> */}
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-4 ms-2">
@@ -872,7 +864,6 @@ const Version = () => {
                </label>
               </Dropdown.Item>
              </li>
-
              {uniqueAdMode?.length > 0 &&
               uniqueAdMode?.map((item, i) => {
                return (
@@ -887,7 +878,6 @@ const Version = () => {
                );
               })}
             </ul>
-
             <div className="row dropdown-footer">
              <div className="col-12 d-flex">
               <div className="col-4  ms-2">
@@ -925,12 +915,11 @@ const Version = () => {
         </div>
        </div>
       </div>
-
       {refresh && active === 1 && (
        <>
         {loader ? (
-         <div class="preloader">
-          <div class="status">
+         <div className="preloader">
+          <div className="status">
            <Loader />
           </div>
          </div>
@@ -943,12 +932,11 @@ const Version = () => {
         )}
        </>
       )}
-
       {refresh && active === 2 && (
        <>
         {loader ? (
-         <div class="preloader">
-          <div class="status">
+         <div className="preloader">
+          <div className="status">
            <Loader />
           </div>
          </div>
@@ -961,12 +949,11 @@ const Version = () => {
         )}
        </>
       )}
-
       {refresh && active === 3 && (
        <>
         {loader ? (
-         <div class="preloader">
-          <div class="status">
+         <div className="preloader">
+          <div className="status">
            <Loader />
           </div>
          </div>
