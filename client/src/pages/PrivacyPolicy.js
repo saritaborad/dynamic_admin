@@ -14,13 +14,17 @@ const PrivacyPolicy = () => {
  let appName = location.search?.substring(1);
 
  const [policy, setPolicy] = useState();
+ const [id, setId] = useState();
 
  useEffect(() => getPolicy(), []);
 
  const getPolicy = () => {
   let data = { table_prefix: appName };
   new Promise((resolve) => resolve(PostApi(API_PATH.getPolicy, data))).then((res) => {
-   if (res.status === 200) setPolicy(res.data.data?.content);
+   if (res.status === 200) {
+    setPolicy(res.data.data?.content);
+    setId(res.data.data?._id);
+   }
   });
  };
 
@@ -56,6 +60,7 @@ const PrivacyPolicy = () => {
           initialValues={{
            table_prefix: appName,
            content: policy ? policy : "",
+           _id: id,
           }}
           validationSchema={Yup.object({
            content: Yup.string().required("Content is required."),

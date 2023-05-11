@@ -7,7 +7,7 @@ const privacySchema = mongoose.Schema({
 });
 
 const privacyTable = (name) => {
- mongoose.model(name, privacySchema);
+ mongoose.model(name, privacySchema, name);
 };
 
 module.exports = { privacyTable };

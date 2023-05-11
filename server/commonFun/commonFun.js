@@ -9,7 +9,7 @@ const increseCount = async (name) => {
 };
 
 const addTitleFun = async (res, adm_name, version_Id, count, enable, table_prefix, version) => {
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  let position = await increseCount("counter2");
  const version1 = await Version.updateOne(
   { _id: new ObjectId(version_Id) },
@@ -40,7 +40,7 @@ const addTitleFun = async (res, adm_name, version_Id, count, enable, table_prefi
 
 const addModeFun = async (res, ad_token, ad_keyword, version_Id, enable, table_prefix, version, adm_name) => {
  let position = await increseCount("counter2");
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
 
  const newVer = await Version.updateOne(
   { _id: new ObjectId(version_Id) },
@@ -61,7 +61,7 @@ const addModeFun = async (res, ad_token, ad_keyword, version_Id, enable, table_p
 };
 
 const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_token, enable, version, newItems, visibility, positionChange = false) => {
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  let obj;
  status || status === 0
   ? (obj = {
@@ -80,7 +80,7 @@ const editModeFun = async (res, _id, status = "", table_prefix, version_Id, ad_t
 };
 
 const editTitleFun = async (res, adm_name, version_Id, count, enable, table_prefix, _id, status) => {
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  let obj;
  status
   ? (obj = { "ad_master.$[item].enable": enable })
@@ -108,7 +108,7 @@ const editTitleFun = async (res, adm_name, version_Id, count, enable, table_pref
 };
 
 const updateTitleAndMode = async (table_prefix, _id, title) => {
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  const adtitle = await Version.find({ _id: new ObjectId(_id), ad_master: { $exists: true } }).toArray();
  const admode = await Version.find({ _id: new ObjectId(_id), "ad_master.ad_chield": { $exists: true } }).toArray();
 
@@ -122,7 +122,7 @@ const updateTitleAndMode = async (table_prefix, _id, title) => {
 };
 
 const changeModePosition = async (newItems = [], table_prefix) => {
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
 
  for (let item of newItems) {
   await Version.updateOne({ _id: new ObjectId(item?.version_Id) }, { $set: { "ad_master.$[item].ad_chield.$[item2].position": item?.position, "ad_master.$[item].ad_chield.$[item2].enable": item?.enable } }, { arrayFilters: [{ "item.ad_chield._id": { $eq: new ObjectId(item?._id) } }, { "item2._id": { $eq: new ObjectId(item?._id) } }] }, function (err) {

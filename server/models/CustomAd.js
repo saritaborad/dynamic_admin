@@ -29,5 +29,5 @@ const CustomAdSchema = mongoose.Schema(
  { timestamps: true }
 );
 
-const CustomAdModel = mongoose.model("CustomAd", CustomAdSchema);
+const CustomAdModel = mongoose.model("CustomAd", CustomAdSchema, "advertisement_custom");
 module.exports = CustomAdModel;

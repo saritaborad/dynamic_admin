@@ -26,7 +26,7 @@ exports.getAllVersion = asyncHandler(async (req, res, next) => {
  const startIndex = (page - 1) * limit;
  const options = { skip: startIndex, limit: limit, sort: { date: -1 } };
 
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
 
  const versionIds = verFilter?.length > 0 && verFilter?.map((id) => new ObjectId(id));
 
@@ -47,8 +47,8 @@ exports.addVersion = asyncHandler(async (req, res, next) => {
  const { is_force, enabled, features, code, title, table_prefix, adMode, adTitle } = req.body;
  let version_Id;
 
- const Version = getCollection(`${table_prefix}_version_tables`);
- const version = await Version.insertOne({ title, is_force, enabled, features, code, date: Date.now() })
+ const Version = getCollection(`${table_prefix}_version_table`);
+ const version = await Version.insertOne({ title, is_force, enabled, features, code, date: Date.now(), users: 0 })
   .then((result) => (version_Id = result.insertedId?.toString()))
   .catch((err) => {
    return give_response(res, 400, false, err.message);
@@ -69,14 +69,14 @@ exports.addVersion = asyncHandler(async (req, res, next) => {
 
 exports.delVersion = asyncHandler(async (req, res, next) => {
  const { table_prefix, _id } = req.body;
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  const version = await Version.deleteOne({ _id: new ObjectId(_id) });
  return give_response(res, 200, true, "Version deleted!");
 });
 
 exports.editVersion = asyncHandler(async (req, res, next) => {
  const { table_prefix, _id, title, is_force, enabled, features, code, version_note } = req.body;
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
 
  const version = await Version.updateOne({ _id: new ObjectId(_id) }, { $set: { title, is_force, enabled, features, code, version_note: version_note } }, function (err, result) {
   if (err) return give_response(res, 400, false, err.message);
@@ -94,7 +94,7 @@ exports.getAllAdTitle = asyncHandler(async (req, res, next) => {
  let adTitleList = [];
  let verFilData = [];
 
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
 
  const version = await Version.find({}, { projection: { ad_master: 1, _id: 0, version: 1 }, sort: { "ad_master.adm_date": 1 } }).toArray((err, docs) => {
   if (err) return give_response(res, 400, false, err.message);
@@ -136,7 +136,7 @@ exports.editTitle = asyncHandler(async (req, res, next) => {
 
 exports.delTitle = asyncHandler(async (req, res, next) => {
  const { _id, version_Id, table_prefix, adm_name, isFilter } = req.body;
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  if (!isFilter) req.session.titleFilter = req.session.titleFilter?.filter((item) => item !== adm_name);
 
  const version1 = Version.updateOne(
@@ -159,7 +159,7 @@ exports.getAllAdMode = asyncHandler(async (req, res, next) => {
  let verFilData = [];
  let titleFilData = [];
 
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
 
  const version = await Version.find({}, { projection: { "ad_master.ad_chield": 1, _id: 0, "ad_master.adm_name": 1 } }).toArray((err, docs) => {
   if (err) return give_response(res, 400, false, err.message);
@@ -213,7 +213,7 @@ exports.editMode = asyncHandler(async (req, res, next) => {
 
 exports.delMode = asyncHandler(async (req, res, next) => {
  const { version_Id, table_prefix, _id, ad_keyword, isModeFilter } = req.body;
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  if (!isModeFilter) req.session.modeFilter = req.session.modeFilter?.filter((item) => item !== ad_keyword);
  console.log(isModeFilter, req.session.modeFilter);
  const version = await Version.updateOne(
@@ -239,9 +239,9 @@ exports.addFilter = asyncHandler(async (req, res, next) => {
  if (verFilter?.length > 0) req.session.verFilter = verFilter;
  if (titleFilter?.length > 0) req.session.titleFilter = titleFilter;
  if (modeFilter?.length > 0) req.session.modeFilter = modeFilter;
- if (action === 2 && filType === 1) req.session.verFilter = [];
- if (action === 2 && filType === 2) req.session.titleFilter = [];
- if (action === 2 && filType === 3) req.session.modeFilter = [];
+ if ((action === 2 && filType === 1) || verFilter?.length === 0) req.session.verFilter = [];
+ if ((action === 2 && filType === 2) || titleFilter?.length === 0) req.session.titleFilter = [];
+ if ((action === 2 && filType === 3) || modeFilter?.length === 0) req.session.modeFilter = [];
 
  return give_response(res, 200, true, "session added");
 });
@@ -254,7 +254,7 @@ exports.modePosition = asyncHandler(async (req, res, next) => {
 
 exports.increaseUser = asyncHandler(async (req, res, next) => {
  const { _id, table_prefix } = req.body;
- const Version = getCollection(`${table_prefix}_version_tables`);
+ const Version = getCollection(`${table_prefix}_version_table`);
  const user = await Version.updateOne({ _id: new ObjectId(_id) }, { $inc: { users: 1 } });
  return give_response(res, 200, true, "user updated!");
 });

@@ -8,16 +8,29 @@ const connectDB = () => {
   .connect(process.env.MONGO_URI, {
    useNewUrlParser: true,
    useUnifiedTopology: true,
+   family: 4,
   })
   .then(() => {
    console.log("database connected");
+  })
+  .catch((err) => {
+   console.log(err);
   });
 };
 
 const connClientDB = () => {
- const client = new MongoClient(process.env.MONGO_URI);
- client.connect();
- const db = client.db("dynamic_admin_new");
+ const client = new MongoClient(process.env.MONGO_URI, {
+  family: 4,
+ });
+ client
+  .connect()
+  .then(() => {
+   //  console.log("clientdb connected");
+  })
+  .catch((err) => {
+   console.log(err);
+  });
+ const db = client.db(process.env.DB_NAME);
  return db;
 };
 

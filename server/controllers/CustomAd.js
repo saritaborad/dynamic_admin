@@ -63,7 +63,7 @@ exports.getAllBanner = asyncHandler(async (req, res, next) => {
 
  const data = await CustomAd.findOne({ _id: new ObjectId(cusAdId) }, { advertisement_custom_multi: { $slice: [startIndex, limit] } });
 
- let bannerAll = sdir === 1 ? data?.advertisement_custom_multi?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) : data?.advertisement_custom_multi?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+ let bannerAll = sdir === 1 ? data?.advertisement_custom_multi?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) || [] : data?.advertisement_custom_multi?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) || [];
 
  const totalRecord = bannerAll?.length;
  const tpage = totalRecord / limit;

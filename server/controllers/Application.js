@@ -29,8 +29,8 @@ exports.updateApp = asyncHandler(async (req, res, next) => {
  let obj = enable || enable === 0 ? { enable, _id } : { title, _id, table_prefix };
  const old = await Application.findById({ _id: _id });
  const newApp = await Application.findByIdAndUpdate({ _id: _id }, { $set: { ...obj } }, { new: true });
- title && renameCollection(res, DB, `${old.table_prefix}_privacypolicies`, `${newApp.table_prefix}_privacypolicies`);
- title && renameCollection(res, DB, `${old.table_prefix}_version_tables`, `${newApp.table_prefix}_version_tables`);
+ title && renameCollection(res, DB, `${old.table_prefix}_privacypolicy`, `${newApp.table_prefix}_privacypolicy`);
+ title && renameCollection(res, DB, `${old.table_prefix}_version_table`, `${newApp.table_prefix}_version_table`);
  return give_response(res, 200, true, "Details updated", newApp);
 });
 
@@ -47,8 +47,8 @@ exports.deleteApp = asyncHandler(async (req, res, next) => {
 
  const deleteAppById = async (appId) => {
   const app = await Application.findByIdAndDelete({ _id: appId });
-  delCollection(res, DB, `${app?.table_prefix}_version_tables`);
-  delCollection(res, DB, `${app?.table_prefix}_privacypolicies`);
+  delCollection(res, DB, `${app?.table_prefix}_version_table`);
+  delCollection(res, DB, `${app?.table_prefix}_privacypolicy`);
  };
 
  delArr && delArr?.length > 0 ? await delArr.forEach(async (id) => await deleteAppById(id)) : await deleteAppById(_id);

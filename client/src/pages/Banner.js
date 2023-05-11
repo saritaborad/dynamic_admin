@@ -53,7 +53,7 @@ const Banner = () => {
     filter: false,
     sort: false,
     customBodyRender: (data, i) => {
-     return <img src={data[i]?.banner} style={{ height: "100px", maxHeight: "100px" }} alt="" />;
+     return <img src={`/dynamic_admin/images/AD_${data[i]?.banner}`} style={{ height: "100px", maxHeight: "100px" }} alt="" />;
     },
    },
   },
@@ -64,7 +64,7 @@ const Banner = () => {
     filter: false,
     sort: false,
     customBodyRender: (data, i) => {
-     return <img src={data[i]?.icon} style={{ height: "70px", maxHeight: "70px", maxWidth: "80px" }} alt="" />;
+     return <img src={`/dynamic_admin/images/AD_${data[i]?.icon}`} style={{ height: "70px", maxHeight: "70px", maxWidth: "80px" }} alt="" />;
     },
    },
   },
@@ -148,6 +148,8 @@ const Banner = () => {
     setLoader(false);
     setData(res.data.data?.bannerAll);
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
+   } else {
+    setLoader(false);
    }
   });
  };

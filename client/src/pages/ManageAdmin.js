@@ -164,9 +164,11 @@ const ManageAdmin = () => {
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp, data)))
    .then((res) => {
     if (res.status === 200) {
+     setLoader(false);
      setData(res.data.data.allApp?.sort((a, b) => a?.position - b?.position));
      setActiveApp(res.data.data?.activeApp?.sort((a, b) => a?.position - b?.position));
      set_option({ ...option, totalRecord: res.data.data?.totalRecord });
+    } else {
      setLoader(false);
     }
    })

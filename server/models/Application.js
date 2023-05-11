@@ -39,4 +39,4 @@ appSchema.pre("save", async function (next) {
  doc.position = count;
 });
 
-module.exports = mongoose.model("Application", appSchema);
+module.exports = mongoose.model("Application", appSchema, "application");

@@ -39,7 +39,7 @@ const versionSchema = mongoose.Schema({
 });
 
 const verionTable = (name) => {
- mongoose.model(name, versionSchema);
+ mongoose.model(name, versionSchema, name);
 };
 
 module.exports = { verionTable };

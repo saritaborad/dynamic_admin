@@ -7,7 +7,7 @@ import { errorContainer, formAttr } from "../CommonFun/CommonFun";
 import { ImagePostApi } from "../Api/apiServices";
 import { API_PATH } from "../const";
 
-const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow }) => {
+const CustomAdModal = ({ update, customAd, updateApp, submitFormData, appModalClose }) => {
  const customAdRef = useRef();
  const [banner, setBanner] = useState("");
  const [icon, setIcon] = useState("");
@@ -170,7 +170,7 @@ const CustomAdModal = ({ update, customAd, updateApp, submitFormData, setShow })
         </div>
        </div>
        <div className="text-end mt-4 mb-2 me-1">
-        <button type="button" className="btn-smart-comn2 me-2" onClick={() => setShow(false)}>
+        <button type="button" className="btn-smart-comn2 me-2" onClick={() => appModalClose()}>
          Close
         </button>
         <button type="submit" className="btn-smart-comn" id="">

@@ -14,5 +14,5 @@ const installTrackSchama = mongoose.Schema({
  },
 });
 
-const InstallTrackModal = mongoose.model("installtrack_counts", installTrackSchama);
+const InstallTrackModal = mongoose.model("installtrack_counts", installTrackSchama, "installtrack_counts");
 module.exports = InstallTrackModal;

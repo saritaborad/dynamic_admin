@@ -14,6 +14,7 @@ const Version = () => {
  const [versionData, setVersionData] = useState([]);
  const [adTitleData, setAdTitleData] = useState([]);
  const [adModeData, setAdModeData] = useState([]);
+ const [uniqueVersion, setUniqueVersion] = useState([]);
  const [uniqueAdMode, setUniqueAdMode] = useState([]);
  const [uniqueTitle, setUniqueTitle] = useState([]);
  const [tableData, setTableData] = useState([]);
@@ -37,6 +38,7 @@ const Version = () => {
  const [refresh, setRefresh] = useState(false);
  const [active, setActive] = useState(1);
  const [loader, setLoader] = useState(false);
+ const [allChecked, setAllChecked] = useState(false);
 
  const table_prefix = useLocation()?.search?.substring(1);
  const stopPropagation = (e) => e.stopPropagation();
@@ -380,19 +382,26 @@ const Version = () => {
  const getAllVersion = (search) => {
   setLoader(true);
   let data = { table_prefix: table_prefix, ...option, search: search, verFilter };
-  new Promise((resolve) => resolve(PostApi(API_PATH.getAllVersion, data))).then((res) => {
-   if (res.status === 200) {
-    const maxObject = res.data.data?.allVersion?.length > 0 ? res.data.data?.allVersion?.reduce((a, b) => (a?.code > b?.code ? a : b)) : null;
-    setLatestVersion(maxObject);
-    set_option({ ...option, totalRecord: res.data.data?.totalRecord });
-    setVersionData(res.data.data?.allVersion);
-    setVerFilter(res.data.data?.verFilter);
-    setRefresh(true);
-    setLoader(false);
-    setTableData(res.data.data?.version);
-    setActive(1);
-   }
-  });
+  new Promise((resolve) => resolve(PostApi(API_PATH.getAllVersion, data)))
+   .then((res) => {
+    if (res.status === 200) {
+     setLoader(false);
+     const maxObject = res.data.data?.allVersion?.length > 0 ? res.data.data?.allVersion?.reduce((a, b) => (a?.code > b?.code ? a : b)) : null;
+     setLatestVersion(maxObject);
+     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
+     setVersionData(res.data.data?.allVersion);
+     let uniqueArr = res.data.data?.allVersion?.map((item) => (res.data.data?.verFilter?.includes(item._id) ? { ...item, checked: true } : item));
+     setUniqueVersion(uniqueArr?.sort((a, b) => b.code - a.code) || []);
+     setVerFilter(res.data.data?.verFilter);
+     setRefresh(true);
+     setTableData(res.data.data?.version?.sort((a, b) => b.code - a.code));
+     setActive(1);
+    } else {
+     setLoader(false);
+     setTableData([]);
+    }
+   })
+   .catch((err) => setLoader(false));
  };
 
  const getAllAdTitle = () => {
@@ -400,14 +409,18 @@ const Version = () => {
   let data = { table_prefix: table_prefix, titleFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdTitle, data))).then((res) => {
    if (res.status === 200) {
+    setLoader(false);
     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
     setAdTitleData(res.data.data?.adTitle);
-    setUniqueTitle(res.data.data?.adTitleList);
+    let uniqueTitle = res.data.data?.adTitleList.length > 0 && res.data.data?.adTitleList?.map((item) => (res.data.data?.titleFilter?.includes(item?.adm_name) ? { ...item, checked: true } : item));
+    setUniqueTitle(uniqueTitle);
     setTitleFilter(res.data.data?.titleFilter);
     setRefresh(true);
-    setLoader(false);
-    setTableData(res.data.data?.adTitle);
+    setTableData(res.data.data?.adTitle?.sort((a, b) => b.code - a.code));
     setActive(2);
+   } else {
+    setLoader(false);
+    setTableData([]);
    }
   });
  };
@@ -415,18 +428,24 @@ const Version = () => {
  const getAllAdMode = () => {
   setLoader(true);
   let data = { table_prefix: table_prefix, titleFilter };
-  new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data))).then((res) => {
-   if (res.status === 200) {
-    set_option({ ...option, totalRecord: res.data.data?.totalRecord });
-    setAdModeData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
-    setUniqueAdMode(res.data.data?.adModeList);
-    setModeFilter(res.data.data?.modeFilter);
-    setRefresh(true);
-    setLoader(false);
-    setTableData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
-    setActive(3);
-   }
-  });
+  new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data)))
+   .then((res) => {
+    if (res.status === 200) {
+     setLoader(false);
+     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
+     setAdModeData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
+     let uniqueMode = res.data.data?.adModeList.length > 0 && res.data.data?.adModeList?.map((item) => (res.data.data?.modeFilter?.include(item?.ad_keyword) ? { ...item, checked: true } : item));
+     setUniqueAdMode(uniqueMode);
+     setModeFilter(res.data.data?.modeFilter);
+     setRefresh(true);
+     setTableData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
+     setActive(3);
+    } else {
+     setLoader(false);
+     setTableData([]);
+    }
+   })
+   .catch((err) => toast.error(err.message));
  };
 
  const updateStatus = (positionChange, data, activeType, newItems = [], block, id) => {
@@ -649,28 +668,44 @@ const Version = () => {
   type === 1 ? getAllVersion() : type === 2 ? getAllAdTitle() : type === 3 && getAllAdMode();
  };
 
- const versionFilter = (e, item) => {
-  if (e.target.checked) {
-   setVerFilter((prev) => (prev ? [...prev, item] : [item]));
-  } else {
-   setVerFilter((prev) => prev?.filter((item1) => item !== item1));
-  }
+ const versionFilter = (isChecked, itemId) => {
+  // if (isChecked) {
+  //  setVerFilter((prev) => (prev ? [...prev, itemId] : [itemId]));
+  // } else {
+  //  setVerFilter((prev) => prev?.filter((item1) => itemId !== item1));
+  // }
+  const newVersion = uniqueVersion.map((item) => (item._id === itemId ? { ...item, checked: isChecked } : item));
+  setUniqueVersion(newVersion);
+  const allChecked = newVersion.every((item) => item.checked);
+  setAllChecked(allChecked);
+  setVerFilter(newVersion?.filter((item) => item?.checked)?.map((item1) => item1?._id));
  };
 
- const handleAdFilter = (e, item) => {
-  if (e.target.checked) {
-   setTitleFilter((prev) => (prev ? [...prev, item] : [item]));
-  } else {
-   setTitleFilter((prev) => prev?.filter((item1) => item !== item1));
-  }
+ const handleAdFilter = (isChecked, adm_name) => {
+  // if (e.target.checked) {
+  //  setTitleFilter((prev) => (prev ? [...prev, item] : [item]));
+  // } else {
+  //  setTitleFilter((prev) => prev?.filter((item1) => item !== item1));
+  //  }
+  const newAd = uniqueTitle.map((item) => (item.adm_name === adm_name ? { ...item, checked: isChecked } : item));
+  setUniqueTitle(newAd);
+  const allChecked = newAd.every((item) => item.checked);
+  setAllChecked(allChecked);
+  setTitleFilter(newAd?.filter((item) => item?.checked)?.map((item1) => item1?.adm_name));
  };
 
- const handleModeFilter = (e, item) => {
-  if (e.target.checked) {
-   setModeFilter((prev) => (prev ? [...prev, item] : [item]));
-  } else {
-   setModeFilter((prev) => prev?.filter((item1) => item !== item1));
-  }
+ const handleModeFilter = (isChecked, ad_keyword) => {
+  // if (e.target.checked) {
+  //  setModeFilter((prev) => (prev ? [...prev, item] : [item]));
+  // } else {
+  //  setModeFilter((prev) => prev?.filter((item1) => item !== item1));
+  //  }
+
+  const newMode = uniqueAdMode.map((item) => (item.ad_keyword === ad_keyword ? { ...item, checked: isChecked } : item));
+  setUniqueAdMode(newMode);
+  const allChecked = newMode.every((item) => item.checked);
+  setAllChecked(allChecked);
+  setModeFilter(newMode?.filter((item) => item?.checked)?.map((item1) => item1?.ad_keyword));
  };
 
  const addFilter = (filterData, filType, action) => {
@@ -679,6 +714,15 @@ const Version = () => {
    filType === 1 ? setVerToggle(!verToggle) : filType === 2 ? setTitleToggle(!titleToggle) : filType === 3 && setModeToggle(!modeToggle);
    filType === 1 ? getAllVersion() : filType === 2 ? getAllAdTitle() : filType === 3 && getAllAdMode();
   });
+ };
+
+ const handleAllCheck = (isChecked, type) => {
+  setAllChecked(isChecked);
+  let newVersion = type === 1 ? uniqueVersion.map((item) => ({ ...item, checked: isChecked })) : type === 2 ? uniqueTitle?.length > 0 && uniqueTitle.map((item) => ({ ...item, checked: isChecked })) : type === 3 && uniqueAdMode?.length > 0 && uniqueAdMode?.map((item) => ({ ...item, checked: isChecked }));
+
+  type === 1 ? setUniqueVersion(newVersion?.sort((a, b) => b?.code - a?.code)) : type === 2 ? setUniqueTitle(newVersion) : type === 3 && setUniqueAdMode(newVersion);
+
+  type === 1 ? setVerFilter(isChecked ? newVersion?.map((item) => item?._id) : []) : type === 2 ? setTitleFilter(isChecked ? newVersion?.map((item) => item?.adm_name) : []) : type === 3 && setModeFilter(isChecked ? newVersion?.map((item) => item?.ad_keyword) : []);
  };
 
  return (
@@ -702,24 +746,24 @@ const Version = () => {
             <span>Version</span>
            </Dropdown.Toggle>
            <Dropdown.Menu className="mymenu">
-            <ul>
+            <ul style={{ maxHeight: "230px", overflowY: "scroll" }}>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input type="checkbox" id="version0" name="version0" className="ms-2 me-2" onClick={stopPropagation} />
+               <input type="checkbox" id="version0" name="version0" className="ms-2 me-2" onClick={stopPropagation} onChange={(e) => handleAllCheck(e.target.checked, 1)} checked={allChecked} />
                <label htmlFor="version0" onClick={stopPropagation}>
                 All
                </label>
               </Dropdown.Item>
              </li>
-             {versionData &&
-              versionData?.length > 0 &&
-              versionData?.map((item, i) => {
+             {uniqueVersion &&
+              uniqueVersion?.length > 0 &&
+              uniqueVersion?.map((item, i) => {
                return (
                 <li key={i}>
                  <Dropdown.Item onClick={stopPropagation}>
-                  <input type="checkbox" id={`v${item._id}`} name={`v${item._id}`} className="ms-2 me-2" onClick={stopPropagation} onChange={(e) => versionFilter(e, item?._id)} checked={verFilter?.includes(item?._id)} />
+                  <input type="checkbox" id={`v${item._id}`} name={`v${item._id}`} className="ms-2 me-2" onClick={stopPropagation} onChange={(e) => versionFilter(e.target.checked, item?._id)} checked={item.checked} />
                   <label htmlFor={`v${item._id}`} onClick={stopPropagation}>
-                   {item?.title}
+                   {item?.code}
                   </label>
                  </Dropdown.Item>
                 </li>
@@ -795,10 +839,19 @@ const Version = () => {
             <span>Ad Title</span>
            </Dropdown.Toggle>
            <Dropdown.Menu className="mymenu">
-            <ul>
+            <ul style={{ maxHeight: "230px", overflowY: "scroll" }}>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input type="checkbox" id="adtitle0" name="adtitle0" className="m-2" onClick={stopPropagation} />
+               <input
+                type="checkbox"
+                id="adtitle0"
+                name="adtitle0"
+                className="m-2"
+                onClick={stopPropagation}
+                onChange={(e) => {
+                 handleAllCheck(e.target.checked, 2);
+                }}
+               />
                <label htmlFor="adtitle0" onClick={stopPropagation}>
                 All
                </label>
@@ -816,9 +869,9 @@ const Version = () => {
                    className="m-2"
                    onClick={stopPropagation}
                    onChange={(e) => {
-                    handleAdFilter(e, item?.adm_name);
+                    handleAdFilter(e.target.checked, item?.adm_name);
                    }}
-                   checked={titleFilter?.includes(item?.adm_name)}
+                   checked={item?.checked}
                   />
                   <label htmlFor={`adtitle${i + 1}`} onClick={stopPropagation}>
                    {item?.adm_name}
@@ -855,10 +908,10 @@ const Version = () => {
             <span>Mode</span>
            </Dropdown.Toggle>
            <Dropdown.Menu className="mymenu">
-            <ul>
+            <ul style={{ maxHeight: "230px", overflowY: "scroll" }}>
              <li>
               <Dropdown.Item onClick={stopPropagation}>
-               <input type="checkbox" id="admode0" name="admode0" className="m-2" onClick={stopPropagation} />
+               <input type="checkbox" id="admode0" name="admode0" className="m-2" onClick={stopPropagation} onChange={(e) => handleAllCheck(e.target.checked, 3)} />
                <label htmlFor="admode0" onClick={stopPropagation}>
                 All
                </label>
@@ -869,7 +922,7 @@ const Version = () => {
                return (
                 <li key={i}>
                  <Dropdown.Item onClick={stopPropagation}>
-                  <input type="checkbox" id={`admode${i + 1}`} name={`admode${i + 1}`} className="m-2" onClick={stopPropagation} onChange={(e) => handleModeFilter(e, item?.ad_keyword)} checked={modeFilter?.includes(item?.ad_keyword)} />
+                  <input type="checkbox" id={`admode${i + 1}`} name={`admode${i + 1}`} className="m-2" onClick={stopPropagation} onChange={(e) => handleModeFilter(e.target.checked, item?.ad_keyword)} checked={item?.checked} />
                   <label htmlFor={`admode${i + 1}`} onClick={stopPropagation}>
                    {item?.ad_keyword}
                   </label>

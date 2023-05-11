@@ -10,8 +10,9 @@ import Dashboard from "./pages/Dashboard";
 const RouteMain = () => {
  return (
   <>
-   <BrowserRouter basename="https://piks.in/dynamic">
+   <BrowserRouter basename="/new_admin">
     <Routes>
+     <Route path="/" strict element={<Dashboard />} />
      <Route path="/dashboard" strict element={<Dashboard />} />
      <Route path="/manage-admin" strict element={<ManageAdmin />} />
      <Route path="/version" element={<Version />} />
