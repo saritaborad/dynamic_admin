@@ -159,20 +159,24 @@ const ManageAdmin = () => {
  useEffect(() => getAllApp(), []);
 
  const getAllApp = (status, search) => {
-  setLoader(true);
   let data = status || status === 0 ? { enable: status, ...option } : { ...option, search: search };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllApp, data)))
    .then((res) => {
+    setLoader(true);
     if (res.status === 200) {
      setLoader(false);
-     setData(res.data.data.allApp?.sort((a, b) => a?.position - b?.position));
-     setActiveApp(res.data.data?.activeApp?.sort((a, b) => a?.position - b?.position));
-     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
+     const { allApp = [], activeApp = [], totalRecord } = res.data.data;
+     setData(allApp?.sort((a, b) => a?.position - b?.position));
+     setActiveApp(activeApp?.sort((a, b) => a?.position - b?.position));
+     set_option({ ...option, totalRecord: totalRecord });
     } else {
      setLoader(false);
     }
    })
-   .catch((err) => setLoader(false));
+   .catch((err) => {
+    setLoader(false);
+    toast.error(err.message);
+   });
  };
 
  const updatePosition = (newItems) => {

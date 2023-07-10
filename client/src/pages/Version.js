@@ -380,10 +380,10 @@ const Version = () => {
  }, []);
 
  const getAllVersion = (search) => {
-  setLoader(true);
   let data = { table_prefix: table_prefix, ...option, search: search, verFilter };
   new Promise((resolve) => resolve(PostApi(API_PATH.getAllVersion, data)))
    .then((res) => {
+    setLoader(true);
     if (res.status === 200) {
      setLoader(false);
      const maxObject = res.data.data?.allVersion?.length > 0 ? res.data.data?.allVersion?.reduce((a, b) => (a?.code > b?.code ? a : b)) : null;
@@ -401,40 +401,57 @@ const Version = () => {
      setTableData([]);
     }
    })
-   .catch((err) => setLoader(false));
+   .catch((err) => {
+    toast.error(err.message);
+    setLoader(false);
+   });
  };
 
  const getAllAdTitle = () => {
-  setLoader(true);
   let data = { table_prefix: table_prefix, titleFilter };
-  new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdTitle, data))).then((res) => {
-   if (res.status === 200) {
-    setLoader(false);
-    set_option({ ...option, totalRecord: res.data.data?.totalRecord });
-    setAdTitleData(res.data.data?.adTitle);
-    let uniqueTitle = res.data.data?.adTitleList.length > 0 && res.data.data?.adTitleList?.map((item) => (res.data.data?.titleFilter?.includes(item?.adm_name) ? { ...item, checked: true } : item));
-    setUniqueTitle(uniqueTitle);
-    setTitleFilter(res.data.data?.titleFilter);
-    setRefresh(true);
-    setTableData(res.data.data?.adTitle?.sort((a, b) => b.code - a.code));
-    setActive(2);
-   } else {
-    setLoader(false);
-    setTableData([]);
-   }
-  });
- };
-
- const getAllAdMode = () => {
-  setLoader(true);
-  let data = { table_prefix: table_prefix, titleFilter };
-  new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data)))
+  new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdTitle, data)))
    .then((res) => {
+    setLoader(true);
     if (res.status === 200) {
      setLoader(false);
      set_option({ ...option, totalRecord: res.data.data?.totalRecord });
+     setAdTitleData(res.data.data?.adTitle);
+     let uniqueTitle = res.data.data?.adTitleList.length > 0 && res.data.data?.adTitleList?.map((item) => (res.data.data?.titleFilter?.includes(item?.adm_name) ? { ...item, checked: true } : item));
+     setUniqueTitle(uniqueTitle);
+     setTitleFilter(res.data.data?.titleFilter);
+     setRefresh(true);
+     setTableData(res.data.data?.adTitle?.sort((a, b) => b.code - a.code));
+     setActive(2);
+    } else {
+     setLoader(false);
+     setTableData([]);
+    }
+   })
+   .catch((err) => {
+    toast.error(err.message);
+    setLoader(false);
+   });
+ };
+
+ const getAllAdMode = () => {
+  let data = { table_prefix: table_prefix, titleFilter };
+  new Promise((resolve) => resolve(PostApi(API_PATH.getAllAdMode, data)))
+   .then((res) => {
+    setLoader(true);
+    if (res.status === 200) {
+     setLoader(false);
+
+     set_option({ ...option, totalRecord: res.data.data?.totalRecord });
      setAdModeData(res.data.data?.adMode?.sort((a, b) => a.position - b.position));
-     let uniqueMode = res.data.data?.adModeList.length > 0 && res.data.data?.adModeList?.map((item) => (res.data.data?.modeFilter?.include(item?.ad_keyword) ? { ...item, checked: true } : item));
+     let uniqueMode =
+      res.data.data?.adModeList.length > 0 &&
+      res.data.data?.adModeList?.map((item) => {
+       if (res.data.data?.modeFilter?.length > 0 && Array.isArray(res.data.data?.modeFilter) && res.data.data?.modeFilter.includes(item?.ad_keyword)) {
+        return { ...item, checked: true };
+       } else {
+        return item;
+       }
+      });
      setUniqueAdMode(uniqueMode);
      setModeFilter(res.data.data?.modeFilter);
      setRefresh(true);
@@ -445,7 +462,10 @@ const Version = () => {
      setTableData([]);
     }
    })
-   .catch((err) => toast.error(err.message));
+   .catch((err) => {
+    toast.error(err.message);
+    setLoader(false);
+   });
  };
 
  const updateStatus = (positionChange, data, activeType, newItems = [], block, id) => {
@@ -515,6 +535,8 @@ const Version = () => {
     return;
    }
 
+    
+    
    const filtered = updatedItems.filter((item, i) => item.version === data?.version && item.adm_name === data?.adm_name);
    const lastIdx = updatedItems.length - 1 - filtered.reverse().findIndex((item) => item.version === data?.version && item.adm_name === data?.adm_name);
 

@@ -94,16 +94,17 @@ const Dashboard = () => {
   let date = { startDate: start ? start : moment(Date.now()).format("YYYY-MM-DD"), endDate: end ? end : moment(Date.now()).format("YYYY-MM-DD"), app_version: app_version };
   const getDashboardCountPromise = new Promise((resolve, reject) => resolve(PostApi(API_PATH.getDashboard, date)));
 
-  getDashboardCountPromise.then((response) => {
-   if (response.status === 200) {
-    setAllVersion(response.data.data?.allVersion);
-    setInstallData(response.data.data?.y);
-    setCategories(response.data.data?.x);
-    setTodayData(response.data.data?.todayData || 0);
-    setYesterday(response.data.data?.yesterdayData || 0);
-    setLastSeven(response.data.data?.lastSevenData || 0);
-    setLastThirty(response.data.data?.monthlyData || 0);
-    setTotalDownload(response.data.data?.totalDownload || 0);
+  getDashboardCountPromise.then((res) => {
+   if (res.status === 200) {
+    const { allVersion = [], x = [], y = [], todayData = 0, yesterdayData = 0, lastSevenData = 0, monthlyData = 0, totalDownload = 0 } = res.data.data;
+    setCategories(x);
+    setInstallData(y);
+    setAllVersion(allVersion);
+    setTodayData(todayData);
+    setYesterday(yesterdayData);
+    setLastSeven(lastSevenData);
+    setLastThirty(monthlyData);
+    setTotalDownload(totalDownload);
    }
   });
  };

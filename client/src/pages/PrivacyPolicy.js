@@ -22,8 +22,9 @@ const PrivacyPolicy = () => {
   let data = { table_prefix: appName };
   new Promise((resolve) => resolve(PostApi(API_PATH.getPolicy, data))).then((res) => {
    if (res.status === 200) {
-    setPolicy(res.data.data?.content);
-    setId(res.data.data?._id);
+    const { content = "", _id } = res.data.data;
+    setPolicy(content);
+    setId(_id);
    }
   });
  };
