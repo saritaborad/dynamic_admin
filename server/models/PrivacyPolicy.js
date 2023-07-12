@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const privacySchema = mongoose.Schema({
  content: { type: String },
- date: { type: Date, default: Date.now },
+ date: { type: Date, default: Date.now() },
  table_prefix: { type: String },
 });
 

@@ -48,7 +48,7 @@ exports.addVersion = asyncHandler(async (req, res, next) => {
  let version_Id;
 
  const Version = getCollection(`${table_prefix}_version_table`);
- const version = await Version.insertOne({ title, is_force, enabled, features, code, date: Date.now(), users: 0 })
+ const version = await Version.insertOne({ title, is_force, enabled, features, code, date: moment(Date.now()).format("YYYY-MM-DD HH:mm"), users: 0 })
   .then((result) => (version_Id = result.insertedId?.toString()))
   .catch((err) => {
    return give_response(res, 400, false, err.message);

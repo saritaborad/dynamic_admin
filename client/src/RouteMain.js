@@ -10,7 +10,7 @@ import Dashboard from "./pages/Dashboard";
 const RouteMain = () => {
  return (
   <>
-   <BrowserRouter basename="/">
+   <BrowserRouter basename="/admin_panel">
     <Routes>
      <Route path="/" strict element={<Dashboard />} />
      <Route path="/dashboard" strict element={<Dashboard />} />

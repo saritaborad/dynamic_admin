@@ -13,6 +13,7 @@ const version = require("./routes/Version");
 const imgUpload = require("./routes/ImageUpload");
 const customAd = require("./routes/CustomAd");
 const dashboard = require("./routes/Dashboard");
+const common = require("./routes/commonRoute");
 
 connectDB();
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
  res.send("get success!");
 });
 
+app.use("/api", common);
 app.use("/img", imgUpload);
 app.use("/app", application);
 app.use("/app", privacy);

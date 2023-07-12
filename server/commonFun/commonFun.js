@@ -130,4 +130,5 @@ const changeModePosition = async (newItems = [], table_prefix) => {
   });
  }
 };
+
 module.exports = { addTitleFun, addModeFun, editModeFun, editTitleFun, updateTitleAndMode, increseCount, changeModePosition };
