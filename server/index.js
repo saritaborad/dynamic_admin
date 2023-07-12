@@ -25,11 +25,14 @@ app.use(express.json());
 app.use(cors({ origin: process.env.REACT_LIVE_URL, credentials: true }));
 app.use(cookieParser());
 app.use(session({ key: "sid", secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
+
 app.get("/", (req, res) => {
  res.send("get success!");
 });
 
+// video call demo api
 app.use("/api", common);
+
 app.use("/img", imgUpload);
 app.use("/app", application);
 app.use("/app", privacy);
