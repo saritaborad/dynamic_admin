@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const { MongoClient } = require("mongodb");
 const give_response = require("../middleware/help");
-const errorResponse = require("../middleware/errorResponse");
 
+let MONGO_URI = "mongodb://mongo:27017/demo1";
+let DB_NAME = "demo1";
 const connectDB = () => {
  mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(MONGO_URI, {
    useNewUrlParser: true,
    useUnifiedTopology: true,
    family: 4,
@@ -19,7 +20,7 @@ const connectDB = () => {
 };
 
 const connClientDB = () => {
- const client = new MongoClient(process.env.MONGO_URI, {
+ const client = new MongoClient(MONGO_URI, {
   family: 4,
  });
  client
@@ -31,7 +32,7 @@ const connClientDB = () => {
    console.log(err);
   });
 
- const db = client.db(process.env.DB_NAME);
+ const db = client.db(DB_NAME);
  return db;
 };
 

@@ -117,3 +117,5 @@ const version3 = Version.updateOne(
   if (err) return give_response(res, 400, false, err.message);
  }
 );
+
+let mongoURL = "mongodb://athh:athh1507@68.183.190.110:27017/?authSource=admin&ssl=false&sslInvalidHostNameAllowed=true";

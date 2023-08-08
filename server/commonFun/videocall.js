@@ -19,7 +19,9 @@ const getInstallTrack = async (app_version) => {
 };
 
 const getAllCustomAd = async () => {
- return await getCollectionDb("advertisement_custom").find({}).toArray();
+ const custom = await getCollectionDb("advertisement_custom").find({}).toArray();
+ return custom;
+ // return custom.map((item) => ({ ...item, advertisement_custom_multi: JSON.parse(item.advertisement_custom_multi) }));
 };
 
 const getAdtaglist = async () => {

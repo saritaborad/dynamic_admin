@@ -48,4 +48,29 @@ router.post(
  })
 );
 
+// router.post(
+//  "/",
+//  asyncHandler(async (req, res) => {
+//   const { event_name, code, app_version, id, enable, clickId } = req.body;
+
+//   const actions = {
+//    version: () => getVersionData(code),
+//    privacypolicy: () => getPrivacyData(code),
+//    installtrack: () => getInstallTrack(app_version),
+//    CustomInApp: () => getAllCustomAd(),
+//    HtmlTaglist: () => getAdtaglist(),
+//    appMaster: () => getAppMaster(id, enable),
+//    sku: () => getSku(),
+//    customAdsClick: () => addClickCount(id, clickId),
+//   };
+
+//   if (event_name in actions) {
+//    const result = await actions[event_name]();
+//    result ? give_response(res, 200, true, "success", result) : give_response(res, 400, false, "failed");
+//   } else {
+//    give_response(res, 400, false, "failed", (data = "null"));
+//   }
+//  })
+// );
+
 module.exports = router;
