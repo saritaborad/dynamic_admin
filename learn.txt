@@ -20,3 +20,59 @@ there must be a clearly defined constraint (limit), which can be based on any of
 => Location: the constraint is based on geography 
              is implemented based on the location from which the request was made
 => IP addresses: the constraint is based on the IP address of the device that initiates a request
+
+//////////////////////////////////////////////////////////////////////////////
+
+test notification 
+----------------------------
+#!/bin/bash
+curl -X POST -H "Authorization: key=AIzaSyAYrx-pKYPZkVnmTDNHWoKYYAu6h2j5chE" -H "Content-Type: application/json" \
+   -d '{
+  "data": {
+    "notification": {
+        "title": "FCM Message",
+        "body": "This is an FCM Message",
+        "icon": "https://athh.co/noty/athhlogo.png",
+	"click_action" : "https://athh.co/noty/athhlogo.png"
+    }
+  },
+  "to": "cAmvWtc1vzk:APA91bGDb_NyqwqrTYRY_VUg2PL8r2pspAvF2xuNb-fG0lU3j1KQQJ0zV69ifyi_3Lr9gYML9Ea9lYRVd_15vG4T-bHauV-NT_OnBUp8jJH4TcKtTr6w-kAEQFwTXJ8e2jGDLzwhpvMB"
+}' https://fcm.googleapis.com/fcm/send
+
+
+// FOREGROUND notification when app minimize
+curl -X POST -H "Authorization: key=AIzaSyAYrx-pKYPZkVnmTDNHWoKYYAu6h2j5chE" -H "Content-Type: application/json" \
+   -d '{
+  "data": {
+    "notification": {
+        "title": "Athh Task Manegment",
+        "body": "New Changes Assign",
+ 	"icon": "https://athh.co/noty/athhlogo.png",
+        "click_action" : "https://athh.co/noty/athhlogo.png"
+
+    }
+  },
+   "priority": "high",
+  "to": "cAmvWtc1vzk:APA91bGDb_NyqwqrTYRY_VUg2PL8r2pspAvF2xuNb-fG0lU3j1KQQJ0zV69ifyi_3Lr9gYML9Ea9lYRVd_15vG4T-bHauV-NT_OnBUp8jJH4TcKtTr6w-kAEQFwTXJ8e2jGDLzwhpvMB"
+}' https://fcm.googleapis.com/fcm/send
+
+
+//*** FINAL Working NOTIFICATION CODE backgrond notification when app minimize
+
+curl -X POST -H "Authorization: key=AAAAOYTPU-o:APA91bERxBBc4pduYG0Et0hairfZ1dgChGaP08kfZV0BtPe5WvfQoqVPF2vGdrrK_wGY7N5FMMaeTmQZ1VIf-cW-5WouJCRLILu_EcwdFF20Jdg8J9MC2ic9TAa5mpfzyFVmxYcMuZHz" -H "Content-Type: application/json" \
+ -d '{
+    "notification": {
+    			"title": "Task Manager",
+    			"body": "Task details",
+   			"icon": "https://athh.co/noty/athhlogo.png",	
+    			"click_action" : "http://www.athh.co/Athh_Task_Mangment/index.php/sl"
+  		    },
+  "priority": "high",
+  "to" : "cAmvWtc1vzk:APA91bGDb_NyqwqrTYRY_VUg2PL8r2pspAvF2xuNb-fG0lU3j1KQQJ0zV69ifyi_3Lr9gYML9Ea9lYRVd_15vG4T-bHauV-NT_OnBUp8jJH4TcKtTr6w-kAEQFwTXJ8e2jGDLzwhpvMB"
+}' "https://fcm.googleapis.com/fcm/send"
+
+//*** END
+
+
+
+

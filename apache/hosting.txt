@@ -1,0 +1,99 @@
+Host React Website using apache to subfolder
+--------------------------------------------
+=> make react build 
+=> using filezilla upload react build to document roots => /admin_panel directory
+=> e.x document root /var/www/piks/public_html
+=> create admin_panel folder 
+=> copy all content of build to admin_panel 
+=> for refreshing issue of react link shows 404
+make htaccess file in in root folder of project 
+
+.htaccess file content
+------------------------
+  RewriteEngine On
+  RewriteBase /admin_panel
+  RewriteCond %{HTTPS} off
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /admin_panel/index.html [L]
+
+in apache2.conf add below config 
+---------------------------------
+<Directory /var/www/piks/public_html/admin_panel>
+	Options Indexes FollowSymLinks
+	AllowOverride all
+	Require all granted
+</Directory>
+
+or if we have different virtual host config for our project then add above in virtual host config
+--------------------------------------------------------------------------------------------------
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName piks.in
+    ServerAlias www.piks.in
+    DocumentRoot /var/www/piks/public_html/
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    
+    <Directory /var/www/piks/public_html/admin_panel>
+      Options Indexes FollowSymLinks
+      AllowOverride all
+      Require all granted
+    </Directory>
+</VirtualHost>
+
+
+-----------------------------
+Host nodejs project using pm2 
+-----------------------------
+=> install nodejs and nvm 
+=> sudo apt install nodejs
+
+=> sudo npm install -g pm2
+
+=> zip nodejs project folder
+=> upload nodejs zip using filezilla
+=> unzip project folder 
+
+pm2 start index.js --name "auth-api"
+pm2 list
+pm2 monit auth-api 
+
+Installing Apache Web Server
+----------------------------
+sudo apt install apache2
+
+=> The Apache web server will be operating as a reverse proxy. 
+=> Requests to it will be proxied to the backend NodeJS applications, managed by PM2
+=> In order for Apache to proxy requests, the following modules must be installed and enabled.
+
+sudo en2mod proxy
+sudo a2enmod proxy_http
+
+To fully enable the modules Apache must be restarted
+=> sudo systemctl restart apache2
+
+
+Configuring Apache to Reverse Proxy to PM2
+------------------------------------------
+=> to revere proxy requests using Apache use the ProxyPass and ProxyPassReverse directives
+<VirtualHost *:80>
+    ProxyPreserveHost On
+
+    ProxyPass / http://127.0.0.1:3000/
+    ProxyPassReverse / http://127.0.0.1:3000/
+</VirtualHost>
+
+
+-----------------------------------------------------
+How to host next js project to subfolder using apache 
+-----------------------------------------------------
+
+=> in next.config file put subfolder name as basePath: "/blog" 
+=> in package.json "build": "next build && next export" 
+=> npm run build => it will return out folder 
+=> upload out folder using filezilla to sub folder 
+=> then access domain/blog

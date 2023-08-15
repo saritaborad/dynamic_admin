@@ -1,0 +1,17 @@
+=> follow step by step process from below link to generate ssl certificate 
+https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-20-04
+
+install certbot
+---------------
+sudo apt install certbot python3-certbot-apache
+
+obtaining SSL certificate 
+-------------------------
+sudo certbot --apache
+
+automatically renew any certificate that’s within thirty days of expiration.
+---------------------------------------------------------------------------
+sudo systemctl status certbot.timer
+
+
+
