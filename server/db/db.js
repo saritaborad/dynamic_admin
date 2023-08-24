@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const { MongoClient } = require("mongodb");
 const give_response = require("../middleware/help");
 
-let MONGO_URI = "mongodb://mongo:27017/demo1";
+// let MONGO_URI = "mongodb://mongo:27017/demo1";
+let MONGO_URI = "mongodb://127.0.0.1:27017/demo1";
 let DB_NAME = "demo1";
 const connectDB = () => {
  mongoose
